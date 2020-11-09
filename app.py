@@ -6,6 +6,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Numeric
+from sqlalchemy import BigInteger, Column, DateTime, Float, Integer, MetaData, Numeric, String
+from sqlalchemy.dialects.mysql.types import BIT
+from sqlalchemy.schema import FetchedValue
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from random import *
 
@@ -33,7 +38,7 @@ app.config["JSON_AS_ASCII"] = False  # jsonify返回的中文正常显示
 app.secret_key = os.urandom(24)
 
 # #用于连接数据库的URI                  数据库类型   账号密码    ip     端口   数据库名
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://liqian:123456@10.20.36.64:3306/zrh_data'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://data2:zruih2ZRH@!@47.92.250.148/riskapply'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://liqian:password@10.20.36.64:3306/zrh_data'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
@@ -119,6 +124,57 @@ class BuildingTroubleDataConverted(db.Model):
             del dict['_sa_instance_state']
         return dict
 
+Base = declarative_base()
+metadata = Base.metadata
+
+
+class RiskProject(Base):
+    __tablename__ = 'risk_project'
+
+    id = Column(BigInteger, primary_key=True)
+    code = Column(String(255, 'utf8_bin'), info='项目编码')
+    name = Column(String(255, 'utf8_bin'), info='项目名称')
+    ctr_code = Column(String(255, 'utf8_bin'), info='合同编码')
+    ctr_codes = Column(String(255, 'utf8_bin'), info='合同父级编码')
+    cust_code = Column(String(32, 'utf8_bin'), info='客户编码')
+    feature = Column(String(255, 'utf8_bin'), info='项目特征')
+    status = Column(String(1, 'utf8_bin'), info='项目状态 0:立项 1:首次会议 2:专业报告 3:末次会议 4:已归档')
+    pro_leader_code = Column(String(32, 'utf8_bin'), info='项目负责人/项目组长')
+    pro_leader_name = Column(String(40, 'utf8_bin'), info='项目组长名字')
+    province_code = Column(String(10, 'utf8_bin'), info='省编码')
+    province_name = Column(String(20, 'utf8_bin'), info='省名称')
+    city_code = Column(String(10, 'utf8_bin'), info='市编码')
+    city_name = Column(String(20, 'utf8_bin'), info='市名')
+    district_code = Column(String(10, 'utf8_bin'), info='区域编码')
+    district_name = Column(String(20, 'utf8_bin'), info='区域名')
+    address = Column(String(100, 'utf8_bin'), info='详细地址')
+    full_address = Column(String(255, 'utf8_bin'), info='完整地址')
+    lng = Column(Float(10), info='经度')
+    lat = Column(Float(10), info='维度')
+    leader_phone = Column(String(32, 'utf8_bin'), info='组长/负责人手机号')
+    plan_start_time = Column(DateTime, info='预计开始时间')
+    plan_end_time = Column(DateTime, info='预计结束时间')
+    type = Column(String(2, 'utf8_bin'), info='检查类型 1:A类检查 2:B类检查  3:C类检查 4:其他类')
+    frist_meetting_file_id = Column(String(255, 'utf8_bin'), info='首次会议文件id')
+    professional_report_file_ids = Column(String(255, 'utf8_bin'))
+    end_meeting_file_id = Column(String(255, 'utf8_bin'), info='末次文件id')
+    general_report_file_id = Column(String(255, 'utf8_bin'), info='综合报告')
+    check_unit = Column(String(32, 'utf8_bin'), info='检查单位')
+    amount = Column(Numeric(18, 2), info='项目金额')
+    note = Column(String(500, 'utf8_bin'), info='项目概况')
+    create_time = Column(DateTime, info='创建时间')
+    create_user = Column(BigInteger, info='创建人')
+    update_time = Column(DateTime)
+    update_user = Column(BigInteger, info='更新人')
+    del_ind = Column(BIT(1))
+    version = Column(Integer, server_default=FetchedValue(), info='乐观锁')
+    unit_key = Column(String(36, 'utf8_bin'), info='唯一标识，用于树形结构')
+
+    def to_json(self):
+        dict = self.__dict__
+        if "_sa_instance_state" in dict:
+            del dict['_sa_instance_state']
+        return dict
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -234,9 +290,18 @@ def login():
 
 # def index():
 def catch_all(path):
+    res = db.session.query(RiskProject).limit(1).all()
+    print(res)
+    ret = []
+    for x in res:
+        ret.append(x.to_json())
+    print(ret)
+    print('lng = ' + str(ret[0]['lng']))
+    print('lat = ' + str(ret[0]['lat']))
     if app.debug:
         return requests.get('http://localhost:8080/{}'.format(path)).text
-    return render_template("index.html")  # ,
+    # return render_template("index.html")
+    return "hello world"
     # name='index')  # 使用模板插件，引入index.html。此处会自动Flask模板文件目录寻找index.html文件。
 
 
@@ -292,7 +357,16 @@ def user_register():
 
 
 if __name__ == '__main__':
-    user = RiskModule.query.filter_by(id=1).all()
-    # user = db.session.query(RiskModule).filter(RiskModule.id == 1)
+    # user = RiskModule.query.filter_by(id=1).all()
+    # # user = db.session.query(RiskModule).filter(RiskModule.id == 1)
     # print(user)
+    res = db.session.query(RiskProject).limit(1).all()
+    print(res)
+    ret = []
+    for x in res:
+        ret.append(x.to_json())
+    print(ret)
+    print('lng = ' + str(ret[0]['lng']))
+    print('lat = ' + str(ret[0]['lat']))
+
     app.run(debug=True)
