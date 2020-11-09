@@ -160,7 +160,7 @@ class RiskProject(Base):
     end_meeting_file_id = Column(String(255, 'utf8_bin'), info='末次文件id')
     general_report_file_id = Column(String(255, 'utf8_bin'), info='综合报告')
     check_unit = Column(String(32, 'utf8_bin'), info='检查单位')
-    amount = Column(Numeric(18, 2), info='项目金额')
+    amount = Column(Numeric(18, 2, asdecimal=False), info='项目金额')
     note = Column(String(500, 'utf8_bin'), info='项目概况')
     create_time = Column(DateTime, info='创建时间')
     create_user = Column(BigInteger, info='创建人')
@@ -188,24 +188,36 @@ class DecimalEncoder(json.JSONEncoder):
 def overview():
     error = None
     # DEBUG
-    res = BuildingTroubleDataConverted.query.filter(BuildingTroubleDataConverted.longitude != '').all()
-    # print(res)
+    res = db.session.query(RiskProject).limit(1).all()
+    print(res)
     ret = []
     for x in res:
         ret.append(x.to_json())
     print(ret)
-    return jsonify(ret)
+    return json.dumps(ret)
+
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return float(obj)
+    raise TypeError
 
 
 # overview页面根据项目名称查询
 @app.route('/api/overview_prjname', methods=['POST'])
 def overview_prjname():
     error = None
-    if request.method == 'POST' and request.form.get("project_name"):
-        datax = request.form.get("project_name")
-        print(datax)
-        return jsonify({'msg': '没问题'})
-    return jsonify({'msg': '出错了'})
+    res = db.session.query(RiskProject).limit(1).all()
+    print(res)
+    ret = []
+    for x in res:
+        ret.append(x.to_json())
+    print(ret)
+    return json.dumps(ret)
+    # if request.method == 'POST' and request.form.get("project_name"):
+    #     datax = request.form.get("project_name")
+    #     print(datax)
+    #     return jsonify({'msg': '没问题'})
+    # return jsonify({'msg': '出错了'})
 
 
 # overview页面右侧初始化数据加载
