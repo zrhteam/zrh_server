@@ -273,7 +273,7 @@ def overview_get_location():
     result = RiskProject.query.all()
     actual_data = {}
     for item in result:
-        if str(item.code) not in data.keys():
+        if str(item.code) not in actual_data.keys():
             tmp_data = {'id': item.id, "longitude": item.lng, "latitude": item.lat}
             actual_data[str(item.code)] = tmp_data
     print("Returned data: ")
@@ -380,7 +380,6 @@ def login():
 
 # def index():
 def catch_all(path):
-    ret = overview_getLocation()
     print(ret)
     if app.debug:
         return requests.get('http://localhost:8080/{}'.format(path)).text
