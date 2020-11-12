@@ -1,10 +1,12 @@
 import decimal
+from datetime import datetime
+from uuid import UUID
 
 from flask import Flask, make_response, json, jsonify, redirect, url_for, request, render_template
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy import Column, Integer, String, Numeric
 from sqlalchemy import BigInteger, Column, DateTime, Float, Integer, MetaData, Numeric, String
 from sqlalchemy.dialects.mysql.types import BIT
@@ -18,6 +20,8 @@ import requests
 import pymysql
 import os
 import pdb
+
+# import test
 
 data = [
     {"id": 1, "username": "小明", "password": "123", "role": 0, "sex": 0, "telephone": "10086", "address": "北京市海淀区"},
@@ -74,107 +78,129 @@ class RiskModule(db.Model):
         return dict
 
 
-class BuildingTroubleDataConverted(db.Model):
-    __tablename__ = 'building_trouble_dataV2.1_converted'
-    # __abstract__ = True
-    id = db.Column('ID', db.Integer, primary_key=True)
-    project_name = db.Column('项目名称', db.Text)
-    risk_description = db.Column('隐患描述', db.Text)
-    risk_cnt = db.Column('隐患数量', db.Integer)
-    system_name = db.Column('系统名称', db.Text)
-    equipment_name = db.Column('设备名称', db.Text)
-    component_name = db.Column('组件名称', db.Text)
-    risk_position = db.Column('隐患地点/位置', db.Text)
-    risk_level = db.Column('风险等级', db.Integer)
-    area = db.Column('分布区域', db.Text)
-    cause_phase = db.Column('致因阶段', db.Text)
-    risk_picture = db.Column('隐患图片', db.Integer)
-    entered_name = db.Column('录入人姓名', db.Text)
-    state = db.Column('状态', db.Integer)
-    appear_frequency = db.Column('出现频率', db.Text)
-    create_time = db.Column('创建时间', db.Text)
-    related_item = db.Column('相关条款', db.Text)
-    code_number = db.Column('法规编号', db.Text)
-    legislation_name = db.Column('法规名称', db.Text)
-    legislation_content = db.Column('条款内容', db.Text)
-    risk_rate = db.Column('隐患风险等级', db.Text)
-    project_leader = db.Column('项目组长', db.Text)
-    province = db.Column('省份', db.Text)
-    city = db.Column('城市', db.Text)
-    region = db.Column('区域', db.Text)
-    longitude = db.Column('经度', db.Float(asdecimal=False))
-    latitude = db.Column('纬度', db.Float(asdecimal=False))
-    predict_start_time = db.Column('预计开始时间', db.Text)
-    predict_end_time = db.Column('预计结束时间', db.Text)
-    project_implement_state = db.Column('项目执行状态', db.Text)
-    project_check_type = db.Column('项目检查类型', db.Text)
-    belonged_major_name = db.Column('所属专业名称', db.Text)
-    risk_picture1 = db.Column('隐患图片.1', db.Text)
+# class RiskProject(test.OutputMixin, db.Model):
+#     __tablename__ = 'risk_project'
+#
+#     id = db.Column(db.BigInteger, primary_key=True)
+#     code = Column(String(255, 'utf8_bin'), info='项目编码')
+#     name = Column(String(255, 'utf8_bin'), info='项目名称')
+#     ctr_code = Column(String(255, 'utf8_bin'), info='合同编码')
+#     ctr_codes = Column(String(255, 'utf8_bin'), info='合同父级编码')
+#     cust_code = Column(String(32, 'utf8_bin'), info='客户编码')
+#     feature = Column(String(255, 'utf8_bin'), info='项目特征')
+#     status = Column(String(1, 'utf8_bin'), info='项目状态 0:立项 1:首次会议 2:专业报告 3:末次会议 4:已归档')
+#     pro_leader_code = Column(String(32, 'utf8_bin'), info='项目负责人/项目组长')
+#     pro_leader_name = Column(String(40, 'utf8_bin'), info='项目组长名字')
+#     province_code = Column(String(10, 'utf8_bin'), info='省编码')
+#     province_name = Column(String(20, 'utf8_bin'), info='省名称')
+#     city_code = Column(String(10, 'utf8_bin'), info='市编码')
+#     city_name = Column(String(20, 'utf8_bin'), info='市名')
+#     district_code = Column(String(10, 'utf8_bin'), info='区域编码')
+#     district_name = Column(String(20, 'utf8_bin'), info='区域名')
+#     address = Column(String(100, 'utf8_bin'), info='详细地址')
+#     full_address = Column(String(255, 'utf8_bin'), info='完整地址')
+#     lng = Column(Float(10), info='经度')
+#     lat = Column(Float(10), info='维度')
+#     leader_phone = Column(String(32, 'utf8_bin'), info='组长/负责人手机号')
+#     plan_start_time = Column(DateTime, info='预计开始时间')
+#     plan_end_time = Column(DateTime, info='预计结束时间')
+#     type = Column(String(2, 'utf8_bin'), info='检查类型 1:A类检查 2:B类检查  3:C类检查 4:其他类')
+#     frist_meetting_file_id = Column(String(255, 'utf8_bin'), info='首次会议文件id')
+#     professional_report_file_ids = Column(String(255, 'utf8_bin'))
+#     end_meeting_file_id = Column(String(255, 'utf8_bin'), info='末次文件id')
+#     general_report_file_id = Column(String(255, 'utf8_bin'), info='综合报告')
+#     check_unit = Column(String(32, 'utf8_bin'), info='检查单位')
+#     amount = Column(Numeric(18, 2, asdecimal=False), info='项目金额')
+#     note = Column(String(500, 'utf8_bin'), info='项目概况')
+#     create_time = Column(DateTime, info='创建时间')
+#     create_user = Column(BigInteger, info='创建人')
+#     update_time = Column(DateTime)
+#     update_user = Column(BigInteger, info='更新人')
+#     del_ind = Column(BIT(1))
+#     version = Column(Integer, server_default=FetchedValue(), info='乐观锁')
+#     unit_key = Column(String(36, 'utf8_bin'), info='唯一标识，用于树形结构')
+#
+#     def to_dict(self, rel=None, backref=None, exclude=()):
+#         if rel is None:
+#             rel = self.RELATIONSHIPS_TO_DICT
+#         res = {column.key: getattr(self, attr)
+#                for attr, column in self.__mapper__.c.items()
+#                if column.key not in exclude}
+#         if rel:
+#             for attr, relation in self.__mapper__.relationships.items():
+#                 # Avoid recursive loop between to tables.
+#                 if backref == relation.table:
+#                     continue
+#                 value = getattr(self, attr)
+#                 if value is None:
+#                     res[relation.key] = None
+#                 elif isinstance(value.__class__, DeclarativeMeta):
+#                     res[relation.key] = value.to_dict(backref=self.__table__)
+#                 else:
+#                     res[relation.key] = [i.to_dict(backref=self.__table__)
+#                                          for i in value]
+#         return res
+#
+#     def to_json(self, rel=None, exclude=None):
+#         def extended_encoder(x):
+#             if isinstance(x, datetime):
+#                 return x.isoformat()
+#             if isinstance(x, UUID):
+#                 return str(x)
+#         if rel is None:
+#             rel = self.RELATIONSHIPS_TO_DICT
+#         return json.dumps(self.to_dict(rel, exclude=exclude),
+#                           default=extended_encoder)
 
-    def __repr__(self):
-        return "location id = {}, longitude = {}, latitude = {}".format(repr(self.id),
-                                                                        repr(self.longitude),
-                                                                        repr(
-                                                                            self.latitude)
-                                                                        )
 
-    def to_json(self):
-        dict = self.__dict__
-        if "_sa_instance_state" in dict:
-            del dict['_sa_instance_state']
-        return dict
-
-Base = declarative_base()
-metadata = Base.metadata
-
-
-class RiskProject(Base):
+class RiskProject(db.Model):
     __tablename__ = 'risk_project'
 
-    id = Column(BigInteger, primary_key=True)
-    code = Column(String(255, 'utf8_bin'), info='项目编码')
-    name = Column(String(255, 'utf8_bin'), info='项目名称')
-    ctr_code = Column(String(255, 'utf8_bin'), info='合同编码')
-    ctr_codes = Column(String(255, 'utf8_bin'), info='合同父级编码')
-    cust_code = Column(String(32, 'utf8_bin'), info='客户编码')
-    feature = Column(String(255, 'utf8_bin'), info='项目特征')
-    status = Column(String(1, 'utf8_bin'), info='项目状态 0:立项 1:首次会议 2:专业报告 3:末次会议 4:已归档')
-    pro_leader_code = Column(String(32, 'utf8_bin'), info='项目负责人/项目组长')
-    pro_leader_name = Column(String(40, 'utf8_bin'), info='项目组长名字')
-    province_code = Column(String(10, 'utf8_bin'), info='省编码')
-    province_name = Column(String(20, 'utf8_bin'), info='省名称')
-    city_code = Column(String(10, 'utf8_bin'), info='市编码')
-    city_name = Column(String(20, 'utf8_bin'), info='市名')
-    district_code = Column(String(10, 'utf8_bin'), info='区域编码')
-    district_name = Column(String(20, 'utf8_bin'), info='区域名')
-    address = Column(String(100, 'utf8_bin'), info='详细地址')
-    full_address = Column(String(255, 'utf8_bin'), info='完整地址')
-    lng = Column(Float(10), info='经度')
-    lat = Column(Float(10), info='维度')
-    leader_phone = Column(String(32, 'utf8_bin'), info='组长/负责人手机号')
-    plan_start_time = Column(DateTime, info='预计开始时间')
-    plan_end_time = Column(DateTime, info='预计结束时间')
-    type = Column(String(2, 'utf8_bin'), info='检查类型 1:A类检查 2:B类检查  3:C类检查 4:其他类')
-    frist_meetting_file_id = Column(String(255, 'utf8_bin'), info='首次会议文件id')
-    professional_report_file_ids = Column(String(255, 'utf8_bin'))
-    end_meeting_file_id = Column(String(255, 'utf8_bin'), info='末次文件id')
-    general_report_file_id = Column(String(255, 'utf8_bin'), info='综合报告')
-    check_unit = Column(String(32, 'utf8_bin'), info='检查单位')
-    amount = Column(Numeric(18, 2, asdecimal=False), info='项目金额')
-    note = Column(String(500, 'utf8_bin'), info='项目概况')
-    create_time = Column(DateTime, info='创建时间')
-    create_user = Column(BigInteger, info='创建人')
-    update_time = Column(DateTime)
-    update_user = Column(BigInteger, info='更新人')
-    del_ind = Column(BIT(1))
-    version = Column(Integer, server_default=FetchedValue(), info='乐观锁')
-    unit_key = Column(String(36, 'utf8_bin'), info='唯一标识，用于树形结构')
+    id = db.Column(db.BigInteger, primary_key=True)
+    code = db.Column(db.String(255, 'utf8_bin'), info='项目编码')
+    name = db.Column(db.String(255, 'utf8_bin'), info='项目名称')
+    ctr_code = db.Column(db.String(255, 'utf8_bin'), info='合同编码')
+    ctr_codes = db.Column(db.String(255, 'utf8_bin'), info='合同父级编码')
+    cust_code = db.Column(db.String(32, 'utf8_bin'), info='客户编码')
+    feature = db.Column(db.String(255, 'utf8_bin'), info='项目特征')
+    status = db.Column(db.String(1, 'utf8_bin'), info='项目状态 0:立项 1:首次会议 2:专业报告 3:末次会议 4:已归档')
+    pro_leader_code = db.Column(db.String(32, 'utf8_bin'), info='项目负责人/项目组长')
+    pro_leader_name = db.Column(db.String(40, 'utf8_bin'), info='项目组长名字')
+    province_code = db.Column(db.String(10, 'utf8_bin'), info='省编码')
+    province_name = db.Column(db.String(20, 'utf8_bin'), info='省名称')
+    city_code = db.Column(db.String(10, 'utf8_bin'), info='市编码')
+    city_name = db.Column(db.String(20, 'utf8_bin'), info='市名')
+    district_code = db.Column(db.String(10, 'utf8_bin'), info='区域编码')
+    district_name = db.Column(db.String(20, 'utf8_bin'), info='区域名')
+    address = db.Column(db.String(100, 'utf8_bin'), info='详细地址')
+    full_address = db.Column(db.String(255, 'utf8_bin'), info='完整地址')
+    lng = db.Column(db.Float(10), info='经度')
+    lat = db.Column(db.Float(10), info='维度')
+    leader_phone = db.Column(db.String(32, 'utf8_bin'), info='组长/负责人手机号')
+    plan_start_time = db.Column(db.DateTime, info='预计开始时间')
+    plan_end_time = db.Column(db.DateTime, info='预计结束时间')
+    type = db.Column(db.String(2, 'utf8_bin'), info='检查类型 1:A类检查 2:B类检查  3:C类检查 4:其他类')
+    frist_meetting_file_id = db.Column(db.String(255, 'utf8_bin'), info='首次会议文件id')
+    professional_report_file_ids = db.Column(db.String(255, 'utf8_bin'))
+    end_meeting_file_id = db.Column(db.String(255, 'utf8_bin'), info='末次文件id')
+    general_report_file_id = db.Column(db.String(255, 'utf8_bin'), info='综合报告')
+    check_unit = db.Column(db.String(32, 'utf8_bin'), info='检查单位')
+    amount = db.Column(db.Numeric(18, 2), info='项目金额')
+    note = db.Column(db.String(500, 'utf8_bin'), info='项目概况')
+    create_time = db.Column(db.DateTime, info='创建时间')
+    create_user = db.Column(db.BigInteger, info='创建人')
+    update_time = db.Column(db.DateTime)
+    update_user = db.Column(db.BigInteger, info='更新人')
+    del_ind = db.Column(BIT(1))
+    version = db.Column(db.Integer, server_default=db.FetchedValue(), info='乐观锁')
+    unit_key = db.Column(db.String(36, 'utf8_bin'), info='唯一标识，用于树形结构')
 
     def to_json(self):
         dict = self.__dict__
         if "_sa_instance_state" in dict:
             del dict['_sa_instance_state']
         return dict
+
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -184,17 +210,18 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 # overview页面地图部分
-@app.route('/api/overview', methods=['POST'])
-def overview():
-    error = None
-    # DEBUG
-    res = db.session.query(RiskProject).limit(1).all()
-    print(res)
-    ret = []
-    for x in res:
-        ret.append(x.to_json())
-    print(ret)
-    return json.dumps(ret)
+# @app.route('/api/overview', methods=['POST'])
+# def overview():
+#     error = None
+#     # DEBUG
+#     res = db.session.query(RiskProject).limit(1).all()
+#     print(res)
+#     ret = []
+#     for x in res:
+#         ret.append(x.to_json())
+#     print(ret)
+#     return json.dumps(ret)
+
 
 def decimal_default(obj):
     if isinstance(obj, decimal.Decimal):
@@ -205,19 +232,70 @@ def decimal_default(obj):
 # overview页面根据项目名称查询
 @app.route('/api/overview_prjname', methods=['POST'])
 def overview_prjname():
-    error = None
-    res = db.session.query(RiskProject).limit(1).all()
+    print("In function overview_getLocation")
+    # res = db.session.query(RiskProject.id, RiskProject.code, RiskProject.lng, RiskProject.lat).all()
+    res = db.session.query(RiskProject).all()
+    result = []
+    for risk_prj in RiskProject:
+        result.append(risk_prj.to_json())
+    print("res")
     print(res)
-    ret = []
-    for x in res:
-        ret.append(x.to_json())
-    print(ret)
-    return json.dumps(ret)
+    # return jsonify(json_list=res)
+    return json.dumps(result)
+    # ...........................
+    # actual func..
+    # error = None
+    # res = db.session.query(RiskProject).limit(1).all()
+    # print(res)
+    # ret = []
+    # for x in res:
+    #     ret.append(x.to_json())
+    # print(ret)
+    # return json.dumps(ret)
+    # ...........................
     # if request.method == 'POST' and request.form.get("project_name"):
     #     datax = request.form.get("project_name")
     #     print(datax)
     #     return jsonify({'msg': '没问题'})
     # return jsonify({'msg': '出错了'})
+
+
+#  overview页面地图部分
+#
+#  FunctionName: getLocation
+#  Purpose:      初始化时得到每个项目的经纬度
+#  Parameter:    null
+#  Return:       包含经纬度的json
+@app.route('/api/overview', methods=['POST'])
+def overview_get_location():
+    print("In function overview_getLocation")
+    # res = db.session.query(RiskProject.id, RiskProject.code, RiskProject.lng, RiskProject.lat).all()
+    result = RiskProject.query.all()
+    actual_data = {}
+    for item in result:
+        if str(item.code) not in data.keys():
+            tmp_data = {'id': item.id, "longtitude": item.lng, "latitude": item.lat}
+            actual_data[str(item.code)] = tmp_data
+    print("Returned data: ")
+    print(actual_data)
+    # return jsonify(json_list=res)
+    return jsonify(actual_data)
+
+
+#  overview页面地图部分
+#
+#  FunctionName: getPrjPie
+#  Purpose:      展示每个项目各风险等级对应的数量
+#  Parameter:    所有项目code
+#  Return:       风险等级及其对应数量
+def overview_get_prj_pie():
+    print("In function overview_getLocation")
+    res = db.session.query(RiskProject.id, RiskProject.code, RiskProject.lng, RiskProject.lat).all()
+    res = RiskProject.query(id).all()
+    # Entry.query.filter_by(uuid=uuid).first_or_404()
+    print("res")
+    print(res)
+    return jsonify(json_list=res)
 
 
 # overview页面右侧初始化数据加载
@@ -302,14 +380,8 @@ def login():
 
 # def index():
 def catch_all(path):
-    res = db.session.query(RiskProject).limit(1).all()
-    print(res)
-    ret = []
-    for x in res:
-        ret.append(x.to_json())
+    ret = overview_getLocation()
     print(ret)
-    print('lng = ' + str(ret[0]['lng']))
-    print('lat = ' + str(ret[0]['lat']))
     if app.debug:
         return requests.get('http://localhost:8080/{}'.format(path)).text
     # return render_template("index.html")
