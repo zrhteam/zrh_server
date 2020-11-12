@@ -274,7 +274,7 @@ def overview_get_location():
     actual_data = {}
     for item in result:
         if str(item.code) not in data.keys():
-            tmp_data = {'id': item.id, "longtitude": item.lng, "latitude": item.lat}
+            tmp_data = {'id': item.id, "longitude": item.lng, "latitude": item.lat}
             actual_data[str(item.code)] = tmp_data
     print("Returned data: ")
     print(actual_data)
