@@ -20,6 +20,7 @@ import requests
 import pymysql
 import os
 import pdb
+from datetime import datetime
 
 # import test
 
@@ -319,15 +320,32 @@ def overview_prjname():
 @app.route('/api/overview', methods=['POST'])
 def overview_get_location():
     print("In function overview_get_location")
-    # res = db.session.query(RiskProject.id, RiskProject.code, RiskProject.lng, RiskProject.lat).all()
+    start_t=datetime.now()
     result = RiskProject.query.all()
     actual_data = {}
+    cnt = 0
+    print(len(result))
     for item in result:
         if str(item.code) not in actual_data.keys():
-            tmp_data = {'id': item.id, "longitude": item.lng, "latitude": item.lat}
+            print("handle..." + str(cnt))
+            cnt += 1
+            tmp_data = {'id': item.id, "longitude": item.lng, "latitude": item.lat, "risk_level": {1: 0, 2: 0, 3: 0}}
+            risk_result = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            for ele in risk_result:
+                # print(ele.risk_level)
+                if ele.risk_level == "1":
+                    tmp_data["risk_level"][1] += 1
+                elif ele.risk_level == "2":
+                    tmp_data["risk_level"][2] += 1
+                elif ele.risk_level == "3":
+                    tmp_data["risk_level"][3] += 1
+                else:
+                    print("Unexpected result")
             actual_data[str(item.code)] = tmp_data
     print("Returned data: ")
     print(actual_data)
+    end_t=datetime.now()
+    print("Query total time is: " + str((end_t-start_t).seconds) + "s")
     # return jsonify(json_list=res)
     return jsonify(actual_data)
 
