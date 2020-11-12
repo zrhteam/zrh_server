@@ -201,6 +201,56 @@ class RiskProject(db.Model):
             del dict['_sa_instance_state']
         return dict
 
+class RiskPrjDangerRecord(db.Model):
+    __tablename__ = 'risk_prj_danger_record'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    code = db.Column(db.String(32, 'utf8_bin'), nullable=False, unique=True, info='隐患编码')
+    danger_library_code = db.Column(db.String(32, 'utf8_bin'), info='隐患库编码')
+    project_code = db.Column(db.String(255, 'utf8_bin'), info='项目编码')
+    project_name = db.Column(db.String(255, 'utf8_bin'), info='项目名称')
+    danger_number = db.Column(db.Integer, info='隐患数量')
+    major_code = db.Column(db.String(32, 'utf8_bin'), info='专业编码')
+    major_name = db.Column(db.String(255, 'utf8_bin'), info='专业名称')
+    system_code = db.Column(db.String(32, 'utf8_bin'), info='系统编码')
+    major_sort = db.Column(db.String(255, 'utf8_bin'), info='专业排序')
+    system_name = db.Column(db.String(20, 'utf8_bin'), info='系统名称')
+    system_sort = db.Column(db.String(255, 'utf8_bin'), info='系统排序')
+    equipment_code = db.Column(db.String(32, 'utf8_bin'), info='设备编码')
+    equipment_name = db.Column(db.String(20, 'utf8_bin'), info='设备名称')
+    module_code = db.Column(db.String(32, 'utf8_bin'), info='组件编码')
+    module_name = db.Column(db.String(20, 'utf8_bin'), info='组件名称')
+    note = db.Column(db.String(255, 'utf8_bin'), info='隐患描述')
+    position = db.Column(db.String(255, 'utf8_bin'), info='隐患地点/位置')
+    risk_level = db.Column(db.String(1, 'utf8_bin'), info='风险等级 1:低风险 2:中风险 3:高风险')
+    area = db.Column(db.String(32, 'utf8_bin'), info='分布区域')
+    stage = db.Column(db.String(32, 'utf8_bin'), info='致因阶段 0:设计 1:运营 2:施工 3:装修')
+    images_file_id = db.Column(db.String(100, 'utf8_bin'), info='隐患图片文件id,多个逗号隔开')
+    write_person = db.Column(db.String(32, 'utf8_bin'), info='录入人')
+    write_person_name = db.Column(db.String(32, 'utf8_bin'), info='录入人姓名')
+    state = db.Column(db.String(1, 'utf8_bin'), info='状态 1：待整改，2：整改中，3：复查中，4：复查不合格，5：合格已完成')
+    frequency = db.Column(db.Integer, info='出现频率')
+    voice_time = db.Column(db.Integer, info='录音长度（秒）')
+    voice_file_id = db.Column(db.String(100, 'utf8_bin'), info='语音文件id')
+    confirm_file_id = db.Column(db.BigInteger, info='手写确认图片')
+    confirm_person = db.Column(db.String(32, 'utf8_bin'), info='确认人')
+    confirm_person_tel = db.Column(db.String(20, 'utf8_bin'), info='手写确认人电话')
+    mark = db.Column(db.String(100, 'utf8_bin'), info='备注')
+    upload_time = db.Column(db.DateTime, info='上传时间')
+    create_time = db.Column(db.DateTime, info='创建时间')
+    create_user = db.Column(db.BigInteger, info='创建人')
+    update_time = db.Column(db.DateTime)
+    update_user = db.Column(db.BigInteger, info='更新人')
+    del_ind = db.Column(BIT(1))
+    version = db.Column(db.Integer, server_default=db.FetchedValue(), info='乐观锁')
+    appflag = db.Column(db.String(32, 'utf8_bin'), info='appflag')
+    rule_code = db.Column(db.String(100, 'utf8_bin'), info='法规编号')
+    rule_name = db.Column(db.String(1024, 'utf8_bin'), info='法规名称')
+    rule_standard = db.Column(db.String(255, 'utf8_bin'), info='法规标准')
+    clause = db.Column(db.String(100, 'utf8_bin'), info='相关条款')
+    clause_contact = db.Column(db.String(1024, 'utf8_bin'), info='条款内容')
+    rectify_advise = db.Column(db.String(1024, 'utf8_bin'), info='整改建议')
+    dangerNote = db.Column(db.String(1024, 'utf8_bin'), info='隐患库的隐患描述')
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -268,7 +318,7 @@ def overview_prjname():
 #  Return:       包含经纬度的json
 @app.route('/api/overview', methods=['POST'])
 def overview_get_location():
-    print("In function overview_getLocation")
+    print("In function overview_get_location")
     # res = db.session.query(RiskProject.id, RiskProject.code, RiskProject.lng, RiskProject.lat).all()
     result = RiskProject.query.all()
     actual_data = {}
@@ -288,14 +338,31 @@ def overview_get_location():
 #  Purpose:      展示每个项目各风险等级对应的数量
 #  Parameter:    所有项目code
 #  Return:       风险等级及其对应数量
+@app.route('/api/overview_pie', methods=['POST'])
 def overview_get_prj_pie():
-    print("In function overview_getLocation")
-    res = db.session.query(RiskProject.id, RiskProject.code, RiskProject.lng, RiskProject.lat).all()
-    res = RiskProject.query(id).all()
-    # Entry.query.filter_by(uuid=uuid).first_or_404()
-    print("res")
-    print(res)
-    return jsonify(json_list=res)
+    prj_code = request.form.get("project_code")
+    print(prj_code)
+    print("In function overview_get_prj_pie")
+
+    result = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == str(prj_code)).all()
+    print(result)
+    actual_data = {1: 0, 2: 0, 3: 0}
+    for item in result:
+        print(item.risk_level)
+        if item.risk_level == "1":
+            actual_data[1] += 1
+        elif item.risk_level == "2":
+            actual_data[2] += 1
+        elif item.risk_level == "3":
+            actual_data[3] += 1
+        else:
+            print("Unexpected value!")
+            # Entry.query.filter_by(uuid=uuid).first_or_404()
+    print("Returned data: ")
+    print(actual_data)
+    # print("res")
+    # print(res)
+    return jsonify(actual_data)
 
 
 # overview页面右侧初始化数据加载
