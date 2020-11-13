@@ -202,6 +202,7 @@ class RiskProject(db.Model):
             del dict['_sa_instance_state']
         return dict
 
+
 class RiskPrjDangerRecord(db.Model):
     __tablename__ = 'risk_prj_danger_record'
 
@@ -252,6 +253,7 @@ class RiskPrjDangerRecord(db.Model):
     clause_contact = db.Column(db.String(1024, 'utf8_bin'), info='条款内容')
     rectify_advise = db.Column(db.String(1024, 'utf8_bin'), info='整改建议')
     dangerNote = db.Column(db.String(1024, 'utf8_bin'), info='隐患库的隐患描述')
+
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -320,8 +322,8 @@ def overview_prjname():
 @app.route('/api/overview', methods=['POST'])
 def overview_get_location():
     print("In function overview_get_location")
-    start_t=datetime.now()
-    result = RiskProject.query.all()
+    start_t = datetime.now()
+    result = RiskProject.query.limit(100).all()
     actual_data = {}
     cnt = 0
     print(len(result))
@@ -344,8 +346,8 @@ def overview_get_location():
             actual_data[str(item.code)] = tmp_data
     print("Returned data: ")
     print(actual_data)
-    end_t=datetime.now()
-    print("Query total time is: " + str((end_t-start_t).seconds) + "s")
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     # return jsonify(json_list=res)
     return jsonify(actual_data)
 
@@ -382,6 +384,96 @@ def overview_get_prj_pie():
     # print(res)
     return jsonify(actual_data)
 
+
+# 置地总部EHS数据大屏页面
+#
+# FunctionName: getInitIndexData
+# Purpose: 初始化页面显示不同专业（消防、电梯、电气、燃气）的危险指数
+# Parameter: null
+# Return: 包含消防、电梯、电气、燃气危险指数的json文件
+#
+# 初始化页面需要数据：消防危险指数、电梯危险指数、电气危险指数、燃气危险指数
+@app.route('/api/land_ehs_screen_top_left', methods=['POST'])
+def ehs_get_init_index_data():
+    print("In function ehs_get_init_index_data")
+    # result = RiskPrjDangerRecord.query.all()
+    # total_index = 0
+    # for item in result:
+    #     total_index += item.danger
+    return None
+
+
+# 置地总部EHS数据大屏页面
+#
+# FunctionName: getInitRectification
+# Purpose: 初始化页面显示总部整改率
+# Parameter: null
+# Return: 包含总部整改率数据的json文件
+@app.route('/api/land_ehs_screen_rectification', methods=['POST'])
+def ehs_get_init_rectification():
+    print("In function ehs_get_init_rectification")
+    result_total = RiskPrjDangerRecord.query.all()
+    result_ok = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.state == 1).all()
+    total = len(result_total)
+    ok = len(result_ok)
+    # for item in result:
+    #     if item.state == "1":
+    #         ok += 1
+    print("Returned data: ")
+    print(str(ok * 100 / total) + "%")
+    return jsonify({"rectification_rate": str(ok * 100 / total) + "%"})
+
+
+# 置地总部EHS数据大屏页面
+#
+# FunctionName: getInitRiskLevelData
+# Purpose: 初始化页面显示隐患风险等级高、中、低风险及其对应的累计隐患数量
+# Parameter: null
+# Return: 风险等级及对应的累计隐患数量的json文件
+@app.route('/api/land_ehs_screen_top_right', methods=['POST'])
+def ehs_get_init_risk_level_data():
+    print("In function ehs_get_init_risk_level_data")
+    result = RiskPrjDangerRecord.query.all()
+    actual_data = {1: 0, 2: 0, 3: 0}
+    for item in result:
+        if item.risk_level == "1":
+            actual_data[1] += 1
+        elif item.risk_level == "2":
+            actual_data[2] += 1
+        elif item.risk_level == "3":
+            actual_data[3] += 1
+        else:
+            print("Unexpected value")
+    print("Returned data: ")
+    print(actual_data)
+    return jsonify(actual_data)
+# 置地总部EHS数据大屏页面
+#
+# FunctionName: getInitRiskIndexData
+# Purpose: 初始化页面显示根据项目综合&专业风险指数排序的结果
+# Parameter: null
+# Return: 根据项目综合&专业风险指数排序后的项目名称的json文件
+
+# 置地总部EHS数据大屏页面
+#
+# FunctionName: getInitRiskNumberRank
+# Purpose: 初始化页面得到按照高风险数量排名的项目名称
+# Parameter: null
+# Return: 对高风险数量排序后的项目名称json文件
+
+# 置地总部EHS数据大屏页面
+#
+# FunctionName: getInitImage
+# Purpose: 初始化时得到所有项目未整改高风险隐患图片
+# Parameter: null
+# Return: 返回包含未整改高风险图片的json文件
+
+# 置地总部EHS数据大屏页面
+#
+# FunctionName: getInitNumberTop
+# Purpose: 初始化页面得到所有项目中出现隐患数量排名前10的隐患
+# Parameter: null
+# Return: 包含在置地总部所有项目中隐患数量排名前10的隐患描述的json文件
 
 # overview页面右侧初始化数据加载
 @app.route('/api/overview_right_init', methods=['POST'])
@@ -525,16 +617,4 @@ def user_register():
 
 
 if __name__ == '__main__':
-    # user = RiskModule.query.filter_by(id=1).all()
-    # # user = db.session.query(RiskModule).filter(RiskModule.id == 1)
-    # print(user)
-    res = db.session.query(RiskProject).limit(1).all()
-    print(res)
-    ret = []
-    for x in res:
-        ret.append(x.to_json())
-    print(ret)
-    print('lng = ' + str(ret[0]['lng']))
-    print('lat = ' + str(ret[0]['lat']))
-
     app.run(debug=True)
