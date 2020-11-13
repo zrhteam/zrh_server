@@ -51,109 +51,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)  # SQLAlchemy语言的映射关系
 
 
-# 定义risk_module模型
-# Remind: 如果是已有的表，一定要 1）变量名和列名相等；2）Column的属性要一致。
-# TODO: 把列取表的写到同一个文件里面
-class RiskModule(db.Model):
-    # 表名
-    __tablename__ = 'risk_module_converted'
-    # ID
-    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    # 组件名称
-    component_name = db.Column(db.TEXT)
-    # 所属设备名称
-    belonged_equipment = db.Column(db.TEXT)
-
-    def __repr__(self):
-        return "system_module id = {}, component_name = {}, belonged_equipment = {}".format(repr(self.id),
-                                                                                            repr(self.component_name),
-                                                                                            repr(
-                                                                                                self.belonged_equipment)
-                                                                                            )
-        # return {"id": repr(self.id), "component_name": repr(self.component_name), "belonged_equipment": repr(self.belonged_equipment)}
-
-    def to_json(self):
-        dict = self.__dict__
-        if "_sa_instance_state" in dict:
-            del dict['_sa_instance_state']
-        return dict
-
-
-# class RiskProject(test.OutputMixin, db.Model):
-#     __tablename__ = 'risk_project'
-#
-#     id = db.Column(db.BigInteger, primary_key=True)
-#     code = Column(String(255, 'utf8_bin'), info='项目编码')
-#     name = Column(String(255, 'utf8_bin'), info='项目名称')
-#     ctr_code = Column(String(255, 'utf8_bin'), info='合同编码')
-#     ctr_codes = Column(String(255, 'utf8_bin'), info='合同父级编码')
-#     cust_code = Column(String(32, 'utf8_bin'), info='客户编码')
-#     feature = Column(String(255, 'utf8_bin'), info='项目特征')
-#     status = Column(String(1, 'utf8_bin'), info='项目状态 0:立项 1:首次会议 2:专业报告 3:末次会议 4:已归档')
-#     pro_leader_code = Column(String(32, 'utf8_bin'), info='项目负责人/项目组长')
-#     pro_leader_name = Column(String(40, 'utf8_bin'), info='项目组长名字')
-#     province_code = Column(String(10, 'utf8_bin'), info='省编码')
-#     province_name = Column(String(20, 'utf8_bin'), info='省名称')
-#     city_code = Column(String(10, 'utf8_bin'), info='市编码')
-#     city_name = Column(String(20, 'utf8_bin'), info='市名')
-#     district_code = Column(String(10, 'utf8_bin'), info='区域编码')
-#     district_name = Column(String(20, 'utf8_bin'), info='区域名')
-#     address = Column(String(100, 'utf8_bin'), info='详细地址')
-#     full_address = Column(String(255, 'utf8_bin'), info='完整地址')
-#     lng = Column(Float(10), info='经度')
-#     lat = Column(Float(10), info='维度')
-#     leader_phone = Column(String(32, 'utf8_bin'), info='组长/负责人手机号')
-#     plan_start_time = Column(DateTime, info='预计开始时间')
-#     plan_end_time = Column(DateTime, info='预计结束时间')
-#     type = Column(String(2, 'utf8_bin'), info='检查类型 1:A类检查 2:B类检查  3:C类检查 4:其他类')
-#     frist_meetting_file_id = Column(String(255, 'utf8_bin'), info='首次会议文件id')
-#     professional_report_file_ids = Column(String(255, 'utf8_bin'))
-#     end_meeting_file_id = Column(String(255, 'utf8_bin'), info='末次文件id')
-#     general_report_file_id = Column(String(255, 'utf8_bin'), info='综合报告')
-#     check_unit = Column(String(32, 'utf8_bin'), info='检查单位')
-#     amount = Column(Numeric(18, 2, asdecimal=False), info='项目金额')
-#     note = Column(String(500, 'utf8_bin'), info='项目概况')
-#     create_time = Column(DateTime, info='创建时间')
-#     create_user = Column(BigInteger, info='创建人')
-#     update_time = Column(DateTime)
-#     update_user = Column(BigInteger, info='更新人')
-#     del_ind = Column(BIT(1))
-#     version = Column(Integer, server_default=FetchedValue(), info='乐观锁')
-#     unit_key = Column(String(36, 'utf8_bin'), info='唯一标识，用于树形结构')
-#
-#     def to_dict(self, rel=None, backref=None, exclude=()):
-#         if rel is None:
-#             rel = self.RELATIONSHIPS_TO_DICT
-#         res = {column.key: getattr(self, attr)
-#                for attr, column in self.__mapper__.c.items()
-#                if column.key not in exclude}
-#         if rel:
-#             for attr, relation in self.__mapper__.relationships.items():
-#                 # Avoid recursive loop between to tables.
-#                 if backref == relation.table:
-#                     continue
-#                 value = getattr(self, attr)
-#                 if value is None:
-#                     res[relation.key] = None
-#                 elif isinstance(value.__class__, DeclarativeMeta):
-#                     res[relation.key] = value.to_dict(backref=self.__table__)
-#                 else:
-#                     res[relation.key] = [i.to_dict(backref=self.__table__)
-#                                          for i in value]
-#         return res
-#
-#     def to_json(self, rel=None, exclude=None):
-#         def extended_encoder(x):
-#             if isinstance(x, datetime):
-#                 return x.isoformat()
-#             if isinstance(x, UUID):
-#                 return str(x)
-#         if rel is None:
-#             rel = self.RELATIONSHIPS_TO_DICT
-#         return json.dumps(self.to_dict(rel, exclude=exclude),
-#                           default=extended_encoder)
-
-
 class RiskProject(db.Model):
     __tablename__ = 'risk_project'
 
@@ -253,6 +150,89 @@ class RiskPrjDangerRecord(db.Model):
     clause_contact = db.Column(db.String(1024, 'utf8_bin'), info='条款内容')
     rectify_advise = db.Column(db.String(1024, 'utf8_bin'), info='整改建议')
     dangerNote = db.Column(db.String(1024, 'utf8_bin'), info='隐患库的隐患描述')
+
+
+class RiskCustomer(db.Model):
+    __tablename__ = 'risk_customer'
+
+    id = db.Column(db.BigInteger, primary_key=True, info='主键')
+    name = db.Column(db.String(40, 'utf8_bin'), nullable=False, info='姓名')
+    code = db.Column(db.String(40, 'utf8_bin'), nullable=False, info='编码')
+    password = db.Column(db.String(40, 'utf8_bin'), nullable=False)
+    role_ids = db.Column(db.String(1024, 'utf8_bin'), info='角色')
+    type = db.Column(db.String(2, 'utf8_bin'), info='类型')
+    phone = db.Column(db.String(20, 'utf8_bin'), nullable=False, info='电话')
+    province_code = db.Column(db.String(10, 'utf8_bin'), info='省编码')
+    province_name = db.Column(db.String(20, 'utf8_bin'), info='省名')
+    city_code = db.Column(db.String(10, 'utf8_bin'), info='市编码')
+    city_name = db.Column(db.String(20, 'utf8_bin'), info='市名')
+    district_code = db.Column(db.String(10, 'utf8_bin'), info='区域编码')
+    district_name = db.Column(db.String(20, 'utf8_bin'), info='区域名')
+    full_address = db.Column(db.String(255, 'utf8_bin'))
+    address = db.Column(db.String(255, 'utf8_bin'), info='详细地址')
+    contacts1 = db.Column(db.String(40, 'utf8_bin'), info='联系人')
+    contacts1_tel = db.Column(db.String(20, 'utf8_bin'), info='联系人电话')
+    contacts2 = db.Column(db.String(40, 'utf8_bin'), info='备用联系人')
+    contacts2_tel = db.Column(db.String(20, 'utf8_bin'), info='备用联系人电话')
+    note = db.Column(db.String(255, 'utf8_bin'), info='备注')
+    is_enable = db.Column(BIT(1), info='是否启用：0禁用 1启用')
+    create_time = db.Column(db.DateTime, info='创建时间')
+    create_user = db.Column(db.BigInteger, info='创建人')
+    update_time = db.Column(db.DateTime)
+    update_user = db.Column(db.BigInteger, info='更新人')
+    del_ind = db.Column(BIT(1), info='是否删除:0未删除 1删除')
+    version = db.Column(db.Integer, server_default=db.FetchedValue(), info='版本')
+
+
+class RiskContract(db.Model):
+    __tablename__ = 'risk_contract'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    code = db.Column(db.String(32, 'utf8_bin'), info='合同编码')
+    name = db.Column(db.String(255, 'utf8_bin'), info='合同名称')
+    pcode = db.Column(db.String(255, 'utf8_bin'), info='父合同编码')
+    pcodes = db.Column(db.String(255, 'utf8_bin'), info='所有父级code')
+    type = db.Column(db.String(2, 'utf8_bin'), info='合同类型 1:开口合同  2:闭口合同')
+    level = db.Column(db.Integer, info='层级')
+    contract_body = db.Column(db.String(32, 'utf8_bin'), info='签约主体')
+    our_contractor = db.Column(db.String(100, 'utf8_bin'), info='我方签约人')
+    cust_code = db.Column(db.String(32, 'utf8_bin'), info='客户名称')
+    amount = db.Column(db.Numeric(18, 2), info='合同金额')
+    escalation = db.Column(db.Numeric(18, 2), info='合同调差')
+    settlement_amount = db.Column(db.Numeric(18, 2), info='结算金额')
+    recepit_amount = db.Column(db.Numeric(18, 2))
+    start_time = db.Column(db.DateTime, info='合同执行起始日')
+    end_time = db.Column(db.DateTime, info='合同执行结束日')
+    files_ids = db.Column(db.String(255, 'utf8_bin'), info='附件文件id')
+    mark = db.Column(db.String(100, 'utf8_bin'), info='说明')
+    create_time = db.Column(db.DateTime, info='创建时间')
+    create_user = db.Column(db.BigInteger, info='创建人')
+    update_time = db.Column(db.DateTime)
+    update_user = db.Column(db.BigInteger, info='更新人')
+    del_ind = db.Column(BIT(1), info='删除标识 0:未删除  1:已删除')
+    version = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue(), info='乐观锁')
+    unit_key = db.Column(db.String(36, 'utf8_bin'), info='唯一标识，用于树形结构')
+
+
+class SysFile(db.Model):
+    __tablename__ = 'sys_files'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    tags = db.Column(db.String(32, 'utf8_bin'), info='业务编码')
+    directory = db.Column(db.String(255, 'utf8_bin'), info='储存路径')
+    name = db.Column(db.String(255, 'utf8_bin'), info='文件名')
+    type = db.Column(db.Integer, info='文件类型：1文档、2图片、3影音')
+    suffix = db.Column(db.String(32, 'utf8_bin'), info='文件后缀')
+    upload_host = db.Column(db.String(32, 'utf8_bin'))
+    source_id = db.Column(db.BigInteger, info='来源')
+    url = db.Column(db.String(255, 'utf8_bin'))
+    size = db.Column(db.BigInteger, info='大小')
+    create_time = db.Column(db.DateTime, info='创建时间')
+    create_user = db.Column(db.BigInteger, info='创建人')
+    update_time = db.Column(db.DateTime)
+    update_user = db.Column(db.BigInteger, info='更新人')
+    del_ind = db.Column(BIT(1))
+    version = db.Column(db.Integer, server_default=db.FetchedValue(), info='乐观锁')
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -412,16 +392,36 @@ def ehs_get_init_index_data():
 @app.route('/api/land_ehs_screen_rectification', methods=['POST'])
 def ehs_get_init_rectification():
     print("In function ehs_get_init_rectification")
-    result_total = RiskPrjDangerRecord.query.all()
-    result_ok = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.state == 1).all()
-    total = len(result_total)
-    ok = len(result_ok)
-    # for item in result:
-    #     if item.state == "1":
-    #         ok += 1
+    start_t = datetime.now()
+    cust_code = RiskContract.query.group_by(RiskContract.cust_code).all()
+    print(len(cust_code))
+    print(cust_code[0].id)
+    actual_result = {}
+    idx = 0
+    for item in cust_code:
+        print("idx: " + str(idx))
+        idx += 1
+        cust_name = RiskCustomer.query.filter(RiskCustomer.code == item.cust_code).first()
+        print(cust_name.name)
+        sub_code = RiskProject.query.filter(RiskProject.cust_code == item.cust_code).all()
+        state_ok = 0
+        state_nok = 0
+        for ele in sub_code:
+            q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+            for i in q_all_code:
+                if i.state == "5":
+                    state_ok += 1
+                else:
+                    state_nok += 1
+        rate = str((state_ok * 100) / (state_ok + state_nok)) + "%"
+        print("rate" + str(rate))
+        actual_result[item.cust_code] = {"risk_customer_name": cust_name.name, "rectification_rate": str(rate)}
     print("Returned data: ")
-    print(str(ok * 100 / total) + "%")
-    return jsonify({"rectification_rate": str(ok * 100 / total) + "%"})
+    print(actual_result)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    # print(str(ok * 100 / total) + "%")
+    return jsonify(actual_result)
 
 
 # 置地总部EHS数据大屏页面
@@ -433,26 +433,39 @@ def ehs_get_init_rectification():
 @app.route('/api/land_ehs_screen_top_right', methods=['POST'])
 def ehs_get_init_risk_level_data():
     print("In function ehs_get_init_risk_level_data")
-    result = RiskPrjDangerRecord.query.all()
-    actual_data = {1: 0, 2: 0, 3: 0}
-    for item in result:
-        if item.risk_level == "1":
-            actual_data[1] += 1
-        elif item.risk_level == "2":
-            actual_data[2] += 1
-        elif item.risk_level == "3":
-            actual_data[3] += 1
-        else:
-            print("Unexpected value")
+    cust_code = "SCYH"
+    actual_data = {"risk_customer_name": "", "risk_level": {1: 0, 2: 0, 3: 0}}
+    cust_name = RiskCustomer.query.filter(RiskCustomer.code == cust_code).first()
+    print(cust_name.name)
+    actual_data["risk_customer_name"] = cust_name.name
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    idx = 0
+    for ele in sub_code:
+        print(idx)
+        idx += 1
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for i in q_all_code:
+            if i.risk_level == "1":
+                actual_data["risk_level"][1] += 1
+            elif i.risk_level == "2":
+                actual_data["risk_level"][2] += 1
+            elif i.risk_level == "3":
+                actual_data["risk_level"][3] += 1
     print("Returned data: ")
     print(actual_data)
     return jsonify(actual_data)
+
+
 # 置地总部EHS数据大屏页面
 #
 # FunctionName: getInitRiskIndexData
 # Purpose: 初始化页面显示根据项目综合&专业风险指数排序的结果
 # Parameter: null
 # Return: 根据项目综合&专业风险指数排序后的项目名称的json文件
+@app.route('/api/land_ehs_screen_index_rank', methods=['POST'])
+def ehs_get_init_risk_index_data():
+    return jsonify({})
+
 
 # 置地总部EHS数据大屏页面
 #
@@ -460,6 +473,32 @@ def ehs_get_init_risk_level_data():
 # Purpose: 初始化页面得到按照高风险数量排名的项目名称
 # Parameter: null
 # Return: 对高风险数量排序后的项目名称json文件
+@app.route('/api/land_ehs_screen_risk_number', methods=['POST'])
+def ehs_get_init_risk_number_rank():
+    print("In function ehs_get_init_risk_number_rank")
+    cust_code = "SCYH"
+    actual_data = {}
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    idx = 0
+    for ele in sub_code:
+        print(idx)
+        idx += 1
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        cnt = 0
+        for i in q_all_code:
+            if i.risk_level == "3":
+                cnt += 1
+        actual_data[ele.code] = cnt
+    res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
+    actual_data = {}
+    idx = 1
+    for ele in res:
+        actual_data[ele[0]] = {"rank": idx, "high_risk_count": ele[1]}
+        idx += 1
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
 
 # 置地总部EHS数据大屏页面
 #
@@ -467,6 +506,27 @@ def ehs_get_init_risk_level_data():
 # Purpose: 初始化时得到所有项目未整改高风险隐患图片
 # Parameter: null
 # Return: 返回包含未整改高风险图片的json文件
+@app.route('/api/land_ehs_screen_image', methods=['POST'])
+def ehs_get_init_image():
+    print("In function ehs_get_init_risk_number_rank")
+    cust_code = "SCYH"
+    actual_data = {}
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    idx = 0
+    for ele in sub_code:
+        print(idx)
+        idx += 1
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        image_list = []
+        for i in q_all_code:
+            get_image = SysFile.query.filter(SysFile.id == i.images_file_id).first()
+            image_url = get_image.upload_host + get_image.directory + get_image.name
+            image_list.append(image_url)
+        actual_data[ele.code] = image_list
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
 
 # 置地总部EHS数据大屏页面
 #
@@ -474,8 +534,530 @@ def ehs_get_init_risk_level_data():
 # Purpose: 初始化页面得到所有项目中出现隐患数量排名前10的隐患
 # Parameter: null
 # Return: 包含在置地总部所有项目中隐患数量排名前10的隐患描述的json文件
+@app.route('/api/data_ehs_screen_top10', methods=['POST'])
+def ehs_get_init_number_top():
+    print("In function ehs_get_init_number_top")
+    cust_code = "SCYH"
+    actual_data = {}
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    idx = 0
+    for ele in sub_code:
+        print(idx)
+        idx += 1
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for i in q_all_code:
+            if i.note not in actual_data.keys():
+                actual_data[i.note] = 0
+            actual_data[i.note] += 1
+    res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
+    print(res)
+    actual_data = {}
+    idx = 1
+    for ele in res:
+        actual_data[ele[0]] = {"rank": idx, "appear_time": ele[1]}
+        idx += 1
+        if idx == 11:
+            break
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
 
 # overview页面右侧初始化数据加载
+# @app.route('/api/data_ehs_screen_top10', methods=['POST'])
+# def ehs_get_init_number_top():
+#     print("In function ehs_get_init_risk_number_rank")
+#     cust_code = "SCYH"
+#     actual_data = {}
+#     sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+#     idx = 0
+#     for ele in sub_code:
+#         print(idx)
+#         idx += 1
+#         q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+
+
+# 地产事业部页面
+#
+# FunctionName: getRegionInitIndex
+# Purpose: 初始化页面显示总的安全指数以及不同专业的安全指数
+# Parameter: null
+# Return: 包含总体安全指数、消防指数、电梯指数、燃气指数、电气指数的json文件
+@app.route('/api/region_index', methods=['POST'])
+def estate_get_region_init_index():
+    print("In function estate_get_region_init_index")
+    return jsonify({})
+
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionProjectNumber
+# Purpose: 初始化页面展示目前已检查的项目数量
+# Parameter: null
+# Return: 包含当前已检查项目数量的json文件
+@app.route('/api/region_project_number', methods=['POST'])
+def estate_get_init_region_project_number():
+    print("In function estate_get_region_project_number")
+    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    # for ele in sub_code:
+    actual_data = {"ctr_code": ctr_code, "project_num": str(len(sub_code))}
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionRiskLevel
+# Purpose: 初始化页面展示不同风险等级及其对应的累计发现隐患数量
+# Parameter: null
+# Return: 包含高、中、低风险对应的累计发现隐患数量的json文件
+@app.route('/api/region_project_risk_level', methods=['POST'])
+def estate_get_init_region_risk_level():
+    print("In function estate_get_init_region_risk_level")
+    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("length of sub_code: " + str(len(sub_code)))
+    actual_data = {"ctr_code": ctr_code, "risk_level": {1: 0, 2: 0, 3: 0}}
+    for ele in sub_code:
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for item in q_all_code:
+            if item.risk_level == "1":
+                actual_data["risk_level"][1] += 1
+            elif item.risk_level == "2":
+                actual_data["risk_level"][2] += 1
+            elif item.risk_level == "3":
+                actual_data["risk_level"][3] += 1
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionHighRisk
+# Purpose: 初始化页面展示当前未整改高风险隐患描述列表
+# Parameter:null
+# Return: 包含当前未整改的高风险隐患描述的json文件
+@app.route('/api/region_project_high_risk', methods=['POST'])
+def estate_get_init_region_high_risk():
+    print("In function estate_get_init_region_high_risk")
+    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("length of sub_code: " + str(len(sub_code)))
+    actual_data = {"ctr_code": ctr_code, "note_list": []}
+    for ele in sub_code:
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for item in q_all_code:
+            if item.risk_level == "3" and item.state != "5":
+                actual_data["note_list"].append(item.note)
+
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionImage
+# Purpose: 初始化页面展示当前未整改高风险隐患图片
+# Parameter: null
+# Return: 包含未整改高风险隐患图片的json文件
+@app.route('/api/region_project_Image', methods=['POST'])
+def estate_get_init_region_image():
+    print("In function estate_get_init_region_high_risk")
+    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("length of sub_code: " + str(len(sub_code)))
+    actual_data = {"ctr_code": ctr_code, "image_list": []}
+    for ele in sub_code:
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for item in q_all_code:
+            if item.risk_level == "3" and item.state != "5":
+                get_image = SysFile.query.filter(SysFile.id == item.images_file_id).first()
+                image_url = get_image.upload_host + get_image.directory + get_image.name
+                actual_data["image_list"].append(image_url)
+
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionMajor
+# Purpose: 初始化页面展示各个项目发现的不同风险等级隐患在不同专业上的分布
+# Parameter: risk_level(高中低）
+# Return: 包含按照项目+专业+风险等级聚类结果的json文件
+@app.route('/api/region_major', methods=['POST'])
+def estate_get_init_region_major():
+    print("In function estate_get_init_region_majo")
+    risk_level = request.form.get("risk_level")
+    print("received risk_level: " + risk_level)
+    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("length of sub_code: " + str(len(sub_code)))
+    actual_data = {}
+    for ele in sub_code:
+        project_map = {"major": {}}
+        q_all_code = []
+        if risk_level != "all":
+            q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code,
+                                                          RiskPrjDangerRecord.risk_level == risk_level).all()
+        else:
+            q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for item in q_all_code:
+            if item.major_name not in project_map["major"].keys():
+                project_map['major'][item.major_name] = {"1": 0, "2": 0, "3": 0}
+            project_map['major'][item.major_name][item.risk_level] += 1
+        actual_data[ele.code] = project_map
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionNumberTop
+# Purpose: 初始化页面展示在所有项目中数量排名前10的隐患
+# Parameter: null
+# Return: 包含隐患数量在当前所有项目中排名前10的隐患描述的json文件
+@app.route('/api/region_project_number_top', methods=['POST'])
+def estate_get_init_region_number_top():
+    print("In function estate_get_init_region_number_top")
+    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("length of sub_code: " + str(len(sub_code)))
+    actual_data = {}
+    for ele in sub_code:
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for item in q_all_code:
+            if item.note not in actual_data:
+                actual_data[item.note] = 0
+            actual_data[item.note] += 1
+    res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
+    print(res)
+    actual_data = {}
+    idx = 1
+    for ele in res:
+        actual_data[ele[0]] = {"rank": idx, "appear_time": ele[1]}
+        idx += 1
+        if idx == 11:
+            break
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionSafetyIndex
+# Purpose: 初始化页面展示按照项目安全指数排名的情况
+# Parameter: null
+# Return: 包含按照项目安全指数排序后的项目名称
+
+# 地产事业部页面
+#
+# FunctionName: getInitRegionRiskRank
+# Purpose: 初始化页面展示按照累计出现高风险数量排名的项目名称
+# Parameter: null
+# Return: 包含按照累计出现高风险数量排序后的项目名称
+@app.route('/api/region_project_risk_rank', methods=['POST'])
+def estate_get_init_region_risk_rank():
+    print("In function estate_get_init_region_risk_rank")
+    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("length of sub_code: " + str(len(sub_code)))
+    actual_data = {}
+    for ele in sub_code:
+        actual_data[ele.name] = 0
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for item in q_all_code:
+            if item.risk_level == "3":
+                actual_data[ele.name] += 1
+
+    res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
+    print(res)
+    actual_data = {}
+    idx = 1
+    for ele in res:
+        actual_data[ele[0]] = {"rank": idx, "high_risk_count": ele[1]}
+        idx += 1
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectIndex
+# Purpose: 初始化页面展示项目危险指数和不同专业的指数
+# Parameter: null
+# Return: 包含项目危险指数、消防指数、电梯指数、燃气指数、电气指数的json文件
+# TODO
+
+# 项目级页面
+#
+# FunctionName: getInitProjectRectification
+# Purpose: 初始化页面展示当前整改率
+# Parameter: null
+# Return: 包含当前项目整改率的json文件
+@app.route('/api/region_project_rectification', methods=['POST'])
+def project_get_init_project_rectification():
+    print("In function project_get_init_project_rectification")
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    state_ok = 0
+    for item in all_check:
+        if item.state == "5":
+            state_ok += 1
+    actual_data = {"project_rectification": str((state_ok * 100) / len(all_check)) + "%"}
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectRiskNumber
+# Purpose: 初始化页面展示历次发现的不同风险等级的隐患数量
+# Parameter: null
+# Return: 包含不同风险等级及其对应的历次发现的隐患数量的json文件
+@app.route('/api/region_project_risk_number', methods=['POST'])
+def project_get_init_project_risk_number():
+    print("In function project_get_init_project_risk_number")
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    actual_data = {1: 0, 2: 0, 3: 0}
+    for item in all_check:
+        if item.risk_level == "1":
+            actual_data[1] += 1
+        elif item.risk_level == "2":
+            actual_data[2] += 1
+        elif item.risk_level == "3":
+            actual_data[3] += 1
+        else:
+            print("Unexpected value!")
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectNumberChange
+# Purpose: 初始化页面展示历次检查隐患数量变化的情况
+# Parameter: null
+# Return: 包含历次检查的隐患数量的json文件
+# TODO
+
+# 项目级页面
+#
+# FunctionName: getInitProjectNearestPerception
+# Purpose: 初始化页面饼图展示最近一次检查不同专业隐患占比情况
+# Parameter: null
+# Return: 包含消防、电梯、电气、燃气4个专业在最近一次检查中发现隐患数量的json文件
+@app.route('/api/region_project_Nearest', methods=['POST'])
+def project_get_init_project_nearest_perception():
+    print("In function project_get_init_project_nearest_perception")
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    actual_data = {"消防专业": 0, "电梯专业": 0, "电气专业": 0, "燃气专业": 0}
+    for item in all_check:
+        if item.major_name == "消防专业":
+            actual_data["消防专业"] += 1
+        elif item.major_name == "电梯专业":
+            actual_data["电梯专业"] += 1
+        elif item.major_name == "电气专业":
+            actual_data["电气专业"] += 1
+        elif item.major_name == "燃气专业":
+            actual_data["燃气专业"] += 1
+        else:
+            continue
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectHistoryPerception
+# Purpose: 初始化页面饼图展示历次检查中不同专业隐患占比情况
+# Parameter: null
+# Return: 包含消防、电梯、电气、燃气4个专业在历次检查中发现的隐患数量的json文件
+# TODO
+
+# 项目级页面
+#
+# FunctionName: getInitProjectRisk
+# Purpose: 初始化页面展示当前未整改的高风险隐患列表
+# Parameter: null
+# Return: 包含当前未整改的高风险隐患描述的json文件
+@app.route('/api/region_project_risk', methods=['POST'])
+def project_get_init_project_risk():
+    print("In function project_get_init_project_risk")
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    actual_data = {"note_list": []}
+    for item in all_check:
+        if item.risk_level == "3" and item.state != "5":
+            actual_data["note_list"].append(item.note)
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectImage
+# Purpose: 初始化页面展示当前未整改高风险隐患图片
+# Parameter: null
+# Return: 包含当前未整改高风险隐患图片的json文件
+@app.route('/api/region_project_image', methods=['POST'])
+def project_get_init_project_image():
+    print("In function project_get_init_project_image")
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    actual_data = {"image_list": []}
+    for item in all_check:
+        if item.risk_level == "3" and item.state != "5":
+            get_image = SysFile.query.filter(SysFile.id == item.images_file_id).first()
+            image_url = get_image.upload_host + get_image.directory + get_image.name
+            actual_data["image_list"].append(image_url)
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectSystem
+# Purpose: 初始化页面展示不同专业所有隐患子系统占比情况
+# Parameter: major（专业：消防、电梯、电气、燃气，all）
+# Return: 包含在不同专业情况下属于不同隐患子系统的隐患数量的json文件
+@app.route('/api/project_system', methods=['POST'])
+def project_get_init_project_system():
+    print("In function project_get_init_project_system")
+    query_major = request.form.get("major_name")
+    print("Received query_major:" + query_major)
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = []
+    actual_data = {}
+    if query_major == "all":
+        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    else:
+        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code,
+                                                     RiskPrjDangerRecord.major_name == query_major).all()
+    for item in all_check:
+        if item.major_name not in actual_data.keys():
+            actual_data[item.major_name] = {}
+        if item.system_name not in actual_data[item.major_name].keys():
+            actual_data[item.major_name][item.system_name] = 0
+        actual_data[item.major_name][item.system_name] += 1
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectReason
+# Purpose: 初始化页面展示所有隐患在不同专业情况下不同致因阶段的数量
+# Parameter: major（专业：消防、电梯、电气、燃气，all）
+# Return: 包含在不同专业情况下的隐患在不同致因（运营、施工等）阶段的数量的json文件
+@app.route('/api/project_reason', methods=['POST'])
+def project_get_init_project_reason():
+    print("In function project_get_init_project_reason")
+    query_major = request.form.get("major_name")
+    print("Received query_major:" + query_major)
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = []
+    actual_data = {}
+    if query_major == "all":
+        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    else:
+        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code,
+                                                     RiskPrjDangerRecord.major_name == query_major).all()
+    for item in all_check:
+        # print(item.)
+        stage = "not defined stage" if item.stage == '' else item.stage
+        if item.major_name not in actual_data.keys():
+            actual_data[item.major_name] = {}
+        if stage not in actual_data[item.major_name].keys():
+            actual_data[item.major_name][stage] = 0
+        actual_data[item.major_name][stage] += 1
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectRegionDistribution
+# Purpose: 初始化页面展示在不同专业情况下隐患区域分布情况
+# Parameter: major（专业：消防、电梯、电气、燃气，all)
+# Return: 包含在不同专业情况下不同区域的隐患数量的json文件
+@app.route('/api/project_distribution', methods=['POST'])
+def project_get_init_project_region_distribution():
+    print("In function project_get_init_project_region_distribution")
+    query_major = request.form.get("major_name")
+    print("Received query_major:" + query_major)
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = []
+    actual_data = {}
+    if query_major == "all":
+        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    else:
+        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code,
+                                                     RiskPrjDangerRecord.major_name == query_major).all()
+    for item in all_check:
+        print(item.area)
+        area = "not defined area" if item.area == '' else item.area
+        if item.major_name not in actual_data.keys():
+            actual_data[item.major_name] = {}
+        if area not in actual_data[item.major_name].keys():
+            actual_data[item.major_name][area] = 0
+        actual_data[item.major_name][area] += 1
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
+# 项目级页面
+#
+# FunctionName: getInitProjectRiskTop
+# Purpose: 初始化页面展示出现次数排前5的隐患以及所属专业和出现频率
+# Parameter: null
+# Return: 包含在历次检查中出现次数排前5的隐患描述及其所属专业和出现次数的json文件
+@app.route('/api/region_project_risk_top', methods=['POST'])
+def project_get_init_project_risk_top():
+    print("In function project_get_init_project_risk_top")
+    project_code = "WH(DL)-2004-L01-B01-000-002"
+    all_check = []
+    prepare_data = {}
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    for item in all_check:
+        if item.note not in prepare_data.keys():
+            prepare_data[item.note] = 0
+        prepare_data[item.note] += 1
+
+    res = sorted(prepare_data.items(), key=lambda d: d[1], reverse=True)
+    print(res)
+    actual_data = {}
+    idx = 1
+    for ele in res:
+        actual_data[ele[0]] = {"rank": idx, "appear_time": ele[1]}
+        for i in all_check:
+            if i.note == ele[0]:
+                actual_data[ele[0]]["major_name"] = i.major_name
+        idx += 1
+        if idx == 6:
+            break
+    print("Returned result:")
+    print(actual_data)
+    return jsonify(actual_data)
+
+
 @app.route('/api/overview_right_init', methods=['POST'])
 def overview_right_init():
     error = None
@@ -489,24 +1071,6 @@ def land_headquarters():
     error = None
     if request.method == 'POST':
         return jsonify({'msg': '没问题'})
-    return jsonify({'msg': '出错了'})
-
-
-@app.route('/api/search_module', methods=['POST'])
-def search_module():
-    error = None
-    if request.method == 'POST' and request.form.get("component_name"):
-        datax = request.form.to_dict()
-        component_namex = datax.get("component_name")
-        # DEBUG
-        print(component_namex)
-        res = RiskModule.query.filter_by(component_name=component_namex).all()
-        ret = []
-        for x in res:
-            ret.append(x.to_json())
-            # print(ret)
-        print(ret)
-        return jsonify(ret)
     return jsonify({'msg': '出错了'})
 
 
@@ -557,7 +1121,6 @@ def login():
 
 # def index():
 def catch_all(path):
-    print(ret)
     if app.debug:
         return requests.get('http://localhost:8080/{}'.format(path)).text
     # return render_template("index.html")
