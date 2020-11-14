@@ -365,6 +365,37 @@ def overview_get_prj_pie():
     return jsonify(actual_data)
 
 
+# overview页面地图部分
+#
+# FunctionName: getProjectionMap
+# Purpose:      初始化保存三种code的对应关系
+# Parameter:    null
+# Return:       code对应关系的map
+@app.route('/api/overview_get_projection_map', methods=['POST'])
+def overview_get_projection_map():
+    print("In function overview_get_projection_map")
+    start_t = datetime.now()
+    actual_data = {}
+    customer_info = RiskCustomer.query.all()
+    idx = 0
+    for item in customer_info:
+        print("idx: " + str(idx))
+        idx += 1
+        actual_data[item.name] = {}
+        contract_info = RiskContract.query.filter(RiskContract.cust_code == item.code).all()
+        for ele in contract_info:
+            actual_data[item.name][ele.name] = []
+            project_info = RiskProject.query.filter(RiskProject.ctr_code == ele.code).all()
+            for i in project_info:
+                actual_data[item.name][ele.name].append(i.name)
+
+    print("Returned data: ")
+    print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(actual_data)
+
+
 # 置地总部EHS数据大屏页面
 #
 # FunctionName: getInitIndexData
@@ -393,35 +424,30 @@ def ehs_get_init_index_data():
 def ehs_get_init_rectification():
     print("In function ehs_get_init_rectification")
     start_t = datetime.now()
-    cust_code = RiskContract.query.group_by(RiskContract.cust_code).all()
-    print(len(cust_code))
-    print(cust_code[0].id)
-    actual_result = {}
-    idx = 0
-    for item in cust_code:
-        print("idx: " + str(idx))
-        idx += 1
-        cust_name = RiskCustomer.query.filter(RiskCustomer.code == item.cust_code).first()
-        print(cust_name.name)
-        sub_code = RiskProject.query.filter(RiskProject.cust_code == item.cust_code).all()
-        state_ok = 0
-        state_nok = 0
-        for ele in sub_code:
-            q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-            for i in q_all_code:
-                if i.state == "5":
-                    state_ok += 1
-                else:
-                    state_nok += 1
-        rate = str((state_ok * 100) / (state_ok + state_nok)) + "%"
-        print("rate" + str(rate))
-        actual_result[item.cust_code] = {"risk_customer_name": cust_name.name, "rectification_rate": str(rate)}
+    print(request.form)
+    cust_name = request.form.get("cust_name")
+    # cust_name = "华润置地华东大区"
+    print("Received cust_name: " + str(cust_name))
+    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+    state_ok = 0
+    state_nok = 0
+    for ele in sub_code:
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        for i in q_all_code:
+            if i.state == "5":
+                state_ok += 1
+            else:
+                state_nok += 1
+    rate = str((state_ok * 100) / (state_ok + state_nok)) + "%"
+    print("rate" + str(rate))
+    actual_data = {"rectification_rate": str(rate)}
     print("Returned data: ")
-    print(actual_result)
+    print(actual_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     # print(str(ok * 100 / total) + "%")
-    return jsonify(actual_result)
+    return jsonify(actual_data)
 
 
 # 置地总部EHS数据大屏页面
@@ -433,15 +459,17 @@ def ehs_get_init_rectification():
 @app.route('/api/land_ehs_screen_top_right', methods=['POST'])
 def ehs_get_init_risk_level_data():
     print("In function ehs_get_init_risk_level_data")
-    cust_code = "SCYH"
-    actual_data = {"risk_customer_name": "", "risk_level": {1: 0, 2: 0, 3: 0}}
-    cust_name = RiskCustomer.query.filter(RiskCustomer.code == cust_code).first()
-    print(cust_name.name)
-    actual_data["risk_customer_name"] = cust_name.name
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    start_t = datetime.now()
+    cust_name = request.form.get("cust_name")
+    # cust_name = "华润置地华东大区"
+    print("Received cust_code: " + str(cust_name))
+    actual_data = {"risk_level": {1: 0, 2: 0, 3: 0}}
+    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
+    print(cust_code.name)
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
     idx = 0
     for ele in sub_code:
-        print(idx)
+        # print(idx)
         idx += 1
         q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
         for i in q_all_code:
@@ -453,6 +481,8 @@ def ehs_get_init_risk_level_data():
                 actual_data["risk_level"][3] += 1
     print("Returned data: ")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -476,9 +506,13 @@ def ehs_get_init_risk_index_data():
 @app.route('/api/land_ehs_screen_risk_number', methods=['POST'])
 def ehs_get_init_risk_number_rank():
     print("In function ehs_get_init_risk_number_rank")
-    cust_code = "SCYH"
+    start_t = datetime.now()
+    cust_name = request.form.get("cust_name")
+    print("Received cust_code: " + str(cust_name))
+    # cust_name = "华润置地华东大区"
     actual_data = {}
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
     idx = 0
     for ele in sub_code:
         print(idx)
@@ -497,6 +531,8 @@ def ehs_get_init_risk_number_rank():
         idx += 1
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -506,12 +542,17 @@ def ehs_get_init_risk_number_rank():
 # Purpose: 初始化时得到所有项目未整改高风险隐患图片
 # Parameter: null
 # Return: 返回包含未整改高风险图片的json文件
+# TODO: Query time is to large, need to polish.
 @app.route('/api/land_ehs_screen_image', methods=['POST'])
 def ehs_get_init_image():
-    print("In function ehs_get_init_risk_number_rank")
-    cust_code = "SCYH"
+    print("In function ehs_get_init_image")
+    start_t = datetime.now()
+    cust_name = request.form.get("cust_name")
+    print("Received cust_code: " + str(cust_name))
+    # cust_name = "华润置地华东大区"
     actual_data = {}
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
     idx = 0
     for ele in sub_code:
         print(idx)
@@ -525,6 +566,8 @@ def ehs_get_init_image():
         actual_data[ele.code] = image_list
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -537,9 +580,13 @@ def ehs_get_init_image():
 @app.route('/api/data_ehs_screen_top10', methods=['POST'])
 def ehs_get_init_number_top():
     print("In function ehs_get_init_number_top")
-    cust_code = "SCYH"
+    start_t = datetime.now()
+    cust_name = request.form.get("cust_name")
+    print("Received cust_code: " + str(cust_name))
+    # cust_name = "华润置地华东大区"
+    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
     actual_data = {}
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
+    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
     idx = 0
     for ele in sub_code:
         print(idx)
@@ -560,6 +607,8 @@ def ehs_get_init_number_top():
             break
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 # overview页面右侧初始化数据加载
@@ -596,13 +645,19 @@ def estate_get_region_init_index():
 # Return: 包含当前已检查项目数量的json文件
 @app.route('/api/region_project_number', methods=['POST'])
 def estate_get_init_region_project_number():
-    print("In function estate_get_region_project_number")
-    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("In function estate_get_init_region_project_number")
+    start_t = datetime.now()
+    ctr_name = request.form.get("ctr_name")
+    print("Received ctr_name: " + str(ctr_name))
+    # ctr_name = "宋城壹号"
+    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
     # for ele in sub_code:
-    actual_data = {"ctr_code": ctr_code, "project_num": str(len(sub_code))}
+    actual_data = {"project_num": str(len(sub_code))}
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -615,10 +670,14 @@ def estate_get_init_region_project_number():
 @app.route('/api/region_project_risk_level', methods=['POST'])
 def estate_get_init_region_risk_level():
     print("In function estate_get_init_region_risk_level")
-    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    start_t = datetime.now()
+    ctr_name = request.form.get("ctr_name")
+    print("Received ctr_name: " + str(ctr_name))
+    # ctr_name = "宋城壹号"
+    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
     print("length of sub_code: " + str(len(sub_code)))
-    actual_data = {"ctr_code": ctr_code, "risk_level": {1: 0, 2: 0, 3: 0}}
+    actual_data = {"risk_level": {1: 0, 2: 0, 3: 0}}
     for ele in sub_code:
         q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
         for item in q_all_code:
@@ -630,6 +689,8 @@ def estate_get_init_region_risk_level():
                 actual_data["risk_level"][3] += 1
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -642,18 +703,23 @@ def estate_get_init_region_risk_level():
 @app.route('/api/region_project_high_risk', methods=['POST'])
 def estate_get_init_region_high_risk():
     print("In function estate_get_init_region_high_risk")
-    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    start_t = datetime.now()
+    ctr_name = request.form.get("ctr_name")
+    print("Received ctr_name: " + str(ctr_name))
+    # ctr_name = "宋城壹号"
+    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
     print("length of sub_code: " + str(len(sub_code)))
-    actual_data = {"ctr_code": ctr_code, "note_list": []}
+    actual_data = {"note_list": []}
     for ele in sub_code:
         q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
         for item in q_all_code:
             if item.risk_level == "3" and item.state != "5":
                 actual_data["note_list"].append(item.note)
-
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -665,11 +731,15 @@ def estate_get_init_region_high_risk():
 # Return: 包含未整改高风险隐患图片的json文件
 @app.route('/api/region_project_Image', methods=['POST'])
 def estate_get_init_region_image():
-    print("In function estate_get_init_region_high_risk")
-    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("In function estate_get_init_region_image")
+    start_t = datetime.now()
+    ctr_name = request.form.get("ctr_name")
+    print("Received ctr_name: " + str(ctr_name))
+    # ctr_name = "宋城壹号"
+    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
     print("length of sub_code: " + str(len(sub_code)))
-    actual_data = {"ctr_code": ctr_code, "image_list": []}
+    actual_data = {"image_list": []}
     for ele in sub_code:
         q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
         for item in q_all_code:
@@ -677,9 +747,10 @@ def estate_get_init_region_image():
                 get_image = SysFile.query.filter(SysFile.id == item.images_file_id).first()
                 image_url = get_image.upload_host + get_image.directory + get_image.name
                 actual_data["image_list"].append(image_url)
-
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -691,21 +762,19 @@ def estate_get_init_region_image():
 # Return: 包含按照项目+专业+风险等级聚类结果的json文件
 @app.route('/api/region_major', methods=['POST'])
 def estate_get_init_region_major():
-    print("In function estate_get_init_region_majo")
-    risk_level = request.form.get("risk_level")
-    print("received risk_level: " + risk_level)
-    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    print("In function estate_get_init_region_major")
+    start_t = datetime.now()
+    ctr_name = request.form.get("ctr_name")
+    print("Received ctr_name: " + str(ctr_name))
+    # ctr_name = "宋城壹号"
+    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
     print("length of sub_code: " + str(len(sub_code)))
     actual_data = {}
     for ele in sub_code:
         project_map = {"major": {}}
         q_all_code = []
-        if risk_level != "all":
-            q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code,
-                                                          RiskPrjDangerRecord.risk_level == risk_level).all()
-        else:
-            q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
         for item in q_all_code:
             if item.major_name not in project_map["major"].keys():
                 project_map['major'][item.major_name] = {"1": 0, "2": 0, "3": 0}
@@ -713,6 +782,8 @@ def estate_get_init_region_major():
         actual_data[ele.code] = project_map
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -725,8 +796,12 @@ def estate_get_init_region_major():
 @app.route('/api/region_project_number_top', methods=['POST'])
 def estate_get_init_region_number_top():
     print("In function estate_get_init_region_number_top")
-    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    start_t = datetime.now()
+    ctr_name = request.form.get("ctr_name")
+    print("Received ctr_name: " + str(ctr_name))
+    # ctr_name = "宋城壹号"
+    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
     print("length of sub_code: " + str(len(sub_code)))
     actual_data = {}
     for ele in sub_code:
@@ -746,6 +821,8 @@ def estate_get_init_region_number_top():
             break
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -765,8 +842,12 @@ def estate_get_init_region_number_top():
 @app.route('/api/region_project_risk_rank', methods=['POST'])
 def estate_get_init_region_risk_rank():
     print("In function estate_get_init_region_risk_rank")
-    ctr_code = "ZRH(ZB)-2008-L01-A01-000"
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code).all()
+    start_t = datetime.now()
+    ctr_name = request.form.get("ctr_name")
+    print("Received ctr_name: " + str(ctr_name))
+    # ctr_name = "宋城壹号"
+    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
     print("length of sub_code: " + str(len(sub_code)))
     actual_data = {}
     for ele in sub_code:
@@ -785,6 +866,8 @@ def estate_get_init_region_risk_rank():
         idx += 1
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -805,8 +888,12 @@ def estate_get_init_region_risk_rank():
 @app.route('/api/region_project_rectification', methods=['POST'])
 def project_get_init_project_rectification():
     print("In function project_get_init_project_rectification")
-    project_code = "WH(DL)-2004-L01-B01-000-002"
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    # project_name = "宋城壹号01"
+    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     state_ok = 0
     for item in all_check:
         if item.state == "5":
@@ -814,6 +901,8 @@ def project_get_init_project_rectification():
     actual_data = {"project_rectification": str((state_ok * 100) / len(all_check)) + "%"}
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -896,14 +985,20 @@ def project_get_init_project_nearest_perception():
 @app.route('/api/region_project_risk', methods=['POST'])
 def project_get_init_project_risk():
     print("In function project_get_init_project_risk")
-    project_code = "WH(DL)-2004-L01-B01-000-002"
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    # project_name = "宋城壹号01"
+    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     actual_data = {"note_list": []}
     for item in all_check:
         if item.risk_level == "3" and item.state != "5":
             actual_data["note_list"].append(item.note)
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -916,8 +1011,12 @@ def project_get_init_project_risk():
 @app.route('/api/region_project_image', methods=['POST'])
 def project_get_init_project_image():
     print("In function project_get_init_project_image")
-    project_code = "WH(DL)-2004-L01-B01-000-002"
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    # project_name = "宋城壹号01"
+    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     actual_data = {"image_list": []}
     for item in all_check:
         if item.risk_level == "3" and item.state != "5":
@@ -926,6 +1025,8 @@ def project_get_init_project_image():
             actual_data["image_list"].append(image_url)
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -938,16 +1039,14 @@ def project_get_init_project_image():
 @app.route('/api/project_system', methods=['POST'])
 def project_get_init_project_system():
     print("In function project_get_init_project_system")
-    query_major = request.form.get("major_name")
-    print("Received query_major:" + query_major)
-    project_code = "WH(DL)-2004-L01-B01-000-002"
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    # project_name = "宋城壹号01"
+    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
     all_check = []
     actual_data = {}
-    if query_major == "all":
-        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
-    else:
-        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code,
-                                                     RiskPrjDangerRecord.major_name == query_major).all()
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     for item in all_check:
         if item.major_name not in actual_data.keys():
             actual_data[item.major_name] = {}
@@ -956,6 +1055,8 @@ def project_get_init_project_system():
         actual_data[item.major_name][item.system_name] += 1
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -968,16 +1069,14 @@ def project_get_init_project_system():
 @app.route('/api/project_reason', methods=['POST'])
 def project_get_init_project_reason():
     print("In function project_get_init_project_reason")
-    query_major = request.form.get("major_name")
-    print("Received query_major:" + query_major)
-    project_code = "WH(DL)-2004-L01-B01-000-002"
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    # project_name = "宋城壹号01"
+    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
     all_check = []
     actual_data = {}
-    if query_major == "all":
-        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
-    else:
-        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code,
-                                                     RiskPrjDangerRecord.major_name == query_major).all()
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     for item in all_check:
         # print(item.)
         stage = "not defined stage" if item.stage == '' else item.stage
@@ -988,6 +1087,8 @@ def project_get_init_project_reason():
         actual_data[item.major_name][stage] += 1
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -1000,16 +1101,14 @@ def project_get_init_project_reason():
 @app.route('/api/project_distribution', methods=['POST'])
 def project_get_init_project_region_distribution():
     print("In function project_get_init_project_region_distribution")
-    query_major = request.form.get("major_name")
-    print("Received query_major:" + query_major)
-    project_code = "WH(DL)-2004-L01-B01-000-002"
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    # project_name = "宋城壹号01"
+    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
     all_check = []
     actual_data = {}
-    if query_major == "all":
-        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
-    else:
-        all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code,
-                                                     RiskPrjDangerRecord.major_name == query_major).all()
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     for item in all_check:
         print(item.area)
         area = "not defined area" if item.area == '' else item.area
@@ -1020,6 +1119,8 @@ def project_get_init_project_region_distribution():
         actual_data[item.major_name][area] += 1
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -1032,15 +1133,18 @@ def project_get_init_project_region_distribution():
 @app.route('/api/region_project_risk_top', methods=['POST'])
 def project_get_init_project_risk_top():
     print("In function project_get_init_project_risk_top")
-    project_code = "WH(DL)-2004-L01-B01-000-002"
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    # project_name = "宋城壹号01"
+    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
     all_check = []
     prepare_data = {}
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
+    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     for item in all_check:
         if item.note not in prepare_data.keys():
             prepare_data[item.note] = 0
         prepare_data[item.note] += 1
-
     res = sorted(prepare_data.items(), key=lambda d: d[1], reverse=True)
     print(res)
     actual_data = {}
@@ -1055,6 +1159,8 @@ def project_get_init_project_risk_top():
             break
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
