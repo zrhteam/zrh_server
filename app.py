@@ -15,6 +15,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from random import *
+import time, datetime
 
 import requests
 import pymysql
@@ -915,20 +916,87 @@ def project_get_init_project_rectification():
 @app.route('/api/region_project_risk_number', methods=['POST'])
 def project_get_init_project_risk_number():
     print("In function project_get_init_project_risk_number")
-    project_code = "WH(DL)-2004-L01-B01-000-002"
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
-    actual_data = {1: 0, 2: 0, 3: 0}
-    for item in all_check:
-        if item.risk_level == "1":
-            actual_data[1] += 1
-        elif item.risk_level == "2":
-            actual_data[2] += 1
-        elif item.risk_level == "3":
-            actual_data[3] += 1
-        else:
-            print("Unexpected value!")
+    start_t = datetime.now()
+    query_level = request.form.get("query_level") # can be cust or ctr
+    print("Received query_level: " + str(query_level))
+    corresponding_name = ""
+    if query_level == "cust":
+        corresponding_name = request.form.get("cust_name")
+    elif query_level == "ctr":
+        corresponding_name = request.form.get("ctr_name")
+    else:
+        return jsonify({"msg": "Unexpected query level!"})
+    print("Received corresponding name: " + str(corresponding_name))
+
+    # debug for cust
+    # query_level = "cust"
+    # corresponding_name = "华润置地华东大区"
+    # debug for ctr
+    # query_level = "ctr"
+    # corresponding_name = "宋城壹号"
+    actual_data = {}
+    if query_level == "cust":
+        cust_code = RiskCustomer.query.filter(RiskCustomer.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+        idx = 1
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            project_map = {"time": "", "1": 0, "2": 0, "3": 0}
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            start_time = 100000000000
+            for ele in all_record:
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                start_time = time_stamp if time_stamp < start_time else start_time
+                if ele.risk_level == "1":
+                    project_map["1"] += 1
+                elif ele.risk_level == "2":
+                    project_map["2"] += 1
+                elif ele.risk_level == "1":
+                    project_map["3"] += 1
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                project_map["time"] = "no record"
+            else:
+                project_map["time"] = time.strftime("%Y-%m-%d", time_array)
+            actual_data[item.name] = project_map
+    elif query_level == "ctr":
+        ctr_code = RiskContract.query.filter(RiskContract.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == ctr_code.code).all()
+        idx = 1
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            project_map = {"time": "", "1": 0, "2": 0, "3": 0}
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            start_time = 100000000000
+            for ele in all_record:
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                start_time = time_stamp if time_stamp < start_time else start_time
+                if ele.risk_level == "1":
+                    project_map["1"] += 1
+                elif ele.risk_level == "2":
+                    project_map["2"] += 1
+                elif ele.risk_level == "1":
+                    project_map["3"] += 1
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                project_map["time"] = "no record"
+            else:
+                project_map["time"] = time.strftime("%Y-%m-%d", time_array)
+            actual_data[item.name] = project_map
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -938,7 +1006,81 @@ def project_get_init_project_risk_number():
 # Purpose: 初始化页面展示历次检查隐患数量变化的情况
 # Parameter: null
 # Return: 包含历次检查的隐患数量的json文件
-# TODO
+@app.route('/api/region_project_number_change', methods=['POST'])
+def project_get_init_project_number_change():
+    print("In function project_get_init_project_number_change")
+    start_t = datetime.now()
+    query_level = request.form.get("query_level") # can be cust or ctr
+    print("Received query_level: " + str(query_level))
+    corresponding_name = ""
+    if query_level == "cust":
+        corresponding_name = request.form.get("cust_name")
+    elif query_level == "ctr":
+        corresponding_name = request.form.get("ctr_name")
+    else:
+        return jsonify({"msg": "Unexpected query level!"})
+    print("Received corresponding name: " + str(corresponding_name))
+
+    # debug for cust
+    # query_level = "cust"
+    # corresponding_name = "华润置地华东大区华润置地华东大区"
+    # debug for ctr
+    # query_level = "ctr"
+    # corresponding_name = "宋城壹号"
+    actual_data = {}
+    if query_level == "cust":
+        cust_code = RiskCustomer.query.filter(RiskCustomer.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+        idx = 1
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            project_map = {"time": "", "risk_number": 0}
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            start_time = 100000000000
+            for ele in all_record:
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                start_time = time_stamp if time_stamp < start_time else start_time
+            project_map["risk_number"] = len(all_record)
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                project_map["time"] = "no record"
+            else:
+                project_map["time"] = time.strftime("%Y-%m-%d", time_array)
+            actual_data[item.name] = project_map
+    elif query_level == "ctr":
+        ctr_code = RiskContract.query.filter(RiskContract.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == ctr_code.code).all()
+        idx = 1
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            project_map = {"time": "", "risk_number": 0}
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            start_time = 100000000000
+            for ele in all_record:
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                start_time = time_stamp if time_stamp < start_time else start_time
+            project_map["risk_number"] = len(all_record)
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                project_map["time"] = "no record"
+            else:
+                project_map["time"] = time.strftime("%Y-%m-%d", time_array)
+            actual_data[item.name] = project_map
+    print("Returned result:")
+    print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(actual_data)
 
 # 项目级页面
 #
@@ -948,23 +1090,102 @@ def project_get_init_project_risk_number():
 # Return: 包含消防、电梯、电气、燃气4个专业在最近一次检查中发现隐患数量的json文件
 @app.route('/api/region_project_Nearest', methods=['POST'])
 def project_get_init_project_nearest_perception():
-    print("In function project_get_init_project_nearest_perception")
-    project_code = "WH(DL)-2004-L01-B01-000-002"
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code).all()
-    actual_data = {"消防专业": 0, "电梯专业": 0, "电气专业": 0, "燃气专业": 0}
-    for item in all_check:
-        if item.major_name == "消防专业":
-            actual_data["消防专业"] += 1
-        elif item.major_name == "电梯专业":
-            actual_data["电梯专业"] += 1
-        elif item.major_name == "电气专业":
-            actual_data["电气专业"] += 1
-        elif item.major_name == "燃气专业":
-            actual_data["燃气专业"] += 1
+    print("In function project_get_init_project_number_change")
+    start_t = datetime.now()
+    query_level = request.form.get("query_level") # can be cust or ctr
+    print("Received query_level: " + str(query_level))
+    corresponding_name = ""
+    if query_level == "cust":
+        corresponding_name = request.form.get("cust_name")
+    elif query_level == "ctr":
+        corresponding_name = request.form.get("ctr_name")
+    else:
+        return jsonify({"msg": "Unexpected query level!"})
+    print("Received corresponding name: " + str(corresponding_name))
+
+    # debug for cust
+    # query_level = "cust"
+    # corresponding_name = "华润置地华东大区华润置地华东大区"
+    # debug for ctr
+    # query_level = "ctr"
+    # corresponding_name = "宋城壹号"
+    actual_data = {"time": "", "nearest_project_name": "", "major_list": {}}
+    if query_level == "cust":
+        cust_code = RiskCustomer.query.filter(RiskCustomer.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+        project_name = ""
+        idx = 1
+        start_time = 100000000000
+        str_time = ""
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            for ele in all_record:
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                if time_stamp < start_time:
+                    start_time = time_stamp
+                    project_name = ele.project_name
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                str_time = "no record"
+            else:
+                str_time = time.strftime("%Y-%m-%d", time_array)
+        if project_name == "":
+            actual_data["nearest_project_name"] = "no record"
         else:
-            continue
+            actual_data["nearest_project_name"] = project_name
+            get_record_by_prj_name = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_name == project_name).all()
+            print("record length of nearest_project" + str(len(get_record_by_prj_name)))
+            for ele in get_record_by_prj_name:
+                if ele.major_name not in actual_data["major_list"].keys():
+                    actual_data["major_list"][ele.major_name] = 0
+                actual_data["major_list"][ele.major_name] += 1
+        actual_data["time"] = str_time
+    elif query_level == "ctr":
+        ctr_code = RiskContract.query.filter(RiskContract.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == ctr_code.code).all()
+        project_name = ""
+        idx = 1
+        start_time = 100000000000
+        str_time = ""
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            for ele in all_record:
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                if time_stamp < start_time:
+                    start_time = time_stamp
+                    project_name = ele.project_name
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                str_time = "no record"
+            else:
+                str_time = time.strftime("%Y-%m-%d", time_array)
+        if project_name == "":
+            actual_data["nearest_project_name"] = "no record"
+        else:
+            actual_data["nearest_project_name"] = project_name
+            get_record_by_prj_name = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_name == project_name).all()
+            print("record length of nearest_project" + str(len(get_record_by_prj_name)))
+            for ele in get_record_by_prj_name:
+                if ele.major_name not in actual_data["major_list"].keys():
+                    actual_data["major_list"][ele.major_name] = 0
+                actual_data["major_list"][ele.major_name] += 1
+        actual_data["time"] = str_time
     print("Returned result:")
     print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
 
 
@@ -974,7 +1195,85 @@ def project_get_init_project_nearest_perception():
 # Purpose: 初始化页面饼图展示历次检查中不同专业隐患占比情况
 # Parameter: null
 # Return: 包含消防、电梯、电气、燃气4个专业在历次检查中发现的隐患数量的json文件
-# TODO
+@app.route('/api/region_project_perception', methods=['POST'])
+def project_get_init_project_history_perception():
+    print("In function project_get_init_project_history_perception")
+    start_t = datetime.now()
+    query_level = request.form.get("query_level") # can be cust or ctr
+    print("Received query_level: " + str(query_level))
+    corresponding_name = ""
+    if query_level == "cust":
+        corresponding_name = request.form.get("cust_name")
+    elif query_level == "ctr":
+        corresponding_name = request.form.get("ctr_name")
+    else:
+        return jsonify({"msg": "Unexpected query level!"})
+    print("Received corresponding name: " + str(corresponding_name))
+
+    # debug for cust
+    # query_level = "cust"
+    # corresponding_name = "华润置地华东大区"
+    # debug for ctr
+    # query_level = "ctr"
+    # corresponding_name = "宋城壹号"
+    actual_data = {}
+    if query_level == "cust":
+        cust_code = RiskCustomer.query.filter(RiskCustomer.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+        idx = 1
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            start_time = 100000000000
+            actual_data[item.name] = {"time": start_time, "major_list": {}}
+            for ele in all_record:
+                if ele.major_name not in actual_data[item.name]["major_list"].keys():
+                    actual_data[item.name]["major_list"][ele.major_name] = 0
+                actual_data[item.name]["major_list"][ele.major_name] += 1
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                if time_stamp < start_time:
+                    start_time = time_stamp
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                actual_data[item.name]["time"] = "no record"
+            else:
+                actual_data[item.name]["time"] = time.strftime("%Y-%m-%d", time_array)
+    elif query_level == "ctr":
+        ctr_code = RiskContract.query.filter(RiskContract.name == corresponding_name).first()
+        all_project = RiskProject.query.filter(RiskProject.cust_code == ctr_code.code).all()
+        idx = 1
+        for item in all_project:  # for each project
+            # 计算这个project的开始时间
+            print("Processing project: " + str(idx))
+            idx += 1
+            all_record = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+            start_time = 100000000000
+            actual_data[item.name] = {"time": start_time, "major_list": {}}
+            for ele in all_record:
+                if ele.major_name not in actual_data[item.name]["major_list"].keys():
+                    actual_data[item.name]["major_list"][ele.major_name] = 0
+                actual_data[item.name]["major_list"][ele.major_name] += 1
+                create_time = str(ele.create_time).split(" ")[0]
+                # print(create_time)
+                time_array = time.strptime(create_time, "%Y-%m-%d")
+                time_stamp = int(time.mktime(time_array))
+                if time_stamp < start_time:
+                    start_time = time_stamp
+            time_array = time.localtime(start_time)
+            if start_time == 100000000000:
+                actual_data[item.name]["time"] = "no record"
+            else:
+                actual_data[item.name]["time"] = time.strftime("%Y-%m-%d", time_array)
+    print("Returned result:")
+    print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(actual_data)
 
 # 项目级页面
 #
