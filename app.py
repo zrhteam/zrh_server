@@ -240,7 +240,7 @@ class SysFile(db.Model):
 def load_tables():
     print("Before first request...")
     start_t = datetime.now()
-    global cache_risk_customer, cache_risk_contract, cache_risk_project, cache_risk_project_danger_record
+    global cache_risk_customer, cache_risk_contract, cache_risk_project, cache_risk_project_danger_record, cache_sys_file
     cache_risk_customer = RiskCustomer.query.all()
     end_t1 = datetime.now()
     print("Time to query table 1 is " + str((end_t1 - start_t).seconds) + "s")
@@ -260,18 +260,33 @@ def load_tables():
                                                                                RiskPrjDangerRecord.risk_level,
                                                                                RiskPrjDangerRecord.area,
                                                                                RiskPrjDangerRecord.stage,
+                                                                               RiskPrjDangerRecord.images_file_id,
+                                                                               RiskPrjDangerRecord.state
                                                                                ).all()
     end_t4 = datetime.now()
     print("Time to query table 4 is " + str((end_t4 - end_t3).seconds) + "s")
-    global cache_cust_map, cache_ctr_map
+    cache_sys_file = SysFile.query.with_entities(SysFile.id, SysFile.upload_host, SysFile.directory, SysFile.name)
+    end_t5 = datetime.now()
+    print("Time to query table 5 is " + str((end_t5 - end_t4).seconds) + "s")
+    global cache_cust_map, cache_ctr_map, cache_cust_map_convert, cache_ctr_map_convert
     cache_cust_map = {}
     cache_ctr_map = {}
+    cache_cust_map_convert = {}
+    cache_ctr_map_convert = {}
     for cust in cache_risk_customer:
         cache_cust_map[cust.code] = cust.name
+        cache_cust_map_convert[cust.name] = cust.code
     for ctr in cache_risk_contract:
         cache_ctr_map[ctr.code] = ctr.name
-    end_t5 = datetime.now()
-    print("Time to cache map is " + str((end_t5 - end_t4).seconds) + "s")
+        cache_ctr_map_convert[ctr.name] = ctr.code
+    end_t6 = datetime.now()
+    print("Time to cache map is " + str((end_t6 - end_t5).seconds) + "s")
+    global cache_image_map
+    cache_image_map = {}
+    for item in cache_sys_file:
+        cache_image_map[item.id] = item.upload_host + item.directory + item.name
+    end_t7 = datetime.now()
+    print("Time to cache image map is " + str((end_t7 - end_t6).seconds) + "s")
     # print(len(cache_risk_danger_record))
     # print(len(cache_risk_contract))
     end_t = datetime.now()
@@ -380,25 +395,30 @@ def ehs_get_init_rectification():
     cust_name = request.form.get("cust_name")
     # cust_name = "华润置地华东大区"
     print("Received cust_name: " + str(cust_name))
-    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+    if cust_name not in cache_cust_map_convert.keys():
+        return jsonify({"msg": "[Invalid] Wrong customer name!"})
+    cust_code = cache_cust_map_convert[cust_name]
+    project_list = {}
     state_ok = 0
     state_nok = 0
-    for ele in sub_code:
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for i in q_all_code:
-            if i.state == "5":
+    for item in cache_risk_project:
+        if cust_code == item.cust_code:
+            project_list[item.name] = ""
+    print(project_list)
+    for item in cache_risk_project_danger_record:
+        if item.project_name in project_list.keys():
+            if item.state == "5":
                 state_ok += 1
             else:
                 state_nok += 1
-    rate = str((state_ok * 100) / (state_ok + state_nok)) + "%"
-    print("rate" + str(rate))
+    if state_ok + state_nok == 0:
+        state_nok = 1
+    rate = str(round((state_ok * 100) / (state_ok + state_nok), 2)) + "%"
     actual_data = {"rectification_rate": str(rate)}
     print("Returned data: ")
     print(actual_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
-    # print(str(ok * 100 / total) + "%")
     return jsonify(actual_data)
 
 
@@ -412,25 +432,27 @@ def ehs_get_init_rectification():
 def ehs_get_init_risk_level_data():
     print("In function ehs_get_init_risk_level_data")
     start_t = datetime.now()
+    print(request.form)
     cust_name = request.form.get("cust_name")
     # cust_name = "华润置地华东大区"
-    print("Received cust_code: " + str(cust_name))
-    actual_data = {"risk_level": {1: 0, 2: 0, 3: 0}}
-    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
-    print(cust_code.name)
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
-    idx = 0
-    for ele in sub_code:
-        # print(idx)
-        idx += 1
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for i in q_all_code:
-            if i.risk_level == "1":
-                actual_data["risk_level"][1] += 1
-            elif i.risk_level == "2":
-                actual_data["risk_level"][2] += 1
-            elif i.risk_level == "3":
-                actual_data["risk_level"][3] += 1
+    print("Received cust_name: " + str(cust_name))
+    if cust_name not in cache_cust_map_convert.keys():
+        return jsonify({"msg": "[Invalid] Wrong customer name!"})
+    cust_code = cache_cust_map_convert[cust_name]
+    project_list = {}
+    actual_data = {1: 0, 2: 0, 3: 0}
+    for item in cache_risk_project:
+        if cust_code == item.cust_code:
+            project_list[item.name] = ""
+    print(project_list)
+    for item in cache_risk_project_danger_record:
+        if item.project_name in project_list.keys():
+            if item.risk_level == "1":
+                actual_data[1] += 1
+            elif item.risk_level == "2":
+                actual_data[2] += 1
+            elif item.risk_level == "3":
+                actual_data[3] += 1
     print("Returned data: ")
     print(actual_data)
     end_t = datetime.now()
@@ -463,18 +485,19 @@ def ehs_get_init_risk_number_rank():
     print("Received cust_code: " + str(cust_name))
     # cust_name = "华润置地华东大区"
     actual_data = {}
-    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
-    idx = 0
-    for ele in sub_code:
-        print(idx)
-        idx += 1
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        cnt = 0
-        for i in q_all_code:
-            if i.risk_level == "3":
-                cnt += 1
-        actual_data[ele.code] = cnt
+    if cust_name not in cache_cust_map_convert.keys():
+        return jsonify({"msg": "[Invalid] Wrong customer name!"})
+    cust_code = cache_cust_map_convert[cust_name]
+    project_list = {}
+    for item in cache_risk_project:
+        if cust_code == item.cust_code:
+            project_list[item.name] = ""
+    for item in cache_risk_project_danger_record:
+        if item.project_name in project_list.keys():
+            if item.project_name not in actual_data.keys():
+                actual_data[item.project_name] = 0
+            if item.risk_level == "3":
+                actual_data[item.project_name] += 1
     res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
     actual_data = {}
     idx = 1
@@ -503,19 +526,21 @@ def ehs_get_init_image():
     print("Received cust_code: " + str(cust_name))
     # cust_name = "华润置地华东大区"
     actual_data = {}
-    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
-    idx = 0
-    for ele in sub_code:
-        print(idx)
-        idx += 1
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        image_list = []
-        for i in q_all_code:
-            get_image = SysFile.query.filter(SysFile.id == i.images_file_id).first()
-            image_url = get_image.upload_host + get_image.directory + get_image.name
-            image_list.append(image_url)
-        actual_data[ele.code] = image_list
+    if cust_name not in cache_cust_map_convert.keys():
+        return jsonify({"msg": "[Invalid] Wrong customer name!"})
+    cust_code = cache_cust_map_convert[cust_name]
+    project_list = {}
+    for item in cache_risk_project:
+        if cust_code == item.cust_code:
+            project_list[item.name] = ""
+    for item in cache_risk_project_danger_record:
+        if item.project_name in project_list.keys():
+            if item.project_name not in actual_data.keys():
+                actual_data[item.project_name] = []
+            if item.risk_level == "3":
+                image_id = str(item.images_file_id).split(",")
+                for i in image_id:
+                    actual_data[item.project_name].append(cache_image_map[int(i)])
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -538,16 +563,19 @@ def ehs_get_init_number_top():
     # cust_name = "华润置地华东大区"
     cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
     actual_data = {}
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
-    idx = 0
-    for ele in sub_code:
-        print(idx)
-        idx += 1
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for i in q_all_code:
-            if i.note not in actual_data.keys():
-                actual_data[i.note] = 0
-            actual_data[i.note] += 1
+    if cust_name not in cache_cust_map_convert.keys():
+        return jsonify({"msg": "[Invalid] Wrong customer name!"})
+    cust_code = cache_cust_map_convert[cust_name]
+    project_list = {}
+    for item in cache_risk_project:
+        if cust_code == item.cust_code:
+            project_list[item.name] = ""
+    for item in cache_risk_project_danger_record:
+        if item.project_name in project_list.keys():
+            if item.note not in actual_data.keys():
+                actual_data[item.note] = 0
+            # print(item.note)
+            actual_data[item.note] += 1
     res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
     print(res)
     actual_data = {}
@@ -557,6 +585,26 @@ def ehs_get_init_number_top():
         idx += 1
         if idx == 11:
             break
+    #
+    # sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+    # idx = 0
+    # for ele in sub_code:
+    #     print(idx)
+    #     idx += 1
+    #     q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+    #     for i in q_all_code:
+    #         if i.note not in actual_data.keys():
+    #             actual_data[i.note] = 0
+    #         actual_data[i.note] += 1
+    # res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
+    # print(res)
+    # actual_data = {}
+    # idx = 1
+    # for ele in res:
+    #     actual_data[ele[0]] = {"rank": idx, "appear_time": ele[1]}
+    #     idx += 1
+    #     if idx == 11:
+    #         break
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
