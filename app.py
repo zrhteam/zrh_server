@@ -280,6 +280,12 @@ def load_tables():
     for ctr in cache_risk_contract:
         cache_ctr_map[ctr.code] = ctr.name
         cache_ctr_map_convert[ctr.name] = ctr.code
+    global cache_project_map, cache_project_map_convert
+    cache_project_map = {}
+    cache_project_map_convert = {}
+    for project in cache_risk_project:
+        cache_project_map[project.code] = project.name
+        cache_project_map_convert[project.name] = project.code
     end_t6 = datetime.now()
     print("Time to cache map is " + str((end_t6 - end_t5).seconds) + "s")
     global cache_image_map
@@ -882,14 +888,17 @@ def project_get_init_project_rectification():
     start_t = datetime.now()
     project_name = request.form.get("project_name")
     print("Received project_name: " + str(project_name))
-    # project_name = "宋城壹号01"
-    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     state_ok = 0
-    for item in all_check:
-        if item.state == "5":
-            state_ok += 1
-    actual_data = {"project_rectification": str((state_ok * 100) / len(all_check)) + "%"}
+    cnt = 0
+    project_code = cache_project_map_convert[project_name]
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code == project_code:
+            cnt += 1
+            if ele.state == "5":
+                state_ok += 1
+    if cnt == 0:
+        cnt += 1
+    actual_data = {"project_rectification": str(round(state_ok * 100 / cnt, 2)) + "%"}
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1281,13 +1290,12 @@ def project_get_init_project_risk():
     start_t = datetime.now()
     project_name = request.form.get("project_name")
     print("Received project_name: " + str(project_name))
-    # project_name = "宋城壹号01"
-    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     actual_data = {"note_list": []}
-    for item in all_check:
-        if item.risk_level == "3" and item.state != "5":
-            actual_data["note_list"].append(item.note)
+    project_code = cache_project_map_convert[project_name]
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code == project_code:
+            if ele.risk_level == "3" and ele.state != "5":
+                actual_data["note_list"].append(ele.note)
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1307,15 +1315,14 @@ def project_get_init_project_image():
     start_t = datetime.now()
     project_name = request.form.get("project_name")
     print("Received project_name: " + str(project_name))
-    # project_name = "宋城壹号01"
-    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
     actual_data = {"image_list": []}
-    for item in all_check:
-        if item.risk_level == "3" and item.state != "5":
-            get_image = SysFile.query.filter(SysFile.id == item.images_file_id).first()
-            image_url = get_image.upload_host + get_image.directory + get_image.name
-            actual_data["image_list"].append(image_url)
+    project_code = cache_project_map_convert[project_name]
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code == project_code:
+            if ele.risk_level == "3" and ele.state != "5":
+                image_list = str(ele.images_file_id).split(",")
+                for i in image_list:
+                    actual_data["image_list"].append(cache_image_map[int(i)])
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1335,21 +1342,19 @@ def project_get_init_project_system():
     start_t = datetime.now()
     project_name = request.form.get("project_name")
     print("Received project_name: " + str(project_name))
-    # project_name = "宋城壹号01"
-    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
-    all_check = []
     actual_data = {}
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
-    for item in all_check:
-        if item.major_name not in actual_data.keys():
-            actual_data[item.major_name] = {}
-        if item.system_name not in actual_data[item.major_name].keys():
-            actual_data[item.major_name][item.system_name] = 0
-        actual_data[item.major_name][item.system_name] += 1
+    project_code = cache_project_map_convert[project_name]
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code == project_code:
+            if ele.major_name not in actual_data.keys():
+                actual_data[ele.major_name] = {}
+            if ele.system_name not in actual_data[ele.major_name].keys():
+                actual_data[ele.major_name][ele.system_name] = 0
+            actual_data[ele.major_name][ele.system_name] += 1
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
-    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    print("Query total time is: " + str((end_t - start_t).seconds) + "ms")
     return jsonify(actual_data)
 
 
@@ -1365,19 +1370,16 @@ def project_get_init_project_reason():
     start_t = datetime.now()
     project_name = request.form.get("project_name")
     print("Received project_name: " + str(project_name))
-    # project_name = "宋城壹号01"
-    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
-    all_check = []
     actual_data = {}
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
-    for item in all_check:
-        # print(item.)
-        stage = "not defined stage" if item.stage == '' else item.stage
-        if item.major_name not in actual_data.keys():
-            actual_data[item.major_name] = {}
-        if stage not in actual_data[item.major_name].keys():
-            actual_data[item.major_name][stage] = 0
-        actual_data[item.major_name][stage] += 1
+    project_code = cache_project_map_convert[project_name]
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code == project_code:
+            stage = "not defined stage" if ele.stage == '' else ele.stage
+            if ele.major_name not in actual_data.keys():
+                actual_data[ele.major_name] = {}
+            if stage not in actual_data[ele.major_name].keys():
+                actual_data[ele.major_name][stage] = 0
+            actual_data[ele.major_name][stage] += 1
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1397,19 +1399,16 @@ def project_get_init_project_region_distribution():
     start_t = datetime.now()
     project_name = request.form.get("project_name")
     print("Received project_name: " + str(project_name))
-    # project_name = "宋城壹号01"
-    project_code = RiskProject.query.filter(RiskProject.name == project_name).first()
-    all_check = []
     actual_data = {}
-    all_check = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == project_code.code).all()
-    for item in all_check:
-        print(item.area)
-        area = "not defined area" if item.area == '' else item.area
-        if item.major_name not in actual_data.keys():
-            actual_data[item.major_name] = {}
-        if area not in actual_data[item.major_name].keys():
-            actual_data[item.major_name][area] = 0
-        actual_data[item.major_name][area] += 1
+    project_code = cache_project_map_convert[project_name]
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code == project_code:
+            area = "not defined area" if ele.area == '' else ele.area
+            if ele.major_name not in actual_data.keys():
+                actual_data[ele.major_name] = {}
+            if area not in actual_data[ele.major_name].keys():
+                actual_data[ele.major_name][area] = 0
+            actual_data[ele.major_name][area] += 1
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
