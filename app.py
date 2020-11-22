@@ -263,6 +263,7 @@ def load_tables():
                                                                                RiskPrjDangerRecord.images_file_id,
                                                                                RiskPrjDangerRecord.state
                                                                                ).all()
+    print("length of cache_risk_project_danger_record: " + str(len(cache_risk_project_danger_record)))
     end_t4 = datetime.now()
     print("Time to query table 4 is " + str((end_t4 - end_t3).seconds) + "s")
     cache_sys_file = SysFile.query.with_entities(SysFile.id, SysFile.upload_host, SysFile.directory, SysFile.name)
@@ -585,45 +586,11 @@ def ehs_get_init_number_top():
         idx += 1
         if idx == 11:
             break
-    #
-    # sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
-    # idx = 0
-    # for ele in sub_code:
-    #     print(idx)
-    #     idx += 1
-    #     q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-    #     for i in q_all_code:
-    #         if i.note not in actual_data.keys():
-    #             actual_data[i.note] = 0
-    #         actual_data[i.note] += 1
-    # res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
-    # print(res)
-    # actual_data = {}
-    # idx = 1
-    # for ele in res:
-    #     actual_data[ele[0]] = {"rank": idx, "appear_time": ele[1]}
-    #     idx += 1
-    #     if idx == 11:
-    #         break
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
-
-
-# overview页面右侧初始化数据加载
-# @app.route('/api/data_ehs_screen_top10', methods=['POST'])
-# def ehs_get_init_number_top():
-#     print("In function ehs_get_init_risk_number_rank")
-#     cust_code = "SCYH"
-#     actual_data = {}
-#     sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code).all()
-#     idx = 0
-#     for ele in sub_code:
-#         print(idx)
-#         idx += 1
-#         q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
 
 
 # 地产事业部页面
@@ -651,10 +618,14 @@ def estate_get_init_region_project_number():
     ctr_name = request.form.get("ctr_name")
     print("Received ctr_name: " + str(ctr_name))
     # ctr_name = "宋城壹号"
-    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
-    # for ele in sub_code:
-    actual_data = {"project_num": str(len(sub_code))}
+    # ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
+    # sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
+    cnt = 0
+    ctr_code = cache_ctr_map_convert[ctr_name]
+    for ele in cache_risk_project:
+        if ele.ctr_code == ctr_code:
+            cnt += 1
+    actual_data = {"project_num": cnt}
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -674,19 +645,21 @@ def estate_get_init_region_risk_level():
     start_t = datetime.now()
     ctr_name = request.form.get("ctr_name")
     print("Received ctr_name: " + str(ctr_name))
-    # ctr_name = "宋城壹号"
-    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
-    print("length of sub_code: " + str(len(sub_code)))
     actual_data = {"risk_level": {1: 0, 2: 0, 3: 0}}
-    for ele in sub_code:
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for item in q_all_code:
-            if item.risk_level == "1":
+    ctr_code = cache_ctr_map_convert[ctr_name]
+    print(ctr_code)
+    selected_project = {}
+    for ele in cache_risk_project:
+        if ele.ctr_code == ctr_code:
+            selected_project[ele.code] = ""
+    print(selected_project)
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code in selected_project.keys():
+            if ele.risk_level == "1":
                 actual_data["risk_level"][1] += 1
-            elif item.risk_level == "2":
+            elif ele.risk_level == "2":
                 actual_data["risk_level"][2] += 1
-            elif item.risk_level == "3":
+            elif ele.risk_level == "3":
                 actual_data["risk_level"][3] += 1
     print("Returned result:")
     print(actual_data)
@@ -707,16 +680,18 @@ def estate_get_init_region_high_risk():
     start_t = datetime.now()
     ctr_name = request.form.get("ctr_name")
     print("Received ctr_name: " + str(ctr_name))
-    # ctr_name = "宋城壹号"
-    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
-    print("length of sub_code: " + str(len(sub_code)))
     actual_data = {"note_list": []}
-    for ele in sub_code:
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for item in q_all_code:
-            if item.risk_level == "3" and item.state != "5":
-                actual_data["note_list"].append(item.note)
+    ctr_code = cache_ctr_map_convert[ctr_name]
+    print(ctr_code)
+    selected_project = {}
+    for ele in cache_risk_project:
+        if ele.ctr_code == ctr_code:
+            selected_project[ele.code] = ""
+    print(selected_project)
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code in selected_project.keys():
+            if ele.risk_level == "3" and ele.state != "5":
+                actual_data["note_list"].append(ele.note)
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -736,18 +711,20 @@ def estate_get_init_region_image():
     start_t = datetime.now()
     ctr_name = request.form.get("ctr_name")
     print("Received ctr_name: " + str(ctr_name))
-    # ctr_name = "宋城壹号"
-    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
-    print("length of sub_code: " + str(len(sub_code)))
     actual_data = {"image_list": []}
-    for ele in sub_code:
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for item in q_all_code:
-            if item.risk_level == "3" and item.state != "5":
-                get_image = SysFile.query.filter(SysFile.id == item.images_file_id).first()
-                image_url = get_image.upload_host + get_image.directory + get_image.name
-                actual_data["image_list"].append(image_url)
+    ctr_code = cache_ctr_map_convert[ctr_name]
+    print(ctr_code)
+    selected_project = {}
+    for ele in cache_risk_project:
+        if ele.ctr_code == ctr_code:
+            selected_project[ele.code] = ""
+    print(selected_project)
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code in selected_project.keys():
+            if ele.risk_level == "3" and ele.state != "5":
+                image_list = str(ele.images_file_id).split(",")
+                for i in image_list:
+                    actual_data["image_list"].append(cache_image_map[int(i)])
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -767,20 +744,26 @@ def estate_get_init_region_major():
     start_t = datetime.now()
     ctr_name = request.form.get("ctr_name")
     print("Received ctr_name: " + str(ctr_name))
-    # ctr_name = "宋城壹号"
-    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
-    print("length of sub_code: " + str(len(sub_code)))
     actual_data = {}
-    for ele in sub_code:
-        project_map = {"major": {}}
-        q_all_code = []
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for item in q_all_code:
-            if item.major_name not in project_map["major"].keys():
-                project_map['major'][item.major_name] = {"1": 0, "2": 0, "3": 0}
-            project_map['major'][item.major_name][item.risk_level] += 1
-        actual_data[ele.code] = project_map
+    ctr_code = cache_ctr_map_convert[ctr_name]
+    print(ctr_code)
+    selected_project = {}
+    for ele in cache_risk_project:
+        if ele.ctr_code == ctr_code:
+            selected_project[ele.code] = ""
+    print(selected_project)
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code in selected_project.keys():
+            if ele.project_name not in actual_data.keys():
+                actual_data[ele.project_name] = {"major": {}}
+            if ele.major_name not in actual_data[ele.project_name]["major"].keys():
+                actual_data[ele.project_name]["major"][ele.major_name] = {1: 0, 2: 0, 3: 0}
+            if ele.risk_level == "1":
+                actual_data[ele.project_name]["major"][ele.major_name][1] += 1
+            elif ele.risk_level == "2":
+                actual_data[ele.project_name]["major"][ele.major_name][2] += 1
+            elif ele.risk_level == "3":
+                actual_data[ele.project_name]["major"][ele.major_name][3] += 1
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -801,17 +784,19 @@ def estate_get_init_region_number_top():
     start_t = datetime.now()
     ctr_name = request.form.get("ctr_name")
     print("Received ctr_name: " + str(ctr_name))
-    # ctr_name = "宋城壹号"
-    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
-    print("length of sub_code: " + str(len(sub_code)))
     actual_data = {}
-    for ele in sub_code:
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for item in q_all_code:
-            if item.note not in actual_data:
-                actual_data[item.note] = 0
-            actual_data[item.note] += 1
+    ctr_code = cache_ctr_map_convert[ctr_name]
+    print(ctr_code)
+    selected_project = {}
+    for ele in cache_risk_project:
+        if ele.ctr_code == ctr_code:
+            selected_project[ele.code] = ""
+    print(selected_project)
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code in selected_project.keys():
+            if ele.note not in actual_data.keys():
+                actual_data[ele.note] = 0
+            actual_data[ele.note] += 1
     res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
     print(res)
     actual_data = {}
@@ -848,17 +833,21 @@ def estate_get_init_region_risk_rank():
     ctr_name = request.form.get("ctr_name")
     print("Received ctr_name: " + str(ctr_name))
     # ctr_name = "宋城壹号"
-    ctr_code = RiskContract.query.filter(RiskContract.name == ctr_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.ctr_code == ctr_code.code).all()
-    print("length of sub_code: " + str(len(sub_code)))
-    actual_data = {}
-    for ele in sub_code:
-        actual_data[ele.name] = 0
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        for item in q_all_code:
-            if item.risk_level == "3":
-                actual_data[ele.name] += 1
 
+    actual_data = {}
+    ctr_code = cache_ctr_map_convert[ctr_name]
+    print(ctr_code)
+    selected_project = {}
+    for ele in cache_risk_project:
+        if ele.ctr_code == ctr_code:
+            selected_project[ele.code] = ""
+    print(selected_project)
+    for ele in cache_risk_project_danger_record:
+        if ele.project_code in selected_project.keys():
+            if ele.risk_level == "3":
+                if ele.project_name not in actual_data.keys():
+                    actual_data[ele.project_name] = 0
+                actual_data[ele.project_name] += 1
     res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
     print(res)
     actual_data = {}
