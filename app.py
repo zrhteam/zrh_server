@@ -402,7 +402,7 @@ def overview_get_projection_map():
 # FunctionName: getInitIndexData
 # Purpose: 初始化页面显示不同专业（消防、电梯、电气、燃气）的危险指数
 # Parameter: null
-# Return: 包含消防、电梯、电气、燃气危险指数的json文件
+# Return: 包含消防、电梯、电气和燃气危险指数的json文件
 #
 # 初始化页面需要数据：消防危险指数、电梯危险指数、电气危险指数、燃气危险指数
 @app.route('/api/land_ehs_screen_top_left', methods=['POST'])
