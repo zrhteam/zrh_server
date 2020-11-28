@@ -22,6 +22,7 @@ import pymysql
 import os
 import pdb
 from datetime import datetime
+from queue import Queue,PriorityQueue
 
 # import test
 
@@ -236,11 +237,68 @@ class SysFile(db.Model):
     version = db.Column(db.Integer, server_default=db.FetchedValue(), info='乐观锁')
 
 
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            return float(o)
-        super(DecimalEncoder, self).default(o)
+@app.before_first_request
+def load_tables():
+    print("Before first request...")
+    start_t = datetime.now()
+    global cache_risk_customer, cache_risk_contract, cache_risk_project, cache_risk_project_danger_record, cache_sys_file
+    cache_risk_customer = RiskCustomer.query.all()
+    end_t1 = datetime.now()
+    print("Time to query table 1 is " + str((end_t1 - start_t).seconds) + "s")
+    cache_risk_contract = RiskContract.query.all()
+    end_t2 = datetime.now()
+    print("Time to query table 2 is " + str((end_t2 - end_t1).seconds) + "s")
+    cache_risk_project = RiskProject.query.all()
+    end_t3 = datetime.now()
+    print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
+    cache_risk_project_danger_record = RiskPrjDangerRecord.query.with_entities(RiskPrjDangerRecord.project_code,
+                                                                               RiskPrjDangerRecord.project_name,
+                                                                               RiskPrjDangerRecord.major_name,
+                                                                               RiskPrjDangerRecord.system_name,
+                                                                               RiskPrjDangerRecord.equipment_name,
+                                                                               RiskPrjDangerRecord.module_name,
+                                                                               RiskPrjDangerRecord.note,
+                                                                               RiskPrjDangerRecord.risk_level,
+                                                                               RiskPrjDangerRecord.area,
+                                                                               RiskPrjDangerRecord.stage,
+                                                                               RiskPrjDangerRecord.images_file_id,
+                                                                               RiskPrjDangerRecord.state
+                                                                               ).all()
+    print("length of cache_risk_project_danger_record: " + str(len(cache_risk_project_danger_record)))
+    end_t4 = datetime.now()
+    print("Time to query table 4 is " + str((end_t4 - end_t3).seconds) + "s")
+    cache_sys_file = SysFile.query.with_entities(SysFile.id, SysFile.upload_host, SysFile.directory, SysFile.name)
+    end_t5 = datetime.now()
+    print("Time to query table 5 is " + str((end_t5 - end_t4).seconds) + "s")
+    global cache_cust_map, cache_ctr_map, cache_cust_map_convert, cache_ctr_map_convert
+    cache_cust_map = {}
+    cache_ctr_map = {}
+    cache_cust_map_convert = {}
+    cache_ctr_map_convert = {}
+    for cust in cache_risk_customer:
+        cache_cust_map[cust.code] = cust.name
+        cache_cust_map_convert[cust.name] = cust.code
+    for ctr in cache_risk_contract:
+        cache_ctr_map[ctr.code] = ctr.name
+        cache_ctr_map_convert[ctr.name] = ctr.code
+    global cache_project_map, cache_project_map_convert
+    cache_project_map = {}
+    cache_project_map_convert = {}
+    for project in cache_risk_project:
+        cache_project_map[project.code] = project.name
+        cache_project_map_convert[project.name] = project.code
+    end_t6 = datetime.now()
+    print("Time to cache map is " + str((end_t6 - end_t5).seconds) + "s")
+    global cache_image_map
+    cache_image_map = {}
+    for item in cache_sys_file:
+        cache_image_map[item.id] = item.upload_host + item.directory + item.name
+    end_t7 = datetime.now()
+    print("Time to cache image map is " + str((end_t7 - end_t6).seconds) + "s")
+    # print(len(cache_risk_danger_record))
+    # print(len(cache_risk_contract))
+    end_t = datetime.now()
+    print("Time to load all data in cache is: " + str((end_t - start_t).seconds) + "s")
 
 
 # overview页面地图部分
@@ -300,31 +358,67 @@ def overview_prjname():
 #  Purpose:      初始化时得到每个项目的经纬度
 #  Parameter:    null
 #  Return:       包含经纬度的json
+# @app.route('/api/overview', methods=['POST'])
+# def overview_get_location():
+#     print("In function overview_get_location")
+#     start_t = datetime.now()
+#     result = RiskProject.query.limit(100).all()
+#     actual_data = {}
+#     cnt = 0
+#     print(len(result))
+#     for item in result:
+#         if str(item.code) not in actual_data.keys():
+#             print("handle..." + str(cnt))
+#             cnt += 1
+#             tmp_data = {'id': item.id, "longitude": item.lng, "latitude": item.lat, "risk_level": {1: 0, 2: 0, 3: 0}}
+#             risk_result = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
+#             for ele in risk_result:
+#                 # print(ele.risk_level)
+#                 if ele.risk_level == "1":
+#                     tmp_data["risk_level"][1] += 1
+#                 elif ele.risk_level == "2":
+#                     tmp_data["risk_level"][2] += 1
+#                 elif ele.risk_level == "3":
+#                     tmp_data["risk_level"][3] += 1
+#                 else:
+#                     print("Unexpected result")
+#             actual_data[str(item.code)] = tmp_data
+#     print("Returned data: ")
+#     print(actual_data)
+#     end_t = datetime.now()
+#     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+#     # return jsonify(json_list=res)
+#     return jsonify(actual_data)
+
 @app.route('/api/overview', methods=['POST'])
 def overview_get_location():
     print("In function overview_get_location")
     start_t = datetime.now()
-    result = RiskProject.query.limit(100).all()
+    result = cache_risk_project_danger_record
     actual_data = {}
     cnt = 0
     print(len(result))
     for item in result:
-        if str(item.code) not in actual_data.keys():
-            print("handle..." + str(cnt))
+        if item.project_name not in actual_data.keys():
+            # print(cnt)
             cnt += 1
-            tmp_data = {'id': item.id, "longitude": item.lng, "latitude": item.lat, "risk_level": {1: 0, 2: 0, 3: 0}}
-            risk_result = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == item.code).all()
-            for ele in risk_result:
-                # print(ele.risk_level)
-                if ele.risk_level == "1":
-                    tmp_data["risk_level"][1] += 1
-                elif ele.risk_level == "2":
-                    tmp_data["risk_level"][2] += 1
-                elif ele.risk_level == "3":
-                    tmp_data["risk_level"][3] += 1
-                else:
-                    print("Unexpected result")
-            actual_data[str(item.code)] = tmp_data
+            lng = ""
+            lat = ""
+            for ele in cache_risk_project:
+                if ele.name == item.project_name:
+                    lng = ele.lng
+                    lat = ele.lat
+                    break
+            actual_data[item.project_name] = {"longitude": lng, "latitude": lat, "risk_level": {1: 0, 2: 0, 3: 0}}
+        if item.risk_level == "1":
+            actual_data[item.project_name]["risk_level"][1] += 1
+        elif item.risk_level == "2":
+            actual_data[item.project_name]["risk_level"][2] += 1
+        elif item.risk_level == "3":
+            actual_data[item.project_name]["risk_level"][3] += 1
+        else:
+            print("Unexpected result")
+    print("Number of project: " + str(cnt))
     print("Returned data: ")
     print(actual_data)
     end_t = datetime.now()
@@ -332,6 +426,84 @@ def overview_get_location():
     # return jsonify(json_list=res)
     return jsonify(actual_data)
 
+#  overview最新数据
+#
+#  FunctionName: getLatestProject
+#  Purpose:      展示最新10个项目数据
+#  Parameter:    null
+#  Return:       最新10个数据
+@app.route('/api/overview_latest_project', methods=['POST'])
+def overview_get_latest_project():
+    class pair:
+        def __init__(self, prj, t):
+            self.prj = prj
+            self.t = t
+        def __lt__(self, other):
+            return self.t < other.t
+    print("In function overview_get_latest_project")
+    start_t = datetime.now()
+    actual_data = {}
+    cnt = 0
+    que = PriorityQueue()
+    for item in cache_risk_project_danger_record:
+        print("create time: " + str(item.create_time))
+        create_time = str(item.create_time).split(" ")[0]
+        time_array = time.strptime(create_time, "%Y-%m-%d")
+        time_stamp = int(time.mktime(time_array))
+        que.put(pair(item.project_name, time_stamp))
+    while cnt != 10:
+        if que.qsize() > 0:
+            tmp_record = que.get()
+            if tmp_record.project_name not in actual_data.keys():
+                cnt += 1
+                time_array = time.localtime(tmp_record.t)
+                tmp_time = time.strftime("%Y-%m-%d", time_array)
+                actual_data[tmp_record.project_name] = tmp_time
+        else:
+            print("No project in que! break.")
+            break
+    print("Returned data: ")
+    print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    # return jsonify(json_list=res)
+    return jsonify(actual_data)
+
+#  overview高风险项目排行
+#
+#  FunctionName: getHighRiskRank
+#  Purpose:      展示高风险最多的10个项目
+#  Parameter:    null
+#  Return:       高风险最多的10个项目
+@app.route('/api/overview_high_risk_rank', methods=['POST'])
+def overview_get_high_risk_rank():
+    print("In function overview_get_latest_project")
+    start_t = datetime.now()
+    actual_data = {}
+    cnt = 0
+
+    actual_data = {}
+
+    for ele in cache_risk_project_danger_record:
+        if ele.project_name not in actual_data.keys():
+            actual_data[ele.project_name] = 0
+        if ele.risk_level == "3":
+            actual_data[ele.project_name] += 1
+    res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
+    # print(res)
+    actual_data = {}
+    idx = 0
+    for ele in res:
+        actual_data[ele[0]] = {"rank": idx, "high_risk_num": ele[1]}
+        idx += 1
+        if idx == 10:
+            break
+    print("Returned data: ")
+    print(actual_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    # return jsonify(json_list=res)
+    return jsonify(actual_data)
 
 #  overview页面地图部分
 #
@@ -372,24 +544,45 @@ def overview_get_prj_pie():
 # Purpose:      初始化保存三种code的对应关系
 # Parameter:    null
 # Return:       code对应关系的map
+# @app.route('/api/overview_get_projection_map', methods=['POST'])
+# def overview_get_projection_map():
+#     print("In function overview_get_projection_map")
+#     start_t = datetime.now()
+#     actual_data = {}
+#     customer_info = RiskCustomer.query.all()
+#     idx = 0
+#     for item in customer_info:
+#         print("idx: " + str(idx))
+#         idx += 1
+#         actual_data[item.name] = {}
+#         contract_info = RiskContract.query.filter(RiskContract.cust_code == item.code).all()
+#         for ele in contract_info:
+#             actual_data[item.name][ele.name] = []
+#             project_info = RiskProject.query.filter(RiskProject.ctr_code == ele.code).all()
+#             for i in project_info:
+#                 actual_data[item.name][ele.name].append(i.name)
+#
+#     print("Returned data: ")
+#     print(actual_data)
+#     end_t = datetime.now()
+#     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+#     return jsonify(actual_data)
+
 @app.route('/api/overview_get_projection_map', methods=['POST'])
 def overview_get_projection_map():
     print("In function overview_get_projection_map")
     start_t = datetime.now()
     actual_data = {}
-    customer_info = RiskCustomer.query.all()
-    idx = 0
-    for item in customer_info:
-        print("idx: " + str(idx))
-        idx += 1
-        actual_data[item.name] = {}
-        contract_info = RiskContract.query.filter(RiskContract.cust_code == item.code).all()
-        for ele in contract_info:
-            actual_data[item.name][ele.name] = []
-            project_info = RiskProject.query.filter(RiskProject.ctr_code == ele.code).all()
-            for i in project_info:
-                actual_data[item.name][ele.name].append(i.name)
-
+    for item in cache_risk_project:
+        if item.cust_code not in cache_cust_map.keys() or item.ctr_code not in cache_ctr_map.keys():
+            continue
+        get_cust_name = cache_cust_map[item.cust_code]
+        get_ctr_name = cache_ctr_map[item.ctr_code]
+        if get_cust_name not in actual_data.keys():
+            actual_data[get_cust_name] = {}
+        if get_ctr_name not in actual_data[get_cust_name].keys():
+            actual_data[get_cust_name][get_ctr_name] = []
+        actual_data[get_cust_name][get_ctr_name].append(item.name)
     print("Returned data: ")
     print(actual_data)
     end_t = datetime.now()
@@ -504,6 +697,38 @@ def ehs_get_init_risk_index_data():
 # Purpose: 初始化页面得到按照高风险数量排名的项目名称
 # Parameter: null
 # Return: 对高风险数量排序后的项目名称json文件
+# @app.route('/api/land_ehs_screen_risk_number', methods=['POST'])
+# def ehs_get_init_risk_number_rank():
+#     print("In function ehs_get_init_risk_number_rank")
+#     start_t = datetime.now()
+#     cust_name = request.form.get("cust_name")
+#     print("Received cust_code: " + str(cust_name))
+#     # cust_name = "华润置地华东大区"
+#     actual_data = {}
+#     cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
+#     sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
+#     idx = 0
+#     for ele in sub_code:
+#         print(idx)
+#         idx += 1
+#         q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
+#         cnt = 0
+#         for i in q_all_code:
+#             if i.risk_level == "3":
+#                 cnt += 1
+#         actual_data[ele.code] = cnt
+#     res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
+#     actual_data = {}
+#     idx = 1
+#     for ele in res:
+#         actual_data[ele[0]] = {"rank": idx, "high_risk_count": ele[1]}
+#         idx += 1
+#     print("Returned result:")
+#     print(actual_data)
+#     end_t = datetime.now()
+#     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+#     return jsonify(actual_data)
+
 @app.route('/api/land_ehs_screen_risk_number', methods=['POST'])
 def ehs_get_init_risk_number_rank():
     print("In function ehs_get_init_risk_number_rank")
@@ -512,18 +737,19 @@ def ehs_get_init_risk_number_rank():
     print("Received cust_code: " + str(cust_name))
     # cust_name = "华润置地华东大区"
     actual_data = {}
-    cust_code = RiskCustomer.query.filter(RiskCustomer.name == cust_name).first()
-    sub_code = RiskProject.query.filter(RiskProject.cust_code == cust_code.code).all()
-    idx = 0
-    for ele in sub_code:
-        print(idx)
-        idx += 1
-        q_all_code = RiskPrjDangerRecord.query.filter(RiskPrjDangerRecord.project_code == ele.code).all()
-        cnt = 0
-        for i in q_all_code:
-            if i.risk_level == "3":
-                cnt += 1
-        actual_data[ele.code] = cnt
+    if cust_name not in cache_cust_map_convert.keys():
+        return jsonify({"msg": "[Invalid] Wrong customer name!"})
+    cust_code = cache_cust_map_convert[cust_name]
+    project_list = {}
+    for item in cache_risk_project:
+        if cust_code == item.cust_code:
+            project_list[item.name] = ""
+    for item in cache_risk_project_danger_record:
+        if item.project_name in project_list.keys():
+            if item.project_name not in actual_data.keys():
+                actual_data[item.project_name] = 0
+            if item.risk_level == "3":
+                actual_data[item.project_name] += 1
     res = sorted(actual_data.items(), key=lambda d: d[1], reverse=True)
     actual_data = {}
     idx = 1
