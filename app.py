@@ -24,6 +24,8 @@ import pdb
 from datetime import datetime
 from queue import Queue, PriorityQueue
 
+from ErrorCode import *
+
 # import test
 
 data = [
@@ -240,62 +242,82 @@ class SysFile(db.Model):
 @app.before_first_request
 def load_tables():
     print("Before first request...")
+    global connect_flag
+    connect_flag = 0
     start_t = datetime.now()
     global cache_risk_customer, cache_risk_contract, cache_risk_project, cache_risk_project_danger_record, cache_sys_file
-    cache_risk_customer = RiskCustomer.query.all()
-    end_t1 = datetime.now()
-    print("Time to query table 1 is " + str((end_t1 - start_t).seconds) + "s")
-    cache_risk_contract = RiskContract.query.all()
-    end_t2 = datetime.now()
-    print("Time to query table 2 is " + str((end_t2 - end_t1).seconds) + "s")
-    cache_risk_project = RiskProject.query.all()
-    end_t3 = datetime.now()
-    print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
-    cache_risk_project_danger_record = RiskPrjDangerRecord.query.with_entities(RiskPrjDangerRecord.project_code,
-                                                                               RiskPrjDangerRecord.project_name,
-                                                                               RiskPrjDangerRecord.major_name,
-                                                                               RiskPrjDangerRecord.system_name,
-                                                                               RiskPrjDangerRecord.equipment_name,
-                                                                               RiskPrjDangerRecord.module_name,
-                                                                               RiskPrjDangerRecord.note,
-                                                                               RiskPrjDangerRecord.risk_level,
-                                                                               RiskPrjDangerRecord.area,
-                                                                               RiskPrjDangerRecord.stage,
-                                                                               RiskPrjDangerRecord.images_file_id,
-                                                                               RiskPrjDangerRecord.state,
-                                                                               RiskPrjDangerRecord.create_time
-                                                                               ).all()
-    print("length of cache_risk_project_danger_record: " + str(len(cache_risk_project_danger_record)))
-    end_t4 = datetime.now()
-    print("Time to query table 4 is " + str((end_t4 - end_t3).seconds) + "s")
-    cache_sys_file = SysFile.query.with_entities(SysFile.id, SysFile.upload_host, SysFile.directory, SysFile.name)
-    end_t5 = datetime.now()
-    print("Time to query table 5 is " + str((end_t5 - end_t4).seconds) + "s")
     global cache_cust_map, cache_ctr_map, cache_cust_map_convert, cache_ctr_map_convert
+    global cache_project_map, cache_project_map_convert
+    global cache_image_map
+    cache_risk_customer = {}
+    cache_risk_contract = {}
+    cache_risk_project = {}
+    cache_risk_project_danger_record = {}
+    cache_sys_file = {}
     cache_cust_map = {}
     cache_ctr_map = {}
     cache_cust_map_convert = {}
     cache_ctr_map_convert = {}
-    for cust in cache_risk_customer:
-        cache_cust_map[cust.code] = cust.name
-        cache_cust_map_convert[cust.name] = cust.code
-    for ctr in cache_risk_contract:
-        cache_ctr_map[ctr.code] = ctr.name
-        cache_ctr_map_convert[ctr.name] = ctr.code
-    global cache_project_map, cache_project_map_convert
     cache_project_map = {}
     cache_project_map_convert = {}
-    for project in cache_risk_project:
-        cache_project_map[project.code] = project.name
-        cache_project_map_convert[project.name] = project.code
-    end_t6 = datetime.now()
-    print("Time to cache map is " + str((end_t6 - end_t5).seconds) + "s")
-    global cache_image_map
     cache_image_map = {}
-    for item in cache_sys_file:
-        cache_image_map[item.id] = item.upload_host + item.directory + item.name
-    end_t7 = datetime.now()
-    print("Time to cache image map is " + str((end_t7 - end_t6).seconds) + "s")
+    try:
+        # a = 1/0
+        cache_risk_customer = RiskCustomer.query.all()
+        end_t1 = datetime.now()
+        print("Time to query table 1 is " + str((end_t1 - start_t).seconds) + "s")
+        cache_risk_contract = RiskContract.query.all()
+        end_t2 = datetime.now()
+        print("Time to query table 2 is " + str((end_t2 - end_t1).seconds) + "s")
+        cache_risk_project = RiskProject.query.all()
+        end_t3 = datetime.now()
+        print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
+        cache_risk_project_danger_record = RiskPrjDangerRecord.query.with_entities(RiskPrjDangerRecord.project_code,
+                                                                                   RiskPrjDangerRecord.project_name,
+                                                                                   RiskPrjDangerRecord.major_name,
+                                                                                   RiskPrjDangerRecord.system_name,
+                                                                                   RiskPrjDangerRecord.equipment_name,
+                                                                                   RiskPrjDangerRecord.module_name,
+                                                                                   RiskPrjDangerRecord.note,
+                                                                                   RiskPrjDangerRecord.risk_level,
+                                                                                   RiskPrjDangerRecord.area,
+                                                                                   RiskPrjDangerRecord.stage,
+                                                                                   RiskPrjDangerRecord.images_file_id,
+                                                                                   RiskPrjDangerRecord.state,
+                                                                                   RiskPrjDangerRecord.create_time
+                                                                                   ).all()
+        print("length of cache_risk_project_danger_record: " + str(len(cache_risk_project_danger_record)))
+        end_t4 = datetime.now()
+        print("Time to query table 4 is " + str((end_t4 - end_t3).seconds) + "s")
+        cache_sys_file = SysFile.query.with_entities(SysFile.id, SysFile.upload_host, SysFile.directory, SysFile.name)
+        end_t5 = datetime.now()
+        print("Time to query table 5 is " + str((end_t5 - end_t4).seconds) + "s")
+        cache_cust_map = {}
+        cache_ctr_map = {}
+        cache_cust_map_convert = {}
+        cache_ctr_map_convert = {}
+        for cust in cache_risk_customer:
+            cache_cust_map[cust.code] = cust.name
+            cache_cust_map_convert[cust.name] = cust.code
+        for ctr in cache_risk_contract:
+            cache_ctr_map[ctr.code] = ctr.name
+            cache_ctr_map_convert[ctr.name] = ctr.code
+        cache_project_map = {}
+        cache_project_map_convert = {}
+        for project in cache_risk_project:
+            cache_project_map[project.code] = project.name
+            cache_project_map_convert[project.name] = project.code
+        end_t6 = datetime.now()
+        print("Time to cache map is " + str((end_t6 - end_t5).seconds) + "s")
+        cache_image_map = {}
+        for item in cache_sys_file:
+            cache_image_map[item.id] = item.upload_host + item.directory + item.name
+        end_t7 = datetime.now()
+        print("Time to cache image map is " + str((end_t7 - end_t6).seconds) + "s")
+    except:
+        connect_flag = 1  # 缓存数据失败
+    finally:
+        print("load data done.")
     # print(len(cache_risk_danger_record))
     # print(len(cache_risk_contract))
     end_t = datetime.now()
@@ -420,6 +442,7 @@ def overview_get_location():
         else:
             print("Unexpected result")
     print("Number of project: " + str(cnt))
+    actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
     print("Returned data: ")
     print(actual_data)
     end_t = datetime.now()
@@ -1231,6 +1254,7 @@ def estate_get_init_region_risk_rank():
     for ele in res:
         actual_data[ele[0]] = {"rank": idx, "high_risk_count": ele[1]}
         idx += 1
+    actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1363,6 +1387,7 @@ def project_get_init_project_risk_number():
             else:
                 project_map["time"] = time.strftime("%Y-%m-%d", time_array)
             actual_data[item.name] = project_map
+    actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1447,6 +1472,7 @@ def project_get_init_project_number_change():
             else:
                 project_map["time"] = time.strftime("%Y-%m-%d", time_array)
             actual_data[item.name] = project_map
+    actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1643,6 +1669,7 @@ def project_get_init_project_history_perception():
                 actual_data[item.name]["time"] = "no record"
             else:
                 actual_data[item.name]["time"] = time.strftime("%Y-%m-%d", time_array)
+    actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1867,6 +1894,7 @@ def project_get_init_project_risk_top():
             idx += 1
             if idx == 6:
                 break
+    actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
     print("[project_get_init_project_risk_top]Returned result:")
     print(actual_data)
     end_t = datetime.now()
