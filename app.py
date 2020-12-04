@@ -1388,6 +1388,7 @@ def project_get_init_project_risk_number():
                 project_map["time"] = time.strftime("%Y-%m-%d", time_array)
             actual_data[item.name] = project_map
     actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
+    actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1473,6 +1474,7 @@ def project_get_init_project_number_change():
                 project_map["time"] = time.strftime("%Y-%m-%d", time_array)
             actual_data[item.name] = project_map
     actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
+    actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1582,6 +1584,7 @@ def project_get_init_project_nearest_perception():
                     actual_data["major_list"][ele.major_name] = 0
                 actual_data["major_list"][ele.major_name] += 1
         actual_data["time"] = str_time
+    actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1670,6 +1673,7 @@ def project_get_init_project_history_perception():
             else:
                 actual_data[item.name]["time"] = time.strftime("%Y-%m-%d", time_array)
     actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
+    actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
@@ -1895,6 +1899,7 @@ def project_get_init_project_risk_top():
             if idx == 6:
                 break
     actual_data["error_code"] = error_code.UNHANDLED_EXCEPTION if connect_flag == 1 else error_code.SUCCESS
+    actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
     print("[project_get_init_project_risk_top]Returned result:")
     print(actual_data)
     end_t = datetime.now()
