@@ -1254,7 +1254,7 @@ def estate_get_init_region_risk_rank():
     for ele in res:
         actual_data[ele[0]] = {"rank": idx, "high_risk_count": ele[1]}
         idx += 1
-    actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
+    # actual_data["error_code"] = error_code.NO_DATA if len(actual_data) == 0 else error_code.SUCCESS
     print("Returned result:")
     print(actual_data)
     end_t = datetime.now()
