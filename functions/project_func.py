@@ -92,7 +92,7 @@ def project_risk_ratio():
         resp_data["code"] = -1
     else:
         for (major_name, appear_num) in major_map.items():
-            resp_data["data"][major_name] = str(round(float(appear_num) * 100 / cnt_check_num, 2)) + "%"
+            resp_data["data"][major_name] = appear_num
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
