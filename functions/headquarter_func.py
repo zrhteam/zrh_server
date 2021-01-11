@@ -156,8 +156,10 @@ def head_high_image():
                 tmp_image_id_list = str(item.images_file_id).split(",")
                 for ele in tmp_image_id_list:
                     image_id_list[ele] = 0
+    print(cache_sys_file)
+    print(image_id_list)
     for ele in cache_sys_file:
-        if ele in image_id_list.keys():
+        if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
             resp_data["data"]["image_list"].append(image_url)
     print("Returned data: ")
