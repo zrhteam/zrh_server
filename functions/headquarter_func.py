@@ -156,8 +156,6 @@ def head_high_image():
                 tmp_image_id_list = str(item.images_file_id).split(",")
                 for ele in tmp_image_id_list:
                     image_id_list[ele] = 0
-    print(cache_sys_file)
-    print(image_id_list)
     for ele in cache_sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
@@ -188,7 +186,7 @@ def head_rank_top():
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag:
             if item.note not in risk_note_map.keys():
-                risk_note_map[item.project_tag] = 0
+                risk_note_map[item.note] = 0
             risk_note_map[item.note] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1], reverse=True)
     idx = 1
