@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, render_template, session, json
 from datetime import datetime
 import functions.cache_data as gl
 import time
-project_blueprint = Blueprint('region', __name__, url_prefix='/api/project')
+project_blueprint = Blueprint('project', __name__, url_prefix='/api/project')
 
 # project页面部分
 #

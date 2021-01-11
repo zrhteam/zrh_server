@@ -163,7 +163,7 @@ def region_rank_top():
     for item in cache_cascade_record:
         if region_name == item.region_tag:
             if item.note not in risk_note_map.keys():
-                risk_note_map[item.project_tag] = 0
+                risk_note_map[item.note] = 0
             risk_note_map[item.note] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1], reverse=True)
     idx = 0
