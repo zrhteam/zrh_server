@@ -62,7 +62,7 @@ def region_risk_level():
 # region页面部分
 #
 # FunctionName: getRegionHighRIsk
-# Purpose: 显示该区域未整改高风险隐患列表
+# Purpose: 显示该区域未整改高风险隐患描述列表
 # Parameter:
 # Return:
 @region_blueprint.route('/region_risk_list', methods=['POST', 'GET'])
@@ -107,7 +107,7 @@ def region_high_image():
                 for ele in tmp_image_id_list:
                     image_id_list[ele] = 0
     for ele in cache_sys_file:
-        if ele in image_id_list.keys():
+        if ele.id in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
             resp_data["data"]["image_list"].append(image_url)
     print("Returned data: ")
@@ -166,11 +166,11 @@ def region_rank_top():
                 risk_note_map[item.project_tag] = 0
             risk_note_map[item.note] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1], reverse=True)
-    idx = 1
+    idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "count": ele[1]}
         idx += 1
-        if idx == 11:
+        if idx == 10:
             break
     print("Returned data: ")
     print(resp_data)
@@ -207,7 +207,7 @@ def region_index_rank():
                 risk_project_map[item.project_tag] = 0
             risk_project_map[item.project_tag] += 1
     res = sorted(risk_project_map.items(), key=lambda d: d[1], reverse=True)
-    idx = 1
+    idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "count": ele[1]}
         idx += 1

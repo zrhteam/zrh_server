@@ -123,7 +123,7 @@ def head_risk_rank():
             if item.risk_level == "3":
                 project_high_risk_map[item.project_tag] += 1
     res = sorted(project_high_risk_map.items(), key=lambda d: d[1], reverse=True)
-    idx = 1
+    idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "high_risk_count": ele[1]}
         idx += 1
@@ -189,7 +189,7 @@ def head_rank_top():
                 risk_note_map[item.note] = 0
             risk_note_map[item.note] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1], reverse=True)
-    idx = 1
+    idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "count": ele[1]}
         idx += 1
