@@ -29,10 +29,17 @@ def cache_tables():
     print(cache_prj_with_tag[0])
 
     # 缓存表 new_cascade_risk_prj_danger_record
-    # cache_new_cascade_record = NewCascadeRiskPrjDangerRecord.query.all()
+    # cache_cascade_record = NewCascadeRiskPrjDangerRecord.query.all()
     # end_t3 = datetime.now()
+    # gl.set_value("cache_cascade_record", cache_cascade_record)
     # print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
-    # print(cache_new_cascade_record[0])
+    # print(cache_cascade_record[0])
+    #
+    # cache_check_location_map = {}
+    # for item in cache_cascade_record:
+    #     if item.project_name not in cache_check_location_map.keys():
+    #         cache_check_location_map[item.project_name] = {"lat": item.lat, "lng": item.lng}
+    # gl.set_value("cache_check_location_map", cache_check_location_map)
 
     end_t = datetime.now()
     print("Time to query all is " + str((end_t - start_t).seconds) + "s")
