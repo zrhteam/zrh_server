@@ -1,5 +1,5 @@
 from ops import db
-
+from sqlalchemy.dialects.mysql.types import BIT
 
 class SysFile(db.Model):
     __tablename__ = 'sys_files'
@@ -18,5 +18,5 @@ class SysFile(db.Model):
     create_user = db.Column(db.BigInteger, info='创建人')
     update_time = db.Column(db.DateTime)
     update_user = db.Column(db.BigInteger, info='更新人')
-    del_ind = db.Column(db.BIT(1))
+    del_ind = db.Column(BIT(1))
     version = db.Column(db.Integer, server_default=db.FetchedValue(), info='乐观锁')

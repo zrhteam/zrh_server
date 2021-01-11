@@ -14,7 +14,7 @@ def get_grant():
     print("Received name: " + str(name))
     print("Received password: " + str(password))
     flag = 0
-    resp_data = {"code": 0,
+    resp_data = {"code": 10000,
                  "data": {"user_grant": "",
                           "headquarter_tag": "",
                           "region_tag": "",
