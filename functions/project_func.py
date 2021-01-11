@@ -258,7 +258,7 @@ def project_risk_top():
         if project_name == item.project_tag:
             if item.note not in risk_note_map.keys():
                 risk_note_map[item.note] = {"appear_time": 0, "belonged_major": item.major_name}
-            risk_note_map[item.note] += 1
+            risk_note_map[item.note]["appear_time"] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
