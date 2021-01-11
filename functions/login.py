@@ -123,5 +123,5 @@ def get_grant():
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
-    print(print("Query total time is: " + str((end_t - start_t).seconds) + "s"))
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)

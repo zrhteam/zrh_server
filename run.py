@@ -3,6 +3,7 @@ from datetime import datetime
 from models.new_cascade_risk_prj_danger_record import NewCascadeRiskPrjDangerRecord
 from models.risk_user import RiskUser
 from models.project_with_tag import PrjWithTag
+from models.sys_file import SysFile
 import functions.cache_data as gl
 from flask_cors import CORS
 
@@ -34,6 +35,12 @@ def cache_tables():
     end_t3 = datetime.now()
     gl.set_value("cache_cascade_record", cache_cascade_record)
     print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
+
+    # 缓存表 sys_file
+    cache_sys_file = SysFile.query.all()
+    end_t4 = datetime.now()
+    gl.set_value("cache_sys_file", cache_sys_file)
+    print("Time to query table 4 is " + str((end_t4 - end_t3).seconds) + "s")
 
     cache_check_location_map = {}
     for item in cache_cascade_record:
