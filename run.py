@@ -6,6 +6,7 @@ from models.project_with_tag import PrjWithTag
 from models.sys_file import SysFile
 import functions.cache_data as gl
 from flask_cors import CORS
+import random
 
 app = app_create('testing')
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -45,7 +46,7 @@ def cache_tables():
     cache_check_location_map = {}
     for item in cache_cascade_record:
         if item.project_code not in cache_check_location_map.keys():
-            cache_check_location_map[item.project_code] = {"lat": item.lat, "lng": item.lng}
+            cache_check_location_map[item.project_code] = {"lat": item.lat, "lng": item.lng, "index": round(random.uniform(1.0, 99.99), 2)}
     gl.set_value("cache_check_location_map", cache_check_location_map)
 
     end_t = datetime.now()
