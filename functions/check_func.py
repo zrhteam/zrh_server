@@ -68,7 +68,7 @@ def check_risk_level():
 def check_risk_ratio():
     print("In function check_risk_ratio")
     start_t = datetime.now()
-    check_code = request.form.get("check")
+    check_code = request.form.get("check_code")
     print("Received check_code " + str(check_code))
     resp_data = {"code": 10000, "data": {}}
     cnt_check_num = 0
@@ -249,7 +249,7 @@ def check_risk_top():
         if check_code == item.project_code:
             if item.note not in risk_note_map.keys():
                 risk_note_map[item.note] = {"appear_time": 0, "belonged_major": item.major_name}
-            risk_note_map[item.note] += 1
+            risk_note_map[item.note]["appear_time"] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
