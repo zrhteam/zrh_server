@@ -92,7 +92,7 @@ def get_grant():
                                     value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag][
                                     "project_tag"][ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
                 elif item.user_grant == "区域":
-                    value["headquarter_tag"] = {item.headquarter_tag: {"region": {item.region_tag: {"project_tag": {}}}}}
+                    value["headquarter_tag"] = {item.headquarter_tag: {"region_tag": {item.region_tag: {"project_tag": {}}}}}
                     for ele in cache_prj_with_tag:
                         if ele.region_tag == item.region_tag:
                             # print(ele.project_tag)
