@@ -61,7 +61,7 @@ def check_risk_level():
 # check页面部分
 #
 # FunctionName: getCheckRiskRatio
-# Purpose: 根据风险指数对项目进行排序
+# Purpose: 不同专业的隐患占比情况
 # Parameter:
 # Return:
 @check_blueprint.route('/check_risk_ratio', methods=['POST', 'GET'])
@@ -84,7 +84,7 @@ def check_risk_ratio():
         resp_data["code"] = -1
     else:
         for (major_name, appear_num) in major_map.items():
-            resp_data["data"][major_name] = str(round(float(appear_num) * 100 / cnt_check_num, 2)) + "%"
+            resp_data["data"][major_name] = appear_num
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
