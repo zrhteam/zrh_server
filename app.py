@@ -24,6 +24,7 @@ import pdb
 from datetime import datetime
 
 # import test
+from functions.file_reader import get_scatter, get_top_k, get_trend, get_correlation
 
 data = [
     {"id": 1, "username": "小明", "password": "123", "role": 0, "sex": 0, "telephone": "10086", "address": "北京市海淀区"},
@@ -1506,6 +1507,70 @@ def project_get_init_project_risk_top():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(actual_data)
+
+
+# Analyze相关页面
+#
+# FunctionName: analyzeGetMainChartData
+# Purpose: 获取Insight用于渲染散点图
+# Parameter: None
+# Return: json -> list of (pid, x, y, type)
+# Comments: 前端实现未完成
+@app.route('/api/analyze/main', methods=['GET'])
+def analyze_get_main_chart_data():
+    print("In function analyze_get_main_chart_data")
+    start_t = datetime.now()
+
+    # insight_list = [(1, 1, 2, 'top1'), (2, 3, 4, 'trend'), (3, 4, 5, 'correlation')]
+    insight_list = get_scatter()
+
+    print("Returned result:")
+    print(insight_list)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(insight_list)
+
+
+# FunctionName: analyzeGetRefChartData
+# Purpose: 获取Insight点击后出现的小图的数据
+# Parameter: pid: insight的id, type: insight的种类
+# Return: json
+# Comments: 前端实现未完成
+@app.route('/api/analyze/ref', methods=['GET'])
+def analyze_get_ref_chart_data():
+    print("In function analyze_get_ref_chart_data")
+    pid = int(request.args.get("pid"))
+    print("Received pid: " + str(pid))
+    type_ = request.args.get("type")
+    print("Received type: " + str(type_))
+    start_t = datetime.now()
+
+    res = {}
+    if type_ == 'top1':
+        y_coord_str, data_list = get_top_k(pid, 10)
+        res['y_coord_str'] = y_coord_str
+        res['data_list'] = [int(num) for num in data_list]
+    elif type_ == 'trend':
+        x_coord_str, y_coord_str, x_label_list, data_list = get_trend(pid)
+        res['x_coord_str'] = x_coord_str
+        res['y_coord_str'] = y_coord_str
+        res['x_label_list'] = x_label_list
+        res['data_list'] = [int(num) for num in data_list]
+    elif type_ == 'correlation':
+        x_coord_str, x_label_list, data_list = get_correlation(pid)
+        res['x_coord_str'] = x_coord_str
+        for item in data_list:
+            item['list'] = [int(x) for x in item['list']]
+        res['x_label_list'] = x_label_list
+        res['data_list'] = data_list
+    else:
+        print(f'Type Error: {type_}')
+
+    print("Returned result:")
+    print(res)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(res)
 
 
 @app.route('/api/overview_right_init', methods=['POST'])

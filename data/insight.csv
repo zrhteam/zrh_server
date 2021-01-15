@@ -1,0 +1,101 @@
+subspace,row,breakdown,insight type,measure,value,value of breakdown,sig
+*;*;*;天津万象城;*,13,plan_end_time,trend,sum of danger_number,-14.64285714,\,0.64
+*;*;*;日照万象汇;*,12,plan_end_time,trend,sum of danger_number,-18.92105263,\,0.83
+*;*;*;北京凤凰汇;*,9,plan_end_time,trend,sum of danger_number,20.89285714,\,0.76
+*;*;*;海口N次方;*,9,plan_end_time,trend,sum of danger_number,13.35714286,\,0.73
+*;*;*;青岛万象城;*,12,plan_end_time,trend,sum of danger_number,-14.83333333,\,0.75
+*;*;*;临沂万象汇;*,14,plan_end_time,trend,sum of danger_number,-64.96153846,\,0.87
+*;*;*;成都万象城;*,9,plan_end_time,trend,sum of danger_number,-17.28947368,\,0.84
+*;*;*;太原万象城;*,9,plan_end_time,trend,sum of danger_number,-73.61538462,\,0.74
+*;*;*;淄博万象汇;*,10,plan_end_time,trend,sum of danger_number,-6.357142857,\,0.51
+*;*;*;天津万象城;*,13,plan_end_time,trend,count of risk_level=3,1.464285714,\,0.82
+*;*;*;日照万象汇;*,12,plan_end_time,trend,count of risk_level=3,-2.184210526,\,0.6
+*;*;*;北京凤凰汇;*,9,plan_end_time,trend,count of risk_level=3,2.928571429,\,0.78
+*;*;*;海口N次方;*,9,plan_end_time,trend,count of risk_level=3,-0.571428571,\,0.41
+*;*;*;青岛万象城;*,12,plan_end_time,trend,count of risk_level=3,0.166666667,\,0.42
+*;*;*;临沂万象汇;*,14,plan_end_time,trend,count of risk_level=3,-3,\,0.65
+*;*;*;成都万象城;*,9,plan_end_time,trend,count of risk_level=3,-1.157894737,\,0.56
+*;*;*;太原万象城;*,9,plan_end_time,trend,count of risk_level=3,-0.576923077,\,0.44
+*;*;*;淄博万象汇;*,10,plan_end_time,trend,count of risk_level=3,-0.178571429,\,0.46
+*;*;*;*;*,1238,project_code,top1,sum of danger_number,1292,ZRH(ZB)-2001-L01-B02-000-001,0.64
+*;*;*;*;*,1238,project_code,top1,count of risk_level=3,93,ZRH(ZB)-1903-L01-B01-000-059,0.41
+*;*;*;*;*,1238,project_tag,top1,sum of danger_number,1499,广州唯品会琶洲总部大厦,0.59
+*;*;*;*;*,1238,project_tag,top1,count of risk_level=3,123,上海时代广场,0.53
+*;*;*;*;*,1238,profession_tag,top1,sum of danger_number,20393,综合体,0.77
+*;*;*;*;*,1238,profession_tag,top1,count of risk_level=3,2028,综合体,0.74
+*;*;*;*;*,1238,major_name,top1,sum of danger_number,22044,消防专业,0.74
+*;*;*;*;*,1238,major_name,top1,count of risk_level=3,2482,消防专业,0.73
+ZRH(ZB)-2002-L01-A01-003-001;*;*;*;*,8,major_name,top1,sum of danger_number,422,消防专业,0.82
+ZRH(ZB)-2005-L01-A01-001-001;*;*;*;*,8,major_name,top1,sum of danger_number,430,其他专业,0.84
+ZRH(ZB)-2002-L01-A01-010;*;*;*;*,7,major_name,top1,sum of danger_number,122,消防专业,0.61
+ZRH(ZB)-2006-L01-B01-000-001-01;*;*;*;*,7,major_name,top1,sum of danger_number,195,其他专业,0.51
+ZRH(ZB)-2006-L01-B09-000-001;*;*;*;*,7,major_name,top1,sum of danger_number,112,电气专业,0.46
+ZRH(ZB)-1906-L01-B01-000-005-02;*;*;*;*,6,major_name,top1,sum of danger_number,44,其他专业,0.66
+ZRH(ZB)-1906-L01-B01-000-005-06;*;*;*;*,6,major_name,top1,sum of danger_number,24,其他专业,0.59
+ZRH(ZB)-2002-L01-A01-005-001;*;*;*;*,6,major_name,top1,sum of danger_number,90,消防专业,0.73
+ZRH(ZB)-2002-L01-A01-003-001;*;*;*;*,9,major_name,top1,count of risk_level=3,33,消防专业,0.77
+ZRH(ZB)-2005-L01-A01-001-001;*;*;*;*,8,major_name,top1,count of risk_level=3,10,电梯专业,0.42
+ZRH(ZB)-2002-L01-A01-010;*;*;*;*,7,major_name,top1,count of risk_level=3,6,电气专业,0.42
+ZRH(ZB)-2006-L01-B01-000-001-01;*;*;*;*,7,major_name,top1,count of risk_level=3,23,消防专业,0.47
+ZRH(ZB)-2006-L01-B09-000-001;*;*;*;*,7,major_name,top1,count of risk_level=3,17,消防专业,0.56
+ZRH(ZB)-1906-L01-B01-000-005-02;*;*;*;*,6,major_name,top1,count of risk_level=3,7,其他专业,0.69
+ZRH(ZB)-1906-L01-B01-000-005-06;*;*;*;*,6,major_name,top1,count of risk_level=3,4,其他专业,0.63
+ZRH(ZB)-2002-L01-A01-005-001;*;*;*;*,6,major_name,top1,count of risk_level=3,9,消防专业,0.66
+ZRH(ZB)-2002-L01-A01-003-001;*;*;*;*,8,major_name,correlation,sum of danger_number;count of risk_level=3,0.985530094,\,0.566647263
+ZRH(ZB)-2005-L01-A01-001-001;*;*;*;*,8,major_name,correlation,sum of danger_number;count of risk_level=3,0.566647263,\,0.985530094
+ZRH(ZB)-2002-L01-A01-010;*;*;*;*,7,major_name,correlation,sum of danger_number;count of risk_level=3,0.703243899,\,0.942878151
+ZRH(ZB)-2006-L01-B01-000-001-01;*;*;*;*,7,major_name,correlation,sum of danger_number;count of risk_level=3,0.942878151,\,0.848187497
+ZRH(ZB)-2006-L01-B09-000-001;*;*;*;*,7,major_name,correlation,sum of danger_number;count of risk_level=3,0.848187497,\,0.703243899
+ZRH(ZB)-1906-L01-B01-000-005-02;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.986049651,\,0.873056541
+ZRH(ZB)-1906-L01-B01-000-005-06;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.990686642,\,0.987464619
+ZRH(ZB)-2002-L01-A01-005-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.873056541,\,0.986049651
+ZRH(ZB)-2002-L01-A01-006-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.673855453,\,0.990686642
+ZRH(ZB)-2002-L01-A01-009-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.510307222,\,0.973740354
+ZRH(ZB)-2002-L01-A01-016-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.572698122,\,0.673855453
+ZRH(ZB)-2004-L01-A01-003-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.973740354,\,0.572698122
+ZRH(ZB)-2005-L01-B02-000-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=3,0.987464619,\,0.510307222
+*;*;*;哈尔滨万象汇;*,14,project_code,correlation,sum of danger_number;count of risk_level=3,0.867305907,\,0.725772099
+*;*;*;临沂万象汇;*,14,project_code,correlation,sum of danger_number;count of risk_level=3,0.958249094,\,0.867305907
+*;*;*;北京五彩城;*,14,project_code,correlation,sum of danger_number;count of risk_level=3,-0.725772099,\,0.958249094
+*;*;*;济南万象城;*,13,project_code,correlation,sum of danger_number;count of risk_level=3,0.852663583,\,0.816361638
+*;*;*;天津万象城;*,13,project_code,correlation,sum of danger_number;count of risk_level=3,0.76548299,\,0.76548299
+*;*;*;北京密云万象汇;*,13,project_code,correlation,sum of danger_number;count of risk_level=3,0.816361638,\,0.852663583
+*;*;*;郑州万象城;*,13,project_code,correlation,sum of danger_number;count of risk_level=3,0.935223948,\,0.935223948
+*;*;*;沈阳万象城;*,12,project_code,correlation,sum of danger_number;count of risk_level=3,0.630946243,\,0.194266805
+*;*;*;日照万象汇;*,12,project_code,correlation,sum of danger_number;count of risk_level=3,0.884710192,\,0.884710192
+*;*;*;青岛万象城;*,12,project_code,correlation,sum of danger_number;count of risk_level=3,-0.04942668,\,0.630946243
+*;*;*;鞍山万象汇;*,11,project_code,correlation,sum of danger_number;count of risk_level=3,0.966460268,\,0.682535412
+*;*;*;兴化项目;*,11,project_code,correlation,sum of danger_number;count of risk_level=3,0.022032766,\,0.779512299
+*;*;*;石家庄万象城;*,11,project_code,correlation,sum of danger_number;count of risk_level=3,0.779512299,\,0.966460268
+*;*;*;青岛城阳万象汇;*,11,project_code,correlation,sum of danger_number;count of risk_level=3,0.682535412,\,0.284640572
+*;*;*;沈阳铁西万象汇;*,11,project_code,correlation,sum of danger_number;count of risk_level=3,0.284640572,\,0.220327662
+ZRH(ZB)-2002-L01-A01-003-001;*;*;*;*,8,major_name,correlation,sum of danger_number;count of risk_level=1,0.855561652,\,0.855561652
+ZRH(ZB)-2005-L01-A01-001-001;*;*;*;*,8,major_name,correlation,sum of danger_number;count of risk_level=1,0.945403724,\,0.945403724
+ZRH(ZB)-2002-L01-A01-010;*;*;*;*,7,major_name,correlation,sum of danger_number;count of risk_level=1,0.666702526,\,0.666702526
+ZRH(ZB)-2006-L01-B01-000-001-01;*;*;*;*,7,major_name,correlation,sum of danger_number;count of risk_level=1,0.721108027,\,0.721108027
+ZRH(ZB)-2006-L01-B09-000-001;*;*;*;*,7,major_name,correlation,sum of danger_number;count of risk_level=1,0.946894878,\,0.946894878
+ZRH(ZB)-1906-L01-B01-000-005-02;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.98704696,\,0.98704696
+ZRH(ZB)-1906-L01-B01-000-005-06;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.868672842,\,0.868672842
+ZRH(ZB)-2002-L01-A01-005-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.802258553,\,0.802258553
+ZRH(ZB)-2002-L01-A01-006-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.581645896,\,0.581645896
+ZRH(ZB)-2002-L01-A01-009-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.539483527,\,0.539483527
+ZRH(ZB)-2002-L01-A01-016-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.712399881,\,0.712399881
+ZRH(ZB)-2004-L01-A01-003-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.7325178,\,0.7325178
+ZRH(ZB)-2005-L01-B02-000-001;*;*;*;*,6,major_name,correlation,sum of danger_number;count of risk_level=1,0.989853513,\,0.989853513
+*;*;*;哈尔滨万象汇;*,14,project_code,correlation,sum of danger_number;count of risk_level=1,0.781142978,\,0.781142978
+*;*;*;临沂万象汇;*,14,project_code,correlation,sum of danger_number;count of risk_level=1,0.98522503,\,0.98522503
+*;*;*;北京五彩城;*,14,project_code,correlation,sum of danger_number;count of risk_level=1,0.913230194,\,0.913230194
+*;*;*;济南万象城;*,13,project_code,correlation,sum of danger_number;count of risk_level=1,0.789636185,\,0.789636185
+*;*;*;天津万象城;*,13,project_code,correlation,sum of danger_number;count of risk_level=1,0.883520586,\,0.883520586
+*;*;*;北京密云万象汇;*,13,project_code,correlation,sum of danger_number;count of risk_level=1,0.582344554,\,0.582344554
+*;*;*;郑州万象城;*,13,project_code,correlation,sum of danger_number;count of risk_level=1,0.997037565,\,0.997037565
+*;*;*;沈阳万象城;*,12,project_code,correlation,sum of danger_number;count of risk_level=1,0.979232902,\,0.979232902
+*;*;*;日照万象汇;*,12,project_code,correlation,sum of danger_number;count of risk_level=1,0.413431711,\,0.413431711
+*;*;*;青岛万象城;*,12,project_code,correlation,sum of danger_number;count of risk_level=1,0.522649459,\,0.522649459
+*;*;*;鞍山万象汇;*,11,project_code,correlation,sum of danger_number;count of risk_level=1,0.949295058,\,0.949295058
+*;*;*;兴化项目;*,11,project_code,correlation,sum of danger_number;count of risk_level=1,0.94560142,\,0.94560142
+*;*;*;石家庄万象城;*,11,project_code,correlation,sum of danger_number;count of risk_level=1,0.264102019,\,0.264102019
+*;*;*;青岛城阳万象汇;*,11,project_code,correlation,sum of danger_number;count of risk_level=1,0.461857553,\,0.461857553
+*;*;*;沈阳铁西万象汇;*,11,project_code,correlation,sum of danger_number;count of risk_level=1,0.777713771,\,0.777713771
+*;*;*;*;*,1238,project_code,correlation,sum of danger_number;count of risk_level=3,0.547646232,\,0.547646232
+*;*;*;*;*,1238,project_code,correlation,sum of danger_number;count of risk_level=1,0.552279675,\,0.552279675
