@@ -1515,8 +1515,7 @@ def project_get_init_project_risk_top():
 # Purpose: 获取Insight用于渲染散点图
 # Parameter: None
 # Return: json -> list of (pid, x, y, type)
-# Comments: 前端实现未完成
-@app.route('/api/analyze/main', methods=['GET'])
+@app.route('/api/analyze/insight/main', methods=['POST'])
 def analyze_get_main_chart_data():
     print("In function analyze_get_main_chart_data")
     start_t = datetime.now()
@@ -1535,13 +1534,12 @@ def analyze_get_main_chart_data():
 # Purpose: 获取Insight点击后出现的小图的数据
 # Parameter: pid: insight的id, type: insight的种类
 # Return: json
-# Comments: 前端实现未完成
-@app.route('/api/analyze/ref', methods=['GET'])
+@app.route('/api/analyze/insight/ref', methods=['POST'])
 def analyze_get_ref_chart_data():
     print("In function analyze_get_ref_chart_data")
-    pid = int(request.args.get("pid"))
+    pid = int(request.form.get("pid"))
     print("Received pid: " + str(pid))
-    type_ = request.args.get("type")
+    type_ = request.form.get("type")
     print("Received type: " + str(type_))
     start_t = datetime.now()
 
