@@ -24,7 +24,8 @@ import pdb
 from datetime import datetime
 
 # import test
-from functions.file_reader import get_scatter, get_top_k, get_trend, get_correlation
+from functions.file_reader import get_scatter, get_trend, get_correlation, get_change_point_and_outlier, \
+    get_attribution, get_top10
 
 data = [
     {"id": 1, "username": "小明", "password": "123", "role": 0, "sex": 0, "telephone": "10086", "address": "北京市海淀区"},
@@ -1523,6 +1524,8 @@ def analyze_get_main_chart_data():
     # insight_list = [(1, 1, 2, 'top1'), (2, 3, 4, 'trend'), (3, 4, 5, 'correlation')]
     insight_list = get_scatter()
 
+    insight_list = list(filter(lambda insight: all((str(attr) != 'nan') for attr in insight), insight_list))
+
     print("Returned result:")
     print(insight_list)
     end_t = datetime.now()
@@ -1544,16 +1547,19 @@ def analyze_get_ref_chart_data():
     start_t = datetime.now()
 
     res = {}
+
     if type_ == 'top1':
-        y_coord_str, data_list = get_top_k(pid, 10)
+        y_coord_str, data_list = get_top10(pid)
         res['y_coord_str'] = y_coord_str
         res['data_list'] = [int(num) for num in data_list]
+
     elif type_ == 'trend':
         x_coord_str, y_coord_str, x_label_list, data_list = get_trend(pid)
         res['x_coord_str'] = x_coord_str
         res['y_coord_str'] = y_coord_str
         res['x_label_list'] = x_label_list
         res['data_list'] = [int(num) for num in data_list]
+
     elif type_ == 'correlation':
         x_coord_str, x_label_list, data_list = get_correlation(pid)
         res['x_coord_str'] = x_coord_str
@@ -1561,6 +1567,20 @@ def analyze_get_ref_chart_data():
             item['list'] = [int(x) for x in item['list']]
         res['x_label_list'] = x_label_list
         res['data_list'] = data_list
+
+    elif type_ == 'change point' or type_ == 'outlier':
+        x_coord_str, y_coord_str, x_label_list, data_list, highlight_idx = get_change_point_and_outlier(pid)
+        res['x_coord_str'] = x_coord_str
+        res['y_coord_str'] = y_coord_str
+        res['x_label_list'] = x_label_list
+        res['data_list'] = [int(num) for num in data_list]
+        res['highlight_idx'] = highlight_idx
+
+    elif type_ == 'attribution':
+        name_list, value_list = get_attribution(pid)
+        data_list = [(str(name), int(value)) for name, value in zip(name_list, value_list)]
+        res['data_list'] = data_list
+
     else:
         print(f'Type Error: {type_}')
 
