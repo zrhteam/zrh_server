@@ -2,37 +2,8 @@ from flask import Blueprint, jsonify, request, render_template, session, json
 from datetime import datetime
 import functions.cache_data as gl
 import time
-check_blueprint = Blueprint('check', __name__, url_prefix='/api/check')
 
-# check页面部分
-#
-# FunctionName: getCheckRectification
-# Purpose: 显示检查整改率
-# Parameter:
-# Return:
-@check_blueprint.route('/check_rectification', methods=['POST'])
-def check_rectification():
-    print("In function check_rectification")
-    start_t = datetime.now()
-    check_code = request.form.get("check_code")
-    print("Received check_code: " + str(check_code))
-    resp_data = {"code": 10000, "data": {"rectification": "0%"}}
-    cache_cascade_record = gl.get_value("cache_cascade_record")
-    state_ok = 0
-    state_nok = 0
-    for item in cache_cascade_record:
-        if check_code == item.project_code:
-            if item.state == 5:
-                state_ok += 1
-            else:
-                state_nok += 1
-    if state_ok + state_nok != 0:
-        resp_data["data"]["rectification"] = str(round(state_ok * 100 / (state_ok + state_nok), 2)) + "%"
-    print("Returned data: ")
-    print(resp_data)
-    end_t = datetime.now()
-    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
-    return jsonify(resp_data)
+check_blueprint = Blueprint('check', __name__, url_prefix='/api/check')
 
 
 # check页面部分
@@ -57,6 +28,34 @@ def check_risk_level():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
+
+# check页面部分
+#
+# FunctionName: getCheckLevelYear
+# Purpose: 显示项目中各风险等级及其对应的隐患数量
+# Parameter:
+# Return:
+@check_blueprint.route('/check_level_year', methods=['POST', 'GET'])
+def check_level_year():
+    print("In function check_level_year")
+    start_t = datetime.now()
+    check_code = request.form.get("check_code")
+    print("Received check_code: " + str(check_code))
+    resp_data = {"code": 10000, "data": {"risk_level": {"1": 0, "2": 0, "3": 0}}}
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    for item in cache_cascade_record:
+        if check_code == item.project_code:
+            cur_year = str(item.create_time).split('-')[0]
+            if cur_year not in resp_data["data"].keys():
+                resp_data["data"][cur_year] = {"1": 0, "2": 0, "3": 0}
+            resp_data["data"][cur_year][item.risk_level] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
 
 # check页面部分
 #
@@ -91,29 +90,6 @@ def check_risk_ratio():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
-# check页面部分
-#
-# FunctionName: getCheckHighRisk
-# Purpose: 显示当前检查中未整改的高风险隐患描述
-# Parameter:
-# Return:
-@check_blueprint.route('/check_high_risk', methods=['POST', 'GET'])
-def check_high_risk():
-    print("In function check_high_risk")
-    start_t = datetime.now()
-    check_code = request.form.get("check_code")
-    print("Received check_code " + str(check_code))
-    resp_data = {"code": 10000, "data": {"note_list": []}}
-    cache_cascade_record = gl.get_value("cache_cascade_record")
-    for item in cache_cascade_record:
-        if check_code == item.project_code:
-            if item.risk_level == "3" and item.state != "5":
-                resp_data["data"]["note_list"].append(item.note)
-    print("Returned data: ")
-    print(resp_data)
-    end_t = datetime.now()
-    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
-    return jsonify(resp_data)
 
 # check页面部分
 #
@@ -147,6 +123,7 @@ def check_high_image():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+
 # check页面部分
 #
 # FunctionName: getCheckMajorSystem
@@ -173,6 +150,7 @@ def check_major_system():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # check页面部分
 #
@@ -202,6 +180,7 @@ def check_major_stage():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+
 # check页面部分
 #
 # FunctionName: getCheckMajorArea
@@ -230,6 +209,7 @@ def check_major_area():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+
 # check页面部分
 #
 # FunctionName: getCheckRiskTop
@@ -241,6 +221,102 @@ def check_risk_top():
     print("In function check_risk_top")
     start_t = datetime.now()
     check_code = request.form.get("check_code")
+    condition = request.form.get("condition")
+    top = int(request.form.get("top"))
+    print("Received check_code " + str(check_code))
+    print("Received condition " + str(condition))
+    print("Received top " + str(top))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    risk_note_map = {}
+    for item in cache_cascade_record:
+        if check_code == item.project_code:
+            if item.note not in risk_note_map.keys():
+                if condition == "major":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.major_name}
+                elif condition == "system":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.system_name}
+                elif condition == "equipment":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.equipment_name}
+                elif condition == "module":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.module_name}
+            risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"][ele[0]] = ele[1]
+        idx += 1
+        if idx == top:
+            break
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+# check页面部分
+#
+# FunctionName: getCheckOtherTop
+# Purpose: 显示在当前检查中，不同筛选条件（风险等级/致因阶段/分布区域）下，出现次数排名前top的隐患描述及其出现次数
+# Parameter:
+# Return:
+@check_blueprint.route('/check_other_top', methods=['POST', 'GET'])
+def check_other_top():
+    print("In function check_other_top")
+    start_t = datetime.now()
+    check_code = request.form.get("check_code")
+    condition = request.form.get("condition")
+    level = request.form.get("level")
+    top = int(request.form.get("top"))
+    print("Received check_code " + str(check_code))
+    print("Received condition " + str(condition))
+    print("Received top " + str(top))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    risk_note_map = {}
+    for item in cache_cascade_record:
+        if check_code == item.project_code:
+            if item.note not in risk_note_map.keys():
+                if condition == "risk_level":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: level}
+                elif condition == "stage":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.stage}
+                elif condition == "area":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.area}
+            if condition == "risk_level":
+                if level == "all":
+                    risk_note_map[item.note]["appear_time"] += 1
+                else:
+                    if str(level) == item.risk_level:
+                        risk_note_map[item.note]["appear_time"] += 1
+            else:
+                risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"][ele[0]] = ele[1]
+        idx += 1
+        if idx == top:
+            break
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+# check页面部分
+#
+# FunctionName: getCheckRule
+# Purpose: 显示违反次数排名前10的法规、违反次数及其相关条款号和内容
+# Parameter:
+# Return:
+@check_blueprint.route('/check_rule', methods=['POST', 'GET'])
+def check_rule():
+    print("In function check_rule")
+    start_t = datetime.now()
+    check_code = request.form.get("check_code")
     print("Received check_code " + str(check_code))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
@@ -248,17 +324,122 @@ def check_risk_top():
     for item in cache_cascade_record:
         if check_code == item.project_code:
             if item.note not in risk_note_map.keys():
-                risk_note_map[item.note] = {"appear_time": 0, "belonged_major": item.major_name}
+                risk_note_map[item.note] = {"appear_time": 0, "rule_code": item.rule_code
+                    , "rule_name": item.rule_name}
             risk_note_map[item.note]["appear_time"] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = ele[1]
         idx += 1
-        if idx == 5:
+        if idx == 10:
             break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
+
+# check页面部分
+#
+# FunctionName: getCheckSystem
+# Purpose: 显示隐患次数排名前10的系统名称
+# Parameter:
+# Return:
+@check_blueprint.route('/check_system', methods=['POST', 'GET'])
+def check_system():
+    print("In function check_system")
+    start_t = datetime.now()
+    check_code = request.form.get("check_code")
+    print("Received check_code " + str(check_code))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    risk_note_map = {}
+    for item in cache_cascade_record:
+        if check_code == item.project_code:
+            if item.note not in risk_note_map.keys():
+                risk_note_map[item.note] = {"appear_time": 0, "system_name": item.system_name}
+            risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"][ele[0]] = ele[1]
+        idx += 1
+        if idx == 10:
+            break
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+# check页面部分
+#
+# FunctionName: getCheckEquipment
+# Purpose: 显示隐患次数排名前10的设备名称
+# Parameter:
+# Return:
+@check_blueprint.route('/check_equipment', methods=['POST', 'GET'])
+def check_equipment():
+    print("In function check_equipment")
+    start_t = datetime.now()
+    check_code = request.form.get("check_code")
+    print("Received check_code " + str(check_code))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    risk_note_map = {}
+    for item in cache_cascade_record:
+        if check_code == item.project_code:
+            if item.note not in risk_note_map.keys():
+                risk_note_map[item.note] = {"appear_time": 0, "equipment_name": item.equipment_name}
+            risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"][ele[0]] = ele[1]
+        idx += 1
+        if idx == 10:
+            break
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+# check页面部分
+#
+# FunctionName: getCheckModule
+# Purpose: 显示隐患次数排名前10的组件名称
+# Parameter:
+# Return:
+@check_blueprint.route('/check_module', methods=['POST', 'GET'])
+def check_module():
+    print("In function check_module")
+    start_t = datetime.now()
+    check_code = request.form.get("check_code")
+    print("Received check_code " + str(check_code))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    risk_note_map = {}
+    for item in cache_cascade_record:
+        if check_code == item.project_code:
+            if item.note not in risk_note_map.keys():
+                risk_note_map[item.note] = {"appear_time": 0, "module_name": item.module_name}
+            risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"][ele[0]] = ele[1]
+        idx += 1
+        if idx == 10:
+            break
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
