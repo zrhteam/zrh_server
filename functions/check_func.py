@@ -42,7 +42,7 @@ def check_level_year():
     start_t = datetime.now()
     check_code = request.form.get("check_code")
     print("Received check_code: " + str(check_code))
-    resp_data = {"code": 10000, "data": {"risk_level": {"1": 0, "2": 0, "3": 0}}}
+    resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     for item in cache_cascade_record:
         if check_code == item.project_code:
