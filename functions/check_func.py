@@ -141,12 +141,13 @@ def check_major_system():
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if check_code == item.project_code and major == item.major_name:
-            # if item.major_name not in resp_data["data"].keys():
-            #     resp_data["data"][item.major_name] = {}
-            if item.system_name not in resp_data["data"].keys():
-                resp_data["data"][item.system_name] = 0
-            resp_data["data"][item.system_name] += 1
+        if check_code == item.project_code:
+            if major == "all" or major == item.major_name:
+                if item.major_name not in resp_data["data"].keys():
+                    resp_data["data"][item.major_name] = {}
+                if item.system_name not in resp_data["data"][item.major_name].keys():
+                    resp_data["data"][item.major_name][item.system_name] = 0
+                resp_data["data"][item.major_name][item.system_name] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -171,13 +172,14 @@ def check_major_stage():
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if check_code == item.project_code and major == item.major_name:
-            stage = "not defined stage" if item.stage == '' else item.stage
-            # if item.major_name not in resp_data["data"].keys():
-            #     resp_data["data"][item.major_name] = {}
-            if stage not in resp_data["data"].keys():
-                resp_data["data"][stage] = 0
-            resp_data["data"][stage] += 1
+        if check_code == item.project_code:
+            if major == "all" or major == item.major_name:
+                stage = "not defined stage" if item.stage == '' else item.stage
+                if item.major_name not in resp_data["data"].keys():
+                    resp_data["data"][item.major_name] = {}
+                if stage not in resp_data["data"][item.major_name].keys():
+                    resp_data["data"][item.major_name][stage] = 0
+                resp_data["data"][item.major_name][stage] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -202,13 +204,14 @@ def check_major_area():
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if check_code == item.project_code and major == item.major_name:
-            area = "not defined area" if item.area == '' else item.area
-            # if item.major_name not in resp_data["data"].keys():
-            #     resp_data["data"][item.major_name] = {}
-            if area not in resp_data["data"].keys():
-                resp_data["data"][area] = 0
-            resp_data["data"][area] += 1
+        if check_code == item.project_code:
+            if major == "all" or major == item.major_name:
+                area = "not defined area" if item.area == '' else item.area
+                if item.major_name not in resp_data["data"].keys():
+                    resp_data["data"][item.major_name] = {}
+                if area not in resp_data["data"][item.major_name].keys():
+                    resp_data["data"][item.major_name][area] = 0
+                resp_data["data"][item.major_name][area] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
