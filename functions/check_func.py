@@ -369,7 +369,7 @@ def check_system():
         if check_code == item.project_code:
             if item.system_name not in risk_system_map.keys():
                 risk_system_map[item.system_name] = {"appear_time": 0}
-            risk_system_map[item.system]["appear_time"] += 1
+            risk_system_map[item.system_name]["appear_time"] += 1
     res = sorted(risk_system_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
