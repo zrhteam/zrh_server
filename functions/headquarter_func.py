@@ -134,6 +134,13 @@ def head_risk_rank():
     return jsonify(resp_data)
 
 
+
+
+
+
+
+
+
 # headquarter页面部分
 #
 # FunctionName: getCompanyHighImage
@@ -170,7 +177,7 @@ def head_high_image():
 
 # headquarter页面部分
 #
-# FunctionName: getCompanyRankTop
+# FunctionName: getInitNumberTop
 # Purpose: 显示隐患数量排名前10的隐患
 # Parameter:
 # Return:
@@ -179,20 +186,29 @@ def head_rank_top():
     print("In function head_rank_top")
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
+    condition = request.form.get("condition")
+    top = int(request.form.get("top"))
     print("Received headquarter_name " + str(headquarter_name))
-    resp_data = { "code": 10000, "data": {}}
+    print("Received condition " + str(condition))
+    print("Received top " + str(top))
+    resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     risk_note_map = {}
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag:
             if item.note not in risk_note_map.keys():
-                risk_note_map[item.note] = 0
+                if condition == "major":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.major_name}
+                elif condition == "system":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.system_name}
             risk_note_map[item.note] += 1
     res = sorted(risk_note_map.items(), key=lambda d: d[1], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "count": ele[1]}
         idx += 1
+        if idx == top:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -202,24 +218,221 @@ def head_rank_top():
 
 # headquarter页面部分
 #
-# FunctionName: getHeadRiskList
-# Purpose: 显示未整改高风险隐患列表
+# FunctionName: getHeadRiskLevelYear
+# Purpose: 按年份显示总部的高中低风险等级对应的隐患数量
 # Parameter:
 # Return:
-@headquarter_blueprint.route('/head_risk_list', methods=['POST', 'GET'])
-def head_risk_list():
-    print("In function head_risk_list")
+@headquarter_blueprint.route('/head_risk_level_year', methods=['POST', 'GET'])
+def head_risk_level_year():
+    print("In function head_risk_level_year")
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
-    print("Received headquarter_name " + str(headquarter_name))
-    resp_data = {"code": 10000, "data": {"note_list": []}}
+    print("Received headquarter_name: " + str(headquarter_name))
+    resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag:
-            if item.risk_level == "3" and item.state != "5":
-                resp_data["data"]["note_list"].append(item.note)
+            cur_year = str(item.create_time).split('-')[0]
+            if cur_year not in resp_data["data"].keys():
+                resp_data["data"][cur_year] = {"1": 0, "2": 0, "3": 0}
+            resp_data["data"][cur_year][item.risk_level] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
 
 
+
+# headquarter页面部分
+#
+# FunctionName: getHeadOtherNumberTop
+# Purpose: 显示在不同条件（风险等级(1, 2,3, all)/致因阶段/分布区域）下，出现次数排名前top的隐患描述
+# Parameter:
+# Return:
+@headquarter_blueprint.route('/head_risk_other_top', methods=['POST', 'GET'])
+def head_risk_other_top():
+    print("In function rhead_risk_other_top")
+    start_t = datetime.now()
+    headquarter_name = request.form.get("headquarter_name")
+    condition = request.form.get("condition")
+    level = request.form.get("level")
+    top = int(request.form.get("top"))
+    print("Received headquarter_name " + str(headquarter_name))
+    print("Received condition " + str(condition))
+    print("Received top " + str(top))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    risk_note_map = {}
+    for item in cache_cascade_record:
+        if headquarter_name == item.headquarter_tag:
+            if item.note not in risk_note_map.keys():
+                if condition == "risk_level":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: level}
+                elif condition == "stage":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.stage}
+                elif condition == "area":
+                    risk_note_map[item.note] = {"appear_time": 0, condition: item.area}
+            if condition == "risk_level":
+                if level == "all":
+                    risk_note_map[item.note]["appear_time"] += 1
+                else:
+                    if str(level) == item.risk_level:
+                        risk_note_map[item.note]["appear_time"] += 1
+            else:
+                risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"][ele[0]] = ele[1]
+        idx += 1
+        if idx == top:
+            break
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+
+# headquarter页面部分
+#
+# FunctionName: getHeadCheckRank
+# Purpose: 按照检查次数对区域排名
+# Parameter:
+# Return:
+@headquarter_blueprint.route('/head_check_rank', methods=['POST', 'GET'])
+def head_check_rank():
+    print("In function head_check_rank")
+    start_t = datetime.now()
+    headquarter_name = request.form.get("headquarter_name")
+    print("Received headquarter_name: " + str(headquarter_name))
+    resp_data = {"code": 10000, "data": {}}
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    risk_check_map = {}
+    for item in cache_cascade_record:
+        if headquarter_name == item.headquarter_tag:
+            if item.project_name not in risk_check_map.keys():
+                risk_check_map[item.project_name] = 0
+                if item.region_name not in resp_data["data"].keys():
+                    resp_data["data"][item.region_name] = 0
+                resp_data["data"][item.region_name] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+
+# headquarter页面部分
+#
+# FunctionName: getHeadMajorRatio
+# Purpose:各专业隐患数量占比
+# Parameter:
+# Return:
+@headquarter_blueprint.route('/head_major_ratio', methods=['POST', 'GET'])
+def head_major_ratio():
+    print("In function head_major_ratio")
+    start_t = datetime.now()
+    headquarter_name = request.form.get("headquarter_name")
+    print("Received headquarter_name: " + str(headquarter_name))
+    resp_data = {"code": 10000, "data": {}}
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    for item in cache_cascade_record:
+        if headquarter_name == item.headquarter_tag:
+            # cur_year = str(item.create_time).split('-')[0]
+            if item.major_name not in resp_data["data"].keys():
+                resp_data["data"][item.major_name] = 0
+            resp_data["data"][item.major_name] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+
+# headquarter页面部分
+#
+# FunctionName: getHeadStageRatio
+# Purpose: 各致因阶段的隐患数量占比情况
+# Parameter:
+# Return:
+@headquarter_blueprint.route('/headquarter_stage_ratio', methods=['POST', 'GET'])
+def headquarter_stage_ratio():
+    print("In function headquarter_stage_ratio")
+    start_t = datetime.now()
+    headquarter_name = request.form.get("headquarter_name")
+    print("Received headquarter_name " + str(headquarter_name))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    for item in cache_cascade_record:
+        if headquarter_name == item.headquarter_tag:
+            stage = "not defined stage" if item.stage == '' else item.stage
+            if item.major_name not in resp_data["data"].keys():
+                resp_data["data"][item.major_name] = {}
+            if stage not in resp_data["data"][item.major_name].keys():
+                resp_data["data"][item.major_name][stage] = 0
+            resp_data["data"][item.major_name][stage] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+# headquarter页面部分
+#
+# FunctionName: getHeadAreaRatio
+# Purpose: 根据隐患数量显示不同分布区域的占比情况
+# Parameter:
+# Return:
+@headquarter_blueprint.route('/head_area_ratio', methods=['POST', 'GET'])
+def head_area_ratio():
+    print("In function head_area_ratio")
+    start_t = datetime.now()
+    headquarter_name = request.form.get("headquarter_name")
+    print("Received headquarter_name " + str(headquarter_name))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    for item in cache_cascade_record:
+        if headquarter_name == item.headquarter_tag:
+            area = "not defined area" if item.area == '' else item.area
+            if item.major_name not in resp_data["data"].keys():
+                resp_data["data"][item.major_name] = {}
+            if area not in resp_data["data"][item.major_name].keys():
+                resp_data["data"][item.major_name][area] = 0
+            resp_data["data"][item.major_name][area] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+# headquarter页面部分
+#
+# FunctionName: getHeadProjectRank
+# Purpose: 按照检查次数对区域排名
+# Parameter:
+# Return:
+@headquarter_blueprint.route('/head_region_rank', methods=['POST', 'GET'])
+def head_region_rank():
+    print("In function head_region_rank")
+    start_t = datetime.now()
+    headquarter_name = request.form.get("headquarter_name")
+    print("Received headquarter_name: " + str(headquarter_name))
+    resp_data = {"code": 10000, "data": {}}
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    risk_project_map = {}
+    for item in cache_cascade_record:
+        if headquarter_name == item.headquarter_tag:
+            if item.project_tag not in risk_project_map.keys():
+                risk_project_map[item.project_tag] = 0
+                if item.region_name not in resp_data["data"].keys():
+                    resp_data["data"][item.region_name] = 0
+                resp_data["data"][item.region_name] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
