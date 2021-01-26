@@ -401,7 +401,7 @@ def check_equipment():
     risk_equipment_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.note not in risk_equipment_map.keys():
+            if item.equipment_name not in risk_equipment_map.keys():
                 risk_equipment_map[item.equipment_name] = {"appear_time": 0}
             risk_equipment_map[item.equipment]["appear_time"] += 1
     res = sorted(risk_equipment_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
@@ -435,9 +435,9 @@ def check_module():
     risk_module_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.note not in risk_module_map.keys():
+            if item.equipment_name not in risk_module_map.keys():
                 risk_module_map[item.module] = {"appear_time": 0}
-            risk_module_map[item.note]["appear_time"] += 1
+            risk_module_map[item.module]["appear_time"] += 1
     res = sorted(risk_module_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
