@@ -329,14 +329,14 @@ def check_rule():
     print("Received check_code " + str(check_code))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
-    risk_note_map = {}
+    risk_rule_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.note not in risk_note_map.keys():
-                risk_note_map[item.note] = {"appear_time": 0, "rule_code": item.rule_code
-                    , "rule_name": item.rule_name}
-            risk_note_map[item.note]["appear_time"] += 1
-    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+            if item.rule_name not in risk_rule_map.keys():
+                risk_rule_map[item.rule_name] = {"appear_time": 0, "clause": item.clause
+                    , "clause_contact": item.clause_contact}
+            risk_rule_map[item.rule_name]["appear_time"] += 1
+    res = sorted(risk_rule_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = ele[1]
@@ -364,13 +364,13 @@ def check_system():
     print("Received check_code " + str(check_code))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
-    risk_note_map = {}
+    risk_system_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.note not in risk_note_map.keys():
-                risk_note_map[item.note] = {"appear_time": 0, "system_name": item.system_name}
-            risk_note_map[item.note]["appear_time"] += 1
-    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+            if item.system_name not in risk_system_map.keys():
+                risk_system_map[item.system_name] = {"appear_time": 0}
+            risk_system_map[item.system]["appear_time"] += 1
+    res = sorted(risk_system_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = ele[1]
@@ -398,13 +398,13 @@ def check_equipment():
     print("Received check_code " + str(check_code))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
-    risk_note_map = {}
+    risk_equipment_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.note not in risk_note_map.keys():
-                risk_note_map[item.note] = {"appear_time": 0, "equipment_name": item.equipment_name}
-            risk_note_map[item.note]["appear_time"] += 1
-    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+            if item.note not in risk_equipment_map.keys():
+                risk_equipment_map[item.equipment_name] = {"appear_time": 0}
+            risk_equipment_map[item.equipment]["appear_time"] += 1
+    res = sorted(risk_equipment_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = ele[1]
@@ -432,13 +432,13 @@ def check_module():
     print("Received check_code " + str(check_code))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
-    risk_note_map = {}
+    risk_module_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.note not in risk_note_map.keys():
-                risk_note_map[item.note] = {"appear_time": 0, "module_name": item.module_name}
-            risk_note_map[item.note]["appear_time"] += 1
-    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+            if item.note not in risk_module_map.keys():
+                risk_module_map[item.module] = {"appear_time": 0}
+            risk_module_map[item.note]["appear_time"] += 1
+    res = sorted(risk_module_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = ele[1]
