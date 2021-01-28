@@ -360,9 +360,9 @@ def head_major_ratio():
 # Purpose: 各致因阶段的隐患数量占比情况
 # Parameter:
 # Return:
-@headquarter_blueprint.route('/headquarter_stage_ratio', methods=['POST', 'GET'])
-def headquarter_stage_ratio():
-    print("In function headquarter_stage_ratio")
+@headquarter_blueprint.route('/head_stage_ratio', methods=['POST', 'GET'])
+def head_stage_ratio():
+    print("In function head_stage_ratio")
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
     print("Received headquarter_name " + str(headquarter_name))
