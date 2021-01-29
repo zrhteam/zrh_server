@@ -104,7 +104,7 @@ def head_risk_level():
 # headquarter页面部分
 #
 # FunctionName: getHeadRiskRank
-# Purpose: 显示根据高风险数量排名的项目名称
+# Purpose: 显示每个区域的高风险数量
 # Parameter:
 # Return:
 @headquarter_blueprint.route('/head_risk_rank', methods=['POST', 'GET'])
@@ -113,16 +113,17 @@ def head_risk_rank():
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
     print("Received headquarter_name " + str(headquarter_name))
-    resp_data = { "code": 10000, "data": {}}
+    resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
-    project_high_risk_map = {}
+    region_high_risk_map = {}
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag:
-            if item.project_tag not in project_high_risk_map.keys():
-                project_high_risk_map[item.project_tag] = 0
+            region_name = item.region_tag if item.region_tag is not None else "空"
+            if region_name not in region_high_risk_map.keys():
+                region_high_risk_map[region_name] = 0
             if item.risk_level == "3":
-                project_high_risk_map[item.project_tag] += 1
-    res = sorted(project_high_risk_map.items(), key=lambda d: d[1], reverse=True)
+                region_high_risk_map[region_name] += 1
+    res = sorted(region_high_risk_map.items(), key=lambda d: d[1], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "high_risk_count": ele[1]}
@@ -131,6 +132,7 @@ def head_risk_rank():
     print(resp_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    print(resp_data)
     return jsonify(resp_data)
 
 
@@ -315,9 +317,9 @@ def head_check_rank():
         if headquarter_name == item.headquarter_tag:
             if item.project_name not in risk_check_map.keys():
                 risk_check_map[item.project_name] = 0
-                if item.region_name not in resp_data["data"].keys():
-                    resp_data["data"][item.region_name] = 0
-                resp_data["data"][item.region_name] += 1
+                if item.region_tag not in resp_data["data"].keys():
+                    resp_data["data"][item.region_tag] = 0
+                resp_data["data"][item.region_tag] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -414,7 +416,7 @@ def head_area_ratio():
 # headquarter页面部分
 #
 # FunctionName: getHeadProjectRank
-# Purpose: 按照检查次数对区域排名
+# Purpose: 按照项目数量对区域排名
 # Parameter:
 # Return:
 @headquarter_blueprint.route('/head_region_rank', methods=['POST', 'GET'])
@@ -430,9 +432,9 @@ def head_region_rank():
         if headquarter_name == item.headquarter_tag:
             if item.project_tag not in risk_project_map.keys():
                 risk_project_map[item.project_tag] = 0
-                if item.region_name not in resp_data["data"].keys():
-                    resp_data["data"][item.region_name] = 0
-                resp_data["data"][item.region_name] += 1
+                if item.region_tag not in resp_data["data"].keys():
+                    resp_data["data"][item.region_tag] = 0
+                resp_data["data"][item.region_tag] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
