@@ -119,7 +119,7 @@ def project_high_image():
     for item in cache_cascade_record:
         if project_name == item.project_tag:
             cur_time = item.create_time
-            if int(time.mktime(time.strptime(cur_time, "%Y-%m-%d %H:%M:%S"))) > int(time.mktime(time.strptime(latest_map["time"], "%Y-%m-%d %H:%M:%S"))):
+            if int(time.mktime(time.strptime(str(cur_time), "%Y-%m-%d %H:%M:%S"))) > int(time.mktime(time.strptime(str(latest_map["time"]), "%Y-%m-%d %H:%M:%S"))):
                 latest_map["time"] = cur_time
                 latest_map["check_code"] = item.project_code
     resp_data["check_code"] = latest_map["check_code"]
@@ -453,10 +453,13 @@ def project_rules():
     risk_rule_map = {}
     for item in cache_cascade_record:
         if project_name == item.project_tag:
-            if item.rule_name not in risk_rule_map.keys():
-                risk_rule_map[item.rule_name] = {"appear_time": 0, "clause": item.clause
-                    , "clause_contact": item.clause_contact}
-            risk_rule_map[item.rule_name]["appear_time"] += 1
+            rule_name = item.rule_name if item.rule_name is not None else ''
+            clause = item.clause if item.clause is not None else ''
+            clause_contact = item.clause_contact if item.clause_contact is not None else ''
+            if rule_name not in risk_rule_map.keys():
+                risk_rule_map[rule_name] = {"appear_time": 0, "clause": clause
+                    , "clause_contact": clause_contact}
+            risk_rule_map[rule_name]["appear_time"] += 1
     res = sorted(risk_rule_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:

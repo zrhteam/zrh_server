@@ -332,10 +332,13 @@ def check_rule():
     risk_rule_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.rule_name not in risk_rule_map.keys():
-                risk_rule_map[item.rule_name] = {"appear_time": 0, "clause": item.clause
-                    , "clause_contact": item.clause_contact}
-            risk_rule_map[item.rule_name]["appear_time"] += 1
+            rule_name = item.rule_name if item.rule_name is not None else ''
+            clause = item.clause if item.clause is not None else ''
+            clause_contact = item.clause_contact if item.clause_contact is not None else ''
+            if rule_name not in risk_rule_map.keys():
+                risk_rule_map[rule_name] = {"appear_time": 0, "clause": clause
+                    , "clause_contact": clause_contact}
+            risk_rule_map[rule_name]["appear_time"] += 1
     res = sorted(risk_rule_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
@@ -403,7 +406,7 @@ def check_equipment():
         if check_code == item.project_code:
             if item.equipment_name not in risk_equipment_map.keys():
                 risk_equipment_map[item.equipment_name] = {"appear_time": 0}
-            risk_equipment_map[item.equipment]["appear_time"] += 1
+            risk_equipment_map[item.equipment_name]["appear_time"] += 1
     res = sorted(risk_equipment_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
@@ -436,8 +439,8 @@ def check_module():
     for item in cache_cascade_record:
         if check_code == item.project_code:
             if item.equipment_name not in risk_module_map.keys():
-                risk_module_map[item.module] = {"appear_time": 0}
-            risk_module_map[item.module]["appear_time"] += 1
+                risk_module_map[item.module_name] = {"appear_time": 0}
+            risk_module_map[item.module_name]["appear_time"] += 1
     res = sorted(risk_module_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
