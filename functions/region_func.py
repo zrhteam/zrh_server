@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template, session, json
 from datetime import datetime
 import functions.cache_data as gl
-import time, datetime
+import time
 
 region_blueprint = Blueprint('region', __name__, url_prefix='/api/region')
 
@@ -172,7 +172,8 @@ def region_high_image():
                 image_id_list[ele] = {}
                 image_id_list[ele]["check_name"] = item.project_name
                 image_id_list[ele]["note"] = item.note
-                image_id_list[ele]["create_time"] = int(time.mktime(time.strptime(item.create_time, "%Y-%m-%d %H:%M:%S")))
+                print("debug..." + str(item.create_time))
+                image_id_list[ele]["create_time"] = int(time.mktime(time.strptime(str(item.create_time), "%Y-%m-%d %H:%M:%S")))
     res = sorted(image_id_list.items(), key=lambda d: d[1]["create_time"], reverse=True)
     image_id_list = {}
     idx = 0
@@ -185,7 +186,7 @@ def region_high_image():
     for ele in cache_sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
-            resp_data["data"]["image_list"].append({"image_url": image_url, "check_name": image_id_list[ele.id]["check_name"], "note": image_id_list[ele.id]["note"]})
+            resp_data["data"]["image_list"].append({"image_url": image_url, "check_name": image_id_list[str(ele.id)]["check_name"], "note": image_id_list[str(ele.id)]["note"]})
     # # 取前10张
     # resp_data["data"]["image_list"] = resp_data["data"]["image_list"][0: 10]
     print("Returned data: ")
@@ -253,8 +254,8 @@ def region_rank_top():
                     risk_note_map[item.note] = {"appear_time": 0, condition: item.major_name}
                 elif condition == "system":
                     risk_note_map[item.note] = {"appear_time": 0, condition: item.system_name}
-            risk_note_map[item.note] += 1
-    res = sorted(risk_note_map.items(), key=lambda d: d[1], reverse=True)
+            risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "count": ele[1]}
@@ -421,12 +422,12 @@ def region_system_ratio():
 def region_stage_ratio():
     print("In function region_stage_ratio")
     start_t = datetime.now()
-    project_name = request.form.get("project_name")
-    print("Received project_name " + str(project_name))
+    region_name = request.form.get("region_name")
+    print("Received region_name " + str(region_name))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if project_name == item.project_tag:
+        if region_name == item.region_tag:
             stage = "not defined stage" if item.stage == '' else item.stage
             if item.major_name not in resp_data["data"].keys():
                 resp_data["data"][item.major_name] = {}
@@ -450,12 +451,12 @@ def region_stage_ratio():
 def region_area_ratio():
     print("In function region_area_ratio")
     start_t = datetime.now()
-    project_name = request.form.get("project_name")
-    print("Received project_name " + str(project_name))
+    region_name = request.form.get("region_name")
+    print("Received region_name " + str(region_name))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if project_name == item.project_tag:
+        if region_name == item.region_tag:
             area = "not defined area" if item.area == '' else item.area
             if item.major_name not in resp_data["data"].keys():
                 resp_data["data"][item.major_name] = {}
