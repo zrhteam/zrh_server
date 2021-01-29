@@ -387,7 +387,7 @@ def project_equipment_number():
         if project_name == item.project_tag:
             if item.equipment_name not in risk_equipment_map.keys():
                 risk_equipment_map[item.equipment_name] = {"appear_time": 0}
-            risk_equipment_map[item.equipment]["appear_time"] += 1
+            risk_equipment_map[item.equipment_name]["appear_time"] += 1
     res = sorted(risk_equipment_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
@@ -419,9 +419,9 @@ def project_module_number():
     risk_module_map = {}
     for item in cache_cascade_record:
         if project_name == item.project_tag:
-            if item.equipment_name not in risk_module_map.keys():
-                risk_module_map[item.module] = {"appear_time": 0}
-            risk_module_map[item.module]["appear_time"] += 1
+            if item.module_name not in risk_module_map.keys():
+                risk_module_map[item.module_name] = {"appear_time": 0}
+            risk_module_map[item.module_name]["appear_time"] += 1
     res = sorted(risk_module_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:

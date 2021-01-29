@@ -438,7 +438,7 @@ def check_module():
     risk_module_map = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
-            if item.equipment_name not in risk_module_map.keys():
+            if item.module_name not in risk_module_map.keys():
                 risk_module_map[item.module_name] = {"appear_time": 0}
             risk_module_map[item.module_name]["appear_time"] += 1
     res = sorted(risk_module_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
