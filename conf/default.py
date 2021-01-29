@@ -12,7 +12,7 @@ class Config:
 
 class TestingConfig(Config):
     # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://data2:zruih2ZRH@!@47.92.250.148/riskapply'
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://dbgroup:db123456@10.20.13.45/zrh_data'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://dbgroup:db123456@10.20.5.110/zrh_data'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
