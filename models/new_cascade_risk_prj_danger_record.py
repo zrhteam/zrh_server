@@ -1,3 +1,5 @@
+from sqlalchemy.dialects.mysql import BIT
+
 from ops import db
 
 class NewCascadeRiskPrjDangerRecord(db.Model):
@@ -40,7 +42,7 @@ class NewCascadeRiskPrjDangerRecord(db.Model):
     create_user = db.Column(db.BigInteger, info='创建人')
     update_time = db.Column(db.DateTime)
     update_user = db.Column(db.BigInteger, info='更新人')
-    del_ind = db.Column(db.BIT(1))
+    del_ind = db.Column(BIT(1))
     version = db.Column(db.Integer, server_default=db.FetchedValue(), info='乐观锁')
     appflag = db.Column(db.String(32, 'utf8_bin'), info='appflag')
     rule_code = db.Column(db.String(100, 'utf8_bin'), info='法规编号')
