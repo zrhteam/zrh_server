@@ -323,8 +323,42 @@ def region_other_top():
 
 # region页面部分
 #
+# FunctionName: getInitRegionRiskRank
+# Purpose: 显示按照隐累计高风险患数量排名后的项目名称
+# Parameter:
+# Return:
+@region_blueprint.route('/region_index_rank', methods=['POST', 'GET'])
+def region_index_rank():
+    print("In function region_index_rank")
+    start_t = datetime.now()
+    region_name = request.form.get("region_name")
+    print("Received region_name " + str(region_name))
+    resp_data = { "code": 10000, "data": {}}
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    risk_project_map = {}
+    for item in cache_cascade_record:
+        if region_name == item.region_tag:
+            if item.project_tag not in risk_project_map.keys():
+                risk_project_map[item.project_tag] = 0
+            if str(item.risk_level) == "3":
+                risk_project_map[item.project_tag] += 1
+    res = sorted(risk_project_map.items(), key=lambda d: d[1], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"][ele[0]] = {"rank": idx, "count": ele[1]}
+        idx += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+
+# region页面部分
+#
 # FunctionName: getRegionCheckRank
-# Purpose: 显示按照隐患数量排名后的项目名称
+# Purpose: 基于该区域每个项目的检查次数对项目排名 ?
 # Parameter:
 # Return:
 @region_blueprint.route('/region_check_rank', methods=['POST', 'GET'])
