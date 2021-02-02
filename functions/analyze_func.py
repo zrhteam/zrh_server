@@ -405,12 +405,16 @@ def analysis_top_number():
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -460,12 +464,16 @@ def analysis_law_top():
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -513,12 +521,16 @@ def analysis_module_top():
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -566,12 +578,16 @@ def analysis_equipment_top():
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -619,12 +635,16 @@ def analysis_system_top():
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
         idx += 1
+        if idx == 20:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
