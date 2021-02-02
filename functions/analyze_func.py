@@ -206,7 +206,7 @@ def analysis_major_number():
                     resp_data["data"]["object1"][item.major_name]["system"][item.system_name]["equipment"][
                         item.equipment_name]["module"].keys():
                 resp_data["data"]["object1"][item.major_name]["system"][item.system_name]["equipment"][
-                    item.module_name]["module"] = {item.module_name: {"appear_time": 0}}
+                    item.equipment_name]["module"] = {item.module_name: {"appear_time": 0}}
             resp_data["data"]["object1"][item.major_name]["appear_time"] += 1
             resp_data["data"]["object1"][item.major_name]["system"][item.system_name]["appear_time"] += 1
             resp_data["data"]["object1"][item.major_name]["system"][item.system_name]["equipment"][item.equipment_name][
@@ -228,7 +228,7 @@ def analysis_major_number():
                     resp_data["data"]["object2"][item.major_name]["system"][item.system_name]["equipment"][
                         item.equipment_name]["module"].keys():
                 resp_data["data"]["object2"][item.major_name]["system"][item.system_name]["equipment"][
-                    item.module_name]["module"] = {item.module_name: {"appear_time": 0}}
+                    item.equipment_name]["module"] = {item.module_name: {"appear_time": 0}}
             resp_data["data"]["object2"][item.major_name]["appear_time"] += 1
             resp_data["data"]["object2"][item.major_name]["system"][item.system_name]["appear_time"] += 1
             resp_data["data"]["object2"][item.major_name]["system"][item.system_name]["equipment"][
