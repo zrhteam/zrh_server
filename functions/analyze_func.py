@@ -310,12 +310,28 @@ def analysis_area_risk():
     for item in cache_cascade_record:
         if item.headquarter_tag in object1_map.keys() or item.region_tag in object1_map.keys() or item.project_tag in object1_map.keys() or item.project_code in object1_map.keys():
             if item.area not in resp_data["data"]["object1"].keys():
-                resp_data["data"]["object1"][item.area] = 0
-            resp_data["data"]["object1"][item.area] += 1
+                resp_data["data"]["object1"][item.area] = {"appear_time": 0}
+            resp_data["data"]["object1"][item.area]["appear_time"] += 1
         if item.headquarter_tag in object2_map.keys() or item.region_tag in object2_map.keys() or item.project_tag in object2_map.keys() or item.project_code in object2_map.keys():
             if item.area not in resp_data["data"]["object2"].keys():
-                resp_data["data"]["object2"][item.area] = 0
-            resp_data["data"]["object2"][item.area] += 1
+                resp_data["data"]["object2"][item.area] = {"appear_time": 0}
+            resp_data["data"]["object2"][item.area]["appear_time"] += 1
+    res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"]["object1"][ele[0]] = ele[1]
+        resp_data["data"]["object1"][ele[0]]["rank"] = idx
+        idx += 1
+        if idx == 20:
+            break
+    res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"]["object2"][ele[0]] = ele[1]
+        resp_data["data"]["object2"][ele[0]]["rank"] = idx
+        idx += 1
+        if idx == 20:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -352,12 +368,28 @@ def analysis_stage_risk():
     for item in cache_cascade_record:
         if item.headquarter_tag in object1_map.keys() or item.region_tag in object1_map.keys() or item.project_tag in object1_map.keys() or item.project_code in object1_map.keys():
             if item.stage not in resp_data["data"]["object1"].keys():
-                resp_data["data"]["object1"][item.stage] = 0
-            resp_data["data"]["object1"][item.stage] += 1
+                resp_data["data"]["object1"][item.stage] = {"appear_time": 0}
+            resp_data["data"]["object1"][item.stage]["appear_time"] += 1
         if item.headquarter_tag in object2_map.keys() or item.region_tag in object2_map.keys() or item.project_tag in object2_map.keys() or item.project_code in object2_map.keys():
             if item.stage not in resp_data["data"]["object2"].keys():
-                resp_data["data"]["object2"][item.stage] = 0
-            resp_data["data"]["object2"][item.stage] += 1
+                resp_data["data"]["object2"][item.stage] = {"appear_time": 0}
+            resp_data["data"]["object2"][item.stage]["appear_time"] += 1
+    res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"]["object1"][ele[0]] = ele[1]
+        resp_data["data"]["object1"][ele[0]]["rank"] = idx
+        idx += 1
+        if idx == 20:
+            break
+    res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    idx = 0
+    for ele in res:
+        resp_data["data"]["object2"][ele[0]] = ele[1]
+        resp_data["data"]["object2"][ele[0]]["rank"] = idx
+        idx += 1
+        if idx == 20:
+            break
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
