@@ -318,6 +318,7 @@ def analysis_area_risk():
             resp_data["data"]["object2"][item.area]["appear_time"] += 1
     res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object1"] = {}
     for ele in res:
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
@@ -326,6 +327,7 @@ def analysis_area_risk():
             break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object2"] = {}
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
@@ -376,6 +378,7 @@ def analysis_stage_risk():
             resp_data["data"]["object2"][item.stage]["appear_time"] += 1
     res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object1"] = {}
     for ele in res:
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
@@ -384,6 +387,7 @@ def analysis_stage_risk():
             break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object2"] = {}
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
@@ -433,6 +437,7 @@ def analysis_top_number():
             resp_data["data"]["object2"][item.note]["appear_time"] += 1
     res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object1"] = {}
     for ele in res:
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
@@ -441,6 +446,7 @@ def analysis_top_number():
             break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object2"] = {}
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
@@ -492,6 +498,7 @@ def analysis_law_top():
             resp_data["data"]["object2"][item.rule_name]["appear_time"] += 1
     res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object1"] = {}
     for ele in res:
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
@@ -500,6 +507,7 @@ def analysis_law_top():
             break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object2"] = {}
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
@@ -549,6 +557,7 @@ def analysis_module_top():
             resp_data["data"]["object2"][item.module_name]["appear_time"] += 1
     res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object1"] = {}
     for ele in res:
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
@@ -557,6 +566,7 @@ def analysis_module_top():
             break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object2"] = {}
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
@@ -579,9 +589,12 @@ def analysis_module_top():
 def analysis_equipment_top():
     print("In function analysis_equipment_top")
     start_t = datetime.now()
-    level = request.form.get("level")
-    object1 = request.form.get("object1")
-    object2 = request.form.get("object2")
+    # level = request.form.get("level")
+    # object1 = request.form.get("object1")
+    # object2 = request.form.get("object2")
+    level = request.values.get("level")
+    object1 = request.values.get("object1")
+    object2 = request.values.get("object2")
     object1_list = object1.split(",")
     object2_list = object2.split(",")
     object1_map = {}
@@ -605,6 +618,7 @@ def analysis_equipment_top():
                 resp_data["data"]["object2"][item.equipment_name] = {"appear_time": 0}
             resp_data["data"]["object2"][item.equipment_name]["appear_time"] += 1
     res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    resp_data["data"]["object1"] = {}
     idx = 0
     for ele in res:
         resp_data["data"]["object1"][ele[0]] = ele[1]
@@ -614,6 +628,7 @@ def analysis_equipment_top():
             break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object2"] = {}
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
@@ -663,6 +678,7 @@ def analysis_system_top():
             resp_data["data"]["object2"][item.system_name]["appear_time"] += 1
     res = sorted(resp_data["data"]["object1"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object1"] = {}
     for ele in res:
         resp_data["data"]["object1"][ele[0]] = ele[1]
         resp_data["data"]["object1"][ele[0]]["rank"] = idx
@@ -671,6 +687,7 @@ def analysis_system_top():
             break
     res = sorted(resp_data["data"]["object2"].items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
+    resp_data["data"]["object2"] = {}
     for ele in res:
         resp_data["data"]["object2"][ele[0]] = ele[1]
         resp_data["data"]["object2"][ele[0]]["rank"] = idx
