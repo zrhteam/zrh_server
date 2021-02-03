@@ -116,43 +116,43 @@ def analysis_project_number():
     if level == "headquarter":
         for item in cache_cascade_record:
             if item.headquarter_tag in object1_map.keys():
-                if item.project_code not in record1_map.keys():
+                if item.project_tag not in record1_map.keys():
                     resp_data["data"]["object1"]["project_num"] += 1
-                    record1_map[item.project_code] = 0
+                    record1_map[item.project_tag] = 0
             if item.headquarter_tag in object2_map.keys():
-                if item.project_code not in record2_map.keys():
+                if item.project_tag not in record2_map.keys():
                     resp_data["data"]["object2"]["project_num"] += 1
-                    record2_map[item.project_code] = 0
+                    record2_map[item.project_tag] = 0
     elif level == "region":
         for item in cache_cascade_record:
             if item.region_tag in object1_map.keys():
-                if item.project_code not in record1_map.keys():
+                if item.project_tag not in record1_map.keys():
                     resp_data["data"]["object1"]["project_num"] += 1
-                    record1_map[item.project_code] = 0
+                    record1_map[item.project_tag] = 0
             if item.region_tag in object2_map.keys():
-                if item.project_code not in record2_map.keys():
+                if item.project_tag not in record2_map.keys():
                     resp_data["data"]["object2"]["project_num"] += 1
-                    record2_map[item.project_code] = 0
+                    record2_map[item.project_tag] = 0
     elif level == "project":
         for item in cache_cascade_record:
             if item.project_tag in object1_map.keys():
-                if item.project_code not in record1_map.keys():
+                if item.project_tag not in record1_map.keys():
                     resp_data["data"]["object1"]["project_num"] += 1
-                    record1_map[item.project_code] = 0
+                    record1_map[item.project_tag] = 0
             if item.project_tag in object2_map.keys():
-                if item.project_code not in record2_map.keys():
+                if item.project_tag not in record2_map.keys():
                     resp_data["data"]["object2"]["project_num"] += 1
-                    record2_map[item.project_code] = 0
+                    record2_map[item.project_tag] = 0
     elif level == "check":
         for item in cache_cascade_record:
-            if item.project_code in object1_map.keys():
-                if item.project_code not in record1_map.keys():
+            if item.project_tag in object1_map.keys():
+                if item.project_tag not in record1_map.keys():
                     resp_data["data"]["object1"]["project_num"] += 1
-                    record1_map[item.project_code] = 0
-            if item.project_code in object2_map.keys():
-                if item.project_code not in record2_map.keys():
+                    record1_map[item.project_tag] = 0
+            if item.project_tag in object2_map.keys():
+                if item.project_tag not in record2_map.keys():
                     resp_data["data"]["object2"]["project_num"] += 1
-                    record2_map[item.project_code] = 0
+                    record2_map[item.project_tag] = 0
     resp_data["data"]["object1"]["project_num"] = round(resp_data["data"]["object1"]["project_num"] / len(object1_list),
                                                         2)
     resp_data["data"]["object2"]["project_num"] = round(resp_data["data"]["object2"]["project_num"] / len(object2_list),
