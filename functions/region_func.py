@@ -240,7 +240,7 @@ def region_rank_top():
     start_t = datetime.now()
     region_name = request.form.get("region_name")
     condition = request.form.get("condition")
-    top = request.form.get("top")
+    top = int(request.form.get("top"))
     print("Received region_name " + str(region_name))
     print("Received condition " + str(condition))
     print("Received top " + str(top))
