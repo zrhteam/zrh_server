@@ -1,6 +1,7 @@
 from ops import db
 from sqlalchemy.dialects.mysql.types import BIT
 
+
 class SysFile(db.Model):
     __tablename__ = 'sys_files'
 

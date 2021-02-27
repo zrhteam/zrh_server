@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request, render_template, session, json
 from datetime import datetime
 import functions.cache_data as gl
 import time
+from ops import db
+from models.user_grant_chart import UserGrantChart
 
 analyze_blueprint = Blueprint('analyze', __name__, url_prefix='/api/analyze')
 
@@ -699,3 +701,90 @@ def analysis_system_top():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
+
+# 数据分析页面部分
+#
+# FunctionName:
+# Purpose: 存入授权数据
+# Parameter:
+# Return:
+@analyze_blueprint.route('/analysis_grant_info', methods=['POST', 'GET'])
+def analysis_grant_info():
+    print("In function analysis_grant_info")
+    start_t = datetime.now()
+    level = request.form.get("level")
+    title = request.form.get("title")
+    object1 = request.form.get("object1")
+    object2 = request.form.get("object2")
+    user_name = request.form.get("user_name")
+    print("Received level " + str(level))
+    print("Received title " + str(title))
+    print("Received object1 " + str(object1))
+    print("Received object2 " + str(object2))
+    print("Received user_name " + str(user_name))
+    resp_data = {"code": 10000, "data": {"state": ""}}
+    ugc = UserGrantChart(0, level, title, object1, object2, user_name)
+    try:
+        db.session.add(ugc)
+        db.session.commit()
+    except Exception as e:
+        print("出现了 exception...")
+        resp_data["data"]["state"] = "fail"
+    else:
+        resp_data["data"]["state"] = "success"
+    finally:
+        print("Returned data: ")
+        print(resp_data)
+        end_t = datetime.now()
+        print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+        return jsonify(resp_data)
+
+
+# 数据分析页面部分
+#
+# FunctionName:
+# Purpose: 查询某个用户下授权的图
+# Parameter:
+# Return:
+@analyze_blueprint.route('/analysis_query_grant', methods=['POST', 'GET'])
+def analysis_query_grant():
+    print("In function analysis_query_grant")
+    start_t = datetime.now()
+    user_name = request.form.get("user_name")
+    print("Received user_name " + str(user_name))
+    resp_data = {"code": 10000, "data": []}
+    charts = UserGrantChart.query.filter(user_name=user_name).all()
+    for ele in charts:
+        tmp_chart_map = {"level": ele.level, "title": ele.title, "object1": ele.object1, "object2": ele.object2}
+        resp_data["data"].append(tmp_chart_map)
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+
+# 数据分析页面部分
+#
+# FunctionName:
+# Purpose: 查询所有用户name
+# Parameter:
+# Return:
+@analyze_blueprint.route('/analysis_all_user_name', methods=['POST', 'GET'])
+def analysis_all_user_name():
+    print("In function analysis_all_user_name")
+    start_t = datetime.now()
+    resp_data = {"code": 10000, "data": []}
+    user_name = gl.get_value("cache_risk_user")
+    for ele in user_name:
+        resp_data["data"].append(ele.name)
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+
