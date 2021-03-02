@@ -754,7 +754,7 @@ def analysis_query_grant():
     user_name = request.form.get("user_name")
     print("Received user_name " + str(user_name))
     resp_data = {"code": 10000, "data": []}
-    charts = UserGrantChart.query.filter(user_name=user_name).all()
+    charts = UserGrantChart.query.filter(UserGrantChart.user_name == user_name).all()
     for ele in charts:
         tmp_chart_map = {"level": ele.level, "title": ele.title, "object1": ele.object1, "object2": ele.object2}
         resp_data["data"].append(tmp_chart_map)
@@ -779,7 +779,8 @@ def analysis_all_user_name():
     resp_data = {"code": 10000, "data": []}
     user_name = gl.get_value("cache_risk_user")
     for ele in user_name:
-        resp_data["data"].append(ele.name)
+        if ele.user_grant != "超级用户":
+            resp_data["data"].append(ele.name)
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
