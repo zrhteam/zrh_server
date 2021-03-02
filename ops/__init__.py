@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from conf.default import config
 
 db = SQLAlchemy()
+db.session.expire_on_commit = False
 
 
 def app_create(config_name):
