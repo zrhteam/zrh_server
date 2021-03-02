@@ -7,8 +7,8 @@ class UserGrantChart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.String(100))
     title = db.Column(db.String(100))
-    object1 = db.Column(db.String(200))
-    object2 = db.Column(db.String(200))
+    object1 = db.Column(db.String(21845))
+    object2 = db.Column(db.String(21845))
     user_name = db.Column(db.String(200))
 
     def __init__(self, id, level, title, object1, object2, user_name):
