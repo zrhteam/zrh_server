@@ -394,7 +394,7 @@ def region_check_rank():
 # Parameter:
 # Return:
 @region_blueprint.route('/region_major_ratio', methods=['POST', 'GET'])
-def region_major_ratior():
+def region_major_ratio():
     print("In function region_major_ratio")
     start_t = datetime.now()
     region_name = request.form.get("region_name")

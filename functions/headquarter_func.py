@@ -203,8 +203,8 @@ def head_rank_top():
                     risk_note_map[item.note] = {"appear_time": 0, condition: item.major_name}
                 elif condition == "system":
                     risk_note_map[item.note] = {"appear_time": 0, condition: item.system_name}
-            risk_note_map[item.note] += 1
-    res = sorted(risk_note_map.items(), key=lambda d: d[1], reverse=True)
+            risk_note_map[item.note]["appear_time"] += 1
+    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = {"rank": idx, "count": ele[1]}
