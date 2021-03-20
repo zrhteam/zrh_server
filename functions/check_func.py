@@ -274,34 +274,59 @@ def check_risk_top():
 def check_other_top():
     print("In function check_other_top")
     start_t = datetime.now()
-    check_code = request.form.get("check_code")
-    condition = request.form.get("condition")
-    level = request.form.get("level")
+    check_code= request.form.get("check_code")
+    flag = int(request.form.get("flag"))
     top = int(request.form.get("top"))
-    print("Received check_code " + str(check_code))
-    print("Received condition " + str(condition))
-    print("Received top " + str(top))
-    cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
-    risk_note_map = {}
-    for item in cache_cascade_record:
-        if check_code == item.project_code:
-            if item.note not in risk_note_map.keys():
-                if condition == "risk_level":
-                    risk_note_map[item.note] = {"appear_time": 0, condition: level}
-                elif condition == "stage":
-                    risk_note_map[item.note] = {"appear_time": 0, condition: item.stage}
-                elif condition == "area":
-                    risk_note_map[item.note] = {"appear_time": 0, condition: item.area}
-            if condition == "risk_level":
-                if level == "all":
-                    risk_note_map[item.note]["appear_time"] += 1
-                else:
-                    if str(level) == item.risk_level:
-                        risk_note_map[item.note]["appear_time"] += 1
-            else:
-                risk_note_map[item.note]["appear_time"] += 1
-    res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    if flag == 1:  # 致因阶段
+        stage = request.form.get("stage")
+        print("Received stage " + str(stage))
+        for item in cache_cascade_record:
+            if check_code == item.project_code and item.stage == stage:
+                if item.note not in resp_data["data"].keys():
+                    resp_data["data"][item.note] = 0
+                resp_data["data"][item.note] += 1
+    elif flag == 2:  # 风险等级
+        risk_level = request.form.get("risk_level")
+        print("Received risk_level " + str(risk_level))
+        for item in cache_cascade_record:
+            if check_code == item.project_code:
+                if risk_level == "all" or risk_level == item.risk_level:
+                    if item.note not in resp_data["data"].keys():
+                        resp_data["data"][item.note] = 0
+                    resp_data["data"][item.note] += 1
+    elif flag == 3:  # 专业
+        major_name = request.form.get("major_name")
+        print("Received major_name " + str(major_name))
+        for item in cache_cascade_record:
+            if check_code == item.project_code and major_name == item.major_name:
+                if item.note not in resp_data["data"].keys():
+                    resp_data["data"][item.note] = 0
+                resp_data["data"][item.note] += 1
+    elif flag == 4:  # 专业 + 系统
+        major_name = request.form.get("major_name")
+        system_name = request.form.get("system_name")
+        print("Received major_name " + str(major_name))
+        print("Received system_name " + str(system_name))
+        for item in cache_cascade_record:
+            if check_code == item.project_code and major_name == item.major_name and system_name == item.system_name:
+                if item.note not in resp_data["data"].keys():
+                    resp_data["data"][item.note] = 0
+                resp_data["data"][item.note] += 1
+    elif flag == 5:  # 专业 + 区域
+        major_name = request.form.get("major_name")
+        area = request.form.get("area")
+        print("Received major_name " + str(major_name))
+        print("Received area " + str(area))
+        for item in cache_cascade_record:
+            if check_code == item.project_code and major_name == item.major_name and area == item.area:
+                if item.note not in resp_data["data"].keys():
+                    resp_data["data"][item.note] = 0
+                resp_data["data"][item.note] += 1
+
+    res = sorted(resp_data["data"].items(), key=lambda d: d[1], reverse=True)
+    resp_data["data"] = {}
     idx = 0
     for ele in res:
         resp_data["data"][ele[0]] = ele[1]
@@ -313,6 +338,47 @@ def check_other_top():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+    # print("In function check_other_top")
+    # start_t = datetime.now()
+    # check_code = request.form.get("check_code")
+    # condition = request.form.get("condition")
+    # level = request.form.get("level")
+    # top = int(request.form.get("top"))
+    # print("Received check_code " + str(check_code))
+    # print("Received condition " + str(condition))
+    # print("Received top " + str(top))
+    # cache_cascade_record = gl.get_value("cache_cascade_record")
+    # resp_data = {"code": 10000, "data": {}}
+    # risk_note_map = {}
+    # for item in cache_cascade_record:
+    #     if check_code == item.project_code:
+    #         if item.note not in risk_note_map.keys():
+    #             if condition == "risk_level":
+    #                 risk_note_map[item.note] = {"appear_time": 0, condition: level}
+    #             elif condition == "stage":
+    #                 risk_note_map[item.note] = {"appear_time": 0, condition: item.stage}
+    #             elif condition == "area":
+    #                 risk_note_map[item.note] = {"appear_time": 0, condition: item.area}
+    #         if condition == "risk_level":
+    #             if level == "all":
+    #                 risk_note_map[item.note]["appear_time"] += 1
+    #             else:
+    #                 if str(level) == item.risk_level:
+    #                     risk_note_map[item.note]["appear_time"] += 1
+    #         else:
+    #             risk_note_map[item.note]["appear_time"] += 1
+    # res = sorted(risk_note_map.items(), key=lambda d: d[1]["appear_time"], reverse=True)
+    # idx = 0
+    # for ele in res:
+    #     resp_data["data"][ele[0]] = ele[1]
+    #     idx += 1
+    #     if idx == top:
+    #         break
+    # print("Returned data: ")
+    # print(resp_data)
+    # end_t = datetime.now()
+    # print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    # return jsonify(resp_data)
 
 
 # check页面部分
