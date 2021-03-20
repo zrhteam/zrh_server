@@ -586,6 +586,7 @@ def analysis_module_top():
 # FunctionName: getEquipmentNumberTop
 # Purpose: 两个对象之间出现隐患次数前top的设备的对比
 # Parameter:
+# Parameter:
 # Return:
 @analyze_blueprint.route('/analysis_equipment_top', methods=['POST', 'GET'])
 def analysis_equipment_top():
