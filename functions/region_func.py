@@ -569,3 +569,29 @@ def region_area_ratio():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+# region页面部分
+#
+# FunctionName: getRegionRiskLevelRatio
+# Purpose: 不同专业下风险等级占比
+# Parameter:
+# Return:
+@region_blueprint.route('/region_risk_level_ratio', methods=['POST', 'GET'])
+def region_risk_level_ratio():
+    print("In function region_risk_level_ratio")
+    start_t = datetime.now()
+    region_name = request.form.get("region_name")
+    print("Received region_name " + str(region_name))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    for item in cache_cascade_record:
+        if region_name == item.region_tag:
+            if item.major_name not in resp_data["data"].keys():
+                resp_data["data"][item.major_name] = {}
+            if item.risk_level not in resp_data["data"][item.major_name].keys():
+                resp_data["data"][item.major_name][item.risk_level] = 0
+            resp_data["data"][item.major_name][item.risk_level] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)

@@ -617,3 +617,32 @@ def project_risk_change():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
+
+
+# project页面部分
+#
+# FunctionName: getProjectRiskLevelRatio
+# Purpose: 不同专业下风险等级占比
+# Parameter:
+# Return:
+@project_blueprint.route('/project_risk_level_ratio', methods=['POST', 'GET'])
+def project_risk_level_ratio():
+    print("In function project_risk_level_ratio")
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name " + str(project_name))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    for item in cache_cascade_record:
+        if project_name == item.project_tag:
+            if item.major_name not in resp_data["data"].keys():
+                resp_data["data"][item.major_name] = {}
+            if item.risk_level not in resp_data["data"][item.major_name].keys():
+                resp_data["data"][item.major_name][item.risk_level] = 0
+            resp_data["data"][item.major_name][item.risk_level] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)

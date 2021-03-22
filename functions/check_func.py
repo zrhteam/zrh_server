@@ -521,3 +521,31 @@ def check_module():
     return jsonify(resp_data)
 
 
+# check页面部分
+#
+# FunctionName: getCheckRiskLevelRatio
+# Purpose: 不同专业下风险等级占比
+# Parameter:
+# Return:
+@check_blueprint.route('/check_risk_level_ratio', methods=['POST', 'GET'])
+def check_risk_level_ratio():
+    print("In function check_risk_level_ratio")
+    start_t = datetime.now()
+    check_code = request.form.get("check_code")
+    print("Received check_code " + str(check_code))
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    resp_data = {"code": 10000, "data": {}}
+    for item in cache_cascade_record:
+        if check_code == item.project_code:
+            if item.major_name not in resp_data["data"].keys():
+                resp_data["data"][item.major_name] = {}
+            if item.risk_level not in resp_data["data"][item.major_name].keys():
+                resp_data["data"][item.major_name][item.risk_level] = 0
+            resp_data["data"][item.major_name][item.risk_level] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
