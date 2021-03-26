@@ -50,7 +50,9 @@ def get_grant():
                                 value["headquarter_tag"][ele.headquarter_tag]["project_tag"][ele.project_tag] = []
                             # print(ele.project_code)
                             # if ele.project_code in cache_check_location_map.keys():
-                            #     value["headquarter_tag"][ele.headquarter_tag]["project_tag"][ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                            # value["headquarter_tag"][ele.headquarter_tag]["project_tag"][ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                            value["headquarter_tag"][ele.headquarter_tag]["project_tag"][ele.project_tag].append(
+                                {ele.project_code: ""})
                         else:
                             if ele.region_tag not in value["headquarter_tag"][ele.headquarter_tag]["region_tag"].keys():
                                 value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag] = {"project_tag": {}}
@@ -61,7 +63,9 @@ def get_grant():
                                 value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][ele.project_tag] = []
                             # print(ele.project_code)
                             # if ele.project_code in cache_check_location_map.keys():
-                            #     value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                            # value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                            value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][
+                                ele.project_tag].append({ele.project_code: ""})
                 elif item.user_grant == "总部":
                     value["headquarter_tag"] = {item.headquarter_tag: {"region_tag": {}}}
                     for ele in cache_prj_with_tag:
@@ -77,7 +81,7 @@ def get_grant():
                                     value["headquarter_tag"][item.headquarter_tag]["project_tag"][ele.project_tag] = []
                                 # print(ele.project_code)
                                 # if ele.project_code in cache_check_location_map.keys():
-                                #     value["headquarter_tag"][item.headquarter_tag]["project_tag"][ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                                value["headquarter_tag"][item.headquarter_tag]["project_tag"][ele.project_tag].append({ele.project_code: ""})
                             else:
                                 if ele.region_tag not in value["headquarter_tag"][ele.headquarter_tag][
                                     "region_tag"].keys():
@@ -89,8 +93,8 @@ def get_grant():
                                     value["headquarter_tag"][item.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][ele.project_tag] = []
                                 # print(ele.project_code)
                                 # if ele.project_code in cache_check_location_map.keys():
-                                #     value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag][
-                                #     "project_tag"][ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                                value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag][
+                                    "project_tag"][ele.project_tag].append({ele.project_code: ""})
                 elif item.user_grant == "区域":
                     value["headquarter_tag"] = {item.headquarter_tag: {"region_tag": {item.region_tag: {"project_tag": {}}}}}
                     for ele in cache_prj_with_tag:
@@ -100,16 +104,16 @@ def get_grant():
                                 value["headquarter_tag"][item.headquarter_tag]["region_tag"][item.region_tag]["project_tag"][ele.project_tag] = []
                             # print(ele.project_code)
                             # if ele.project_code in cache_check_location_map.keys():
-                            #     value["headquarter_tag"][item.headquarter_tag]["region_tag"][item.region_tag]["project_tag"][
-                            #     ele.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                            value["headquarter_tag"][item.headquarter_tag]["region_tag"][item.region_tag]["project_tag"][
+                                ele.project_tag].append({ele.project_code: ""})
                 elif item.user_grant == "项目":
                     value["headquarter_tag"] = {item.headquarter_tag: {"region_tag": {item.region_tag: {"project_tag": {item.project_tag: []}}}}}
-                    # for ele in cache_prj_with_tag:
-                    #     if ele.project_tag == item.project_tag:
-                    #         # print(ele.project_code)
-                    #         if ele.project_code in cache_check_location_map.keys():
-                    #             value["headquarter_tag"][item.headquarter_tag]["region_tag"][item.region_tag]["project_tag"][
-                    #             item.project_tag].append({ele.project_code: cache_check_location_map[ele.project_code]})
+                    for ele in cache_prj_with_tag:
+                        if ele.project_tag == item.project_tag:
+                            # print(ele.project_code)
+                            # if ele.project_code in cache_check_location_map.keys():
+                            value["headquarter_tag"][item.headquarter_tag]["region_tag"][item.region_tag]["project_tag"][
+                                item.project_tag].append({ele.project_code: ""})
                 else:
                     resp_data["code"] = -1
                 resp_data["data"]["value"] = value
