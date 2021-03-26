@@ -481,14 +481,36 @@ def head_danger_problem():
     print("Received headquarter_name: " + str(headquarter_name))
     resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
-    risk_project_map = {}
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag:
-            if item.project_tag not in risk_project_map.keys():
-                risk_project_map[item.project_tag] = 0
-                if item.region_tag not in resp_data["data"].keys():
-                    resp_data["data"][item.region_tag] = 0
-                resp_data["data"][item.region_tag] += 1
+            if item.alert_indicator != "":
+                if item.alert_indicator not in resp_data["data"].keys():
+                    resp_data["data"][item.alert_indicator] = {"appear_time": 0, "problem": {}}
+                                                               # "problem1": {"appear_time": 0, "reason": ""},
+                                                               # "problem2": {"appear_time": 0, "reason": ""},
+                                                               # "problem3": {"appear_time": 0, "reason": ""},
+                                                               # "problem4": {"appear_time": 0, "reason": ""},
+                                                               # "problem5": {"appear_time": 0, "reason": ""}}
+                if item.problem1 != "":
+                    if item.problem1 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem1] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem1]["appear_time"] += 1
+                if item.problem2 != "":
+                    if item.problem2 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem2] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem2]["appear_time"] += 1
+                if item.problem3 != "":
+                    if item.problem13not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem3] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem3]["appear_time"] += 1
+                if item.problem4 != "":
+                    if item.problem4 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem4] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem4]["appear_time"] += 1
+                if item.problem5 != "":
+                    if item.problem5 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem5] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem5]["appear_time"] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()

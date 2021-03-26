@@ -1,6 +1,7 @@
 from ops import app_create
 from datetime import datetime
 from models.new_cascade_risk_prj_danger_record import NewCascadeRiskPrjDangerRecord
+from models.final_all_record import FinalAllRecord
 from models.risk_user import RiskUser
 from models.project_with_tag import PrjWithTag
 from models.sys_file import SysFile
@@ -32,7 +33,8 @@ def cache_tables():
     print(cache_prj_with_tag[0])
 
     # 缓存表 new_cascade_risk_prj_danger_record
-    cache_cascade_record = NewCascadeRiskPrjDangerRecord.query.all()
+    # cache_cascade_record = NewCascadeRiskPrjDangerRecord.query.all()
+    cache_cascade_record = FinalAllRecord.query.all()
     end_t3 = datetime.now()
     gl.set_value("cache_cascade_record", cache_cascade_record)
     print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
