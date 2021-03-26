@@ -500,7 +500,7 @@ def head_danger_problem():
                         resp_data["data"][item.alert_indicator]["problem"][item.problem2] = {"appear_time": 0}
                     resp_data["data"][item.alert_indicator]["problem"][item.problem2]["appear_time"] += 1
                 if item.problem3 != "":
-                    if item.problem13not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                    if item.problem3 not in resp_data["data"][item.alert_indicator]["problem"].keys():
                         resp_data["data"][item.alert_indicator]["problem"][item.problem3] = {"appear_time": 0}
                     resp_data["data"][item.alert_indicator]["problem"][item.problem3]["appear_time"] += 1
                 if item.problem4 != "":
