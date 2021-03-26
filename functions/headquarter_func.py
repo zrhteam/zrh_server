@@ -486,11 +486,6 @@ def head_danger_problem():
             if item.alert_indicator is not None:
                 if item.alert_indicator not in resp_data["data"].keys():
                     resp_data["data"][item.alert_indicator] = {"appear_time": 0, "problem": {}}
-                                                               # "problem1": {"appear_time": 0, "reason": ""},
-                                                               # "problem2": {"appear_time": 0, "reason": ""},
-                                                               # "problem3": {"appear_time": 0, "reason": ""},
-                                                               # "problem4": {"appear_time": 0, "reason": ""},
-                                                               # "problem5": {"appear_time": 0, "reason": ""}}
                 resp_data["data"][item.alert_indicator]["appear_time"] += 1
                 if item.problem1 is not None:
                     if item.problem1 not in resp_data["data"][item.alert_indicator]["problem"].keys():

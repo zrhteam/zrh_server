@@ -646,3 +646,51 @@ def project_risk_level_ratio():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
+
+
+# project页面部分
+#
+# FunctionName: getProjectDangerProblem
+# Purpose: 显示该项目存在的红线问题及其对应的原因
+# Parameter:
+# Return:
+@project_blueprint.route('/project_danger_problem', methods=['POST', 'GET'])
+def project_danger_problem():
+    print("In function project_danger_problem")
+    start_t = datetime.now()
+    project_name = request.form.get("project_name")
+    print("Received project_name: " + str(project_name))
+    resp_data = {"code": 10000, "data": {}}
+    cache_cascade_record = gl.get_value("cache_cascade_record")
+    for item in cache_cascade_record:
+        if project_name == item.project_tag:
+            if item.alert_indicator is not None:
+                if item.alert_indicator not in resp_data["data"].keys():
+                    resp_data["data"][item.alert_indicator] = {"appear_time": 0, "problem": {}}
+                resp_data["data"][item.alert_indicator]["appear_time"] += 1
+                if item.problem1 is not None:
+                    if item.problem1 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem1] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem1]["appear_time"] += 1
+                if item.problem2 is not None:
+                    if item.problem2 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem2] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem2]["appear_time"] += 1
+                if item.problem3 is not None:
+                    if item.problem3 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem3] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem3]["appear_time"] += 1
+                if item.problem4 is not None:
+                    if item.problem4 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem4] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem4]["appear_time"] += 1
+                if item.problem5 is not None:
+                    if item.problem5 not in resp_data["data"][item.alert_indicator]["problem"].keys():
+                        resp_data["data"][item.alert_indicator]["problem"][item.problem5] = {"appear_time": 0}
+                    resp_data["data"][item.alert_indicator]["problem"][item.problem5]["appear_time"] += 1
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
