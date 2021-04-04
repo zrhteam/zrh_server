@@ -228,7 +228,8 @@ def head_rank_top():
 def head_risk_level_year():
     print("In function head_risk_level_year")
     start_t = datetime.now()
-    headquarter_name = request.form.get("headquarter_name")
+    # headquarter_name = request.form.get("headquarter_name")
+    headquarter_name = request.values.get("headquarter_name")
     print("Received headquarter_name: " + str(headquarter_name))
     resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
@@ -265,7 +266,12 @@ def head_risk_other_top():
         stage = request.form.get("stage")
         print("Received stage " + str(stage))
         for item in cache_cascade_record:
-            if headquarter_name == item.headquarter_tag and item.stage == stage:
+            t_stage = ''
+            if item.stage == '':
+                t_stage = "未定义"
+            else:
+                t_stage = item.stage.split("阶段")[0]
+            if headquarter_name == item.headquarter_tag and t_stage == stage:
                 if item.note not in resp_data["data"].keys():
                     resp_data["data"][item.note] = 0
                 resp_data["data"][item.note] += 1
@@ -397,7 +403,13 @@ def head_stage_ratio():
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag:
-            stage = "not defined stage" if item.stage == '' else item.stage
+            stage = ''
+            if item.stage == '':
+                stage = "未定义"
+            else:
+                stage = item.stage.split("阶段")[0]
+            # stage = "not defined stage" if item.stage == '' else item.stage
+            # if
             if item.major_name not in resp_data["data"].keys():
                 resp_data["data"][item.major_name] = {}
             if stage not in resp_data["data"][item.major_name].keys():
@@ -528,8 +540,13 @@ def danger_selection():
                                          "major_name": {}}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     for item in cache_cascade_record:
-        if item.stage not in resp_data["data"]["stage"]:
-            resp_data["data"]["stage"].append(item.stage)
+        stage = ''
+        if item.stage == '':
+            stage = "未定义"
+        else:
+            stage = item.stage.split("阶段")[0]
+        if stage not in resp_data["data"]["stage"]:
+            resp_data["data"]["stage"].append(stage)
         if item.major_name not in resp_data["data"]["major_name"].keys():
             resp_data["data"]["major_name"][item.major_name] = {"system_name": [], "area": []}
         if item.system_name not in resp_data["data"]["major_name"][item.major_name]["system_name"]:
