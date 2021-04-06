@@ -289,7 +289,12 @@ def region_other_top():
         stage = request.form.get("stage")
         print("Received stage " + str(stage))
         for item in cache_cascade_record:
-            if region_name == item.region_tag and item.stage == stage:
+            t_stage = ''
+            if item.stage == '':
+                t_stage = "未定义"
+            else:
+                t_stage = item.stage.split("阶段")[0]
+            if region_name == item.region_tag and t_stage == stage:
                 if item.note not in resp_data["data"].keys():
                     resp_data["data"][item.note] = 0
                 resp_data["data"][item.note] += 1
@@ -528,7 +533,12 @@ def region_stage_ratio():
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
         if region_name == item.region_tag:
-            stage = "not defined stage" if item.stage == '' else item.stage
+            # stage = "not defined stage" if item.stage == '' else item.stage
+            stage = ''
+            if item.stage == '':
+                stage = "未定义"
+            else:
+                stage = item.stage.split("阶段")[0]
             if item.major_name not in resp_data["data"].keys():
                 resp_data["data"][item.major_name] = {}
             if stage not in resp_data["data"][item.major_name].keys():

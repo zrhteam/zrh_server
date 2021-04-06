@@ -174,7 +174,12 @@ def check_major_stage():
     for item in cache_cascade_record:
         if check_code == item.project_code:
             if major == "all" or major == item.major_name:
-                stage = "not defined stage" if item.stage == '' else item.stage
+                # stage = "not defined stage" if item.stage == '' else item.stage
+                stage = ''
+                if item.stage == '':
+                    stage = "未定义"
+                else:
+                    stage = item.stage.split("阶段")[0]
                 if item.major_name not in resp_data["data"].keys():
                     resp_data["data"][item.major_name] = {}
                 if stage not in resp_data["data"][item.major_name].keys():
@@ -283,7 +288,12 @@ def check_other_top():
         stage = request.form.get("stage")
         print("Received stage " + str(stage))
         for item in cache_cascade_record:
-            if check_code == item.project_code and item.stage == stage:
+            t_stage = ''
+            if item.stage == '':
+                t_stage = "未定义"
+            else:
+                t_stage = item.stage.split("阶段")[0]
+            if check_code == item.project_code and t_stage == stage:
                 if item.note not in resp_data["data"].keys():
                     resp_data["data"][item.note] = 0
                 resp_data["data"][item.note] += 1
