@@ -570,8 +570,8 @@ def check_risk_level_ratio():
 def check_danger_problem():
     print("In function check_danger_problem")
     start_t = datetime.now()
-    project_name = request.form.get("check_name")
-    print("Received check_name: " + str(check_name))
+    check_code = request.form.get("check_code")
+    print("Received check_code: " + str(check_code))
     resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     for item in cache_cascade_record:
