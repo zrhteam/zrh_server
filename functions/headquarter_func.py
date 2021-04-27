@@ -4,6 +4,7 @@ import functions.cache_data as gl
 
 headquarter_blueprint = Blueprint('headquarter', __name__, url_prefix='/api/headquarter')
 
+
 # # headquarter页面部分
 # #
 # # FunctionName: getRegionNumber
@@ -50,7 +51,7 @@ def head_rectification():
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
     print("Received headquarter_name " + str(headquarter_name))
-    resp_data = { "code": 10000, "data": {"rectification": "0%"}}
+    resp_data = {"code": 10000, "data": {"rectification": "0%"}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     state_ok = 0
     state_nok = 0
@@ -81,7 +82,7 @@ def head_risk_level():
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
     print("Received headquarter_name " + str(headquarter_name))
-    resp_data = { "code": 10000, "data": {"risk_level": {"1": 0, "2": 0, "3": 0}}}
+    resp_data = {"code": 10000, "data": {"risk_level": {"1": 0, "2": 0, "3": 0}}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag:
@@ -136,26 +137,21 @@ def head_risk_rank():
     return jsonify(resp_data)
 
 
-
-
-
-
-
-
-
 # headquarter页面部分
 #
 # FunctionName: getCompanyHighImage
-# Purpose: 显示属于同一总部的未整改的高风险隐患图片
+# Purpose: 显示属于同一总部的未整改的高风险隐患图片 以及隐患描述
 # Parameter:
 # Return:
+# 修改前： {"data": {"image_list": [url1, url2, ...]}}
+# 修改后： {"data": {"image_list": [{"url": url1, "note": note1}, {"url": url1, "note": note1}, ...]}}
 @headquarter_blueprint.route('/head_high_image', methods=['POST', 'GET'])
 def head_high_image():
     print("In function head_high_image")
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
     print("Received headquarter_name " + str(headquarter_name))
-    resp_data = { "code": 10000, "data": {"image_list": []}}
+    resp_data = {"code": 10000, "data": {"image_list": []}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     cache_sys_file = gl.get_value("cache_sys_file")
     image_id_list = {}
@@ -164,17 +160,68 @@ def head_high_image():
             if item.risk_level == "3" and item.state != "5":
                 tmp_image_id_list = str(item.images_file_id).split(",")
                 for ele in tmp_image_id_list:
-                    image_id_list[ele] = 0
+                    # image_id_list[ele] = 0
+                    image_id_list[ele] = {"note": item.note, "check_name": item.project_name}
     for ele in cache_sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
-            resp_data["data"]["image_list"].append(image_url)
+            resp_data["data"]["image_list"].append({"image_url": image_url, "check_name": image_id_list[str(ele.id)]["check_name"],
+                                                    "note": image_id_list[str(ele.id)]["note"]})
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+# # headquarter页面部分
+# #
+# # FunctionName: getCompanyHighImage
+# # Purpose: 显示属于同一总部的未整改的高风险隐患图片 以及隐患描述
+# # Parameter:
+# # Return:
+# @headquarter_blueprint.route('/head_high_image', methods=['POST', 'GET'])
+# def head_high_image():
+#     print("In function head_high_image")
+#     start_t = datetime.now()
+#     headquarter_name = request.form.get("headquarter_name")
+#     # top = int(request.form.get("top"))
+#     print("Received headquarter_name " + str(headquarter_name))
+#     # print("Received top " + str(top))
+#     resp_data = {"code": 10000, "data": {"image_list": []}}
+#     cache_cascade_record = gl.get_value("cache_cascade_record")
+#     cache_sys_file = gl.get_value("cache_sys_file")
+#     image_id_list = {}
+#     # resp_data["check_code"] = latest_map["check_code"]
+#     # resp_data["check_time"] = latest_map["time"]
+#     for item in cache_cascade_record:
+#         if headquarter_name == item.region_tag:
+#             tmp_image_id_list = str(item.images_file_id).split(",")
+#             for ele in tmp_image_id_list:
+#                 image_id_list[ele] = {}
+#                 image_id_list[ele]["check_name"] = item.project_name
+#                 image_id_list[ele]["note"] = item.note
+#                 print("debug..." + str(item.create_time))
+#                 image_id_list[ele]["create_time"] = int(time.mktime(time.strptime(str(item.create_time), "%Y-%m-%d %H:%M:%S")))
+#     res = sorted(image_id_list.items(), key=lambda d: d[1]["create_time"], reverse=True)
+#     image_id_list = {}
+#     idx = 0
+#     # 取出前10张
+#     for ele in res:
+#         image_id_list[ele[0]] = ele[1]
+#         idx += 1
+#         if idx == 10:
+#             break
+#     for ele in cache_sys_file:
+#         if str(ele.id) in image_id_list.keys():
+#             image_url = ele.upload_host + ele.directory + ele.name
+#             resp_data["data"]["image_list"].append({"image_url": image_url, "check_name": image_id_list[str(ele.id)]["check_name"], "note": image_id_list[str(ele.id)]["note"]})
+#     # # 取前10张
+#     # resp_data["data"]["image_list"] = resp_data["data"]["image_list"][0: 10]
+#     print("Returned data: ")
+#     print(resp_data)
+#     end_t = datetime.now()
+#     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+#     return jsonify(resp_data)
 
 
 # headquarter页面部分
@@ -244,7 +291,6 @@ def head_risk_level_year():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
-
 
 
 # headquarter页面部分
@@ -328,7 +374,6 @@ def head_risk_other_top():
     return jsonify(resp_data)
 
 
-
 # headquarter页面部分
 #
 # FunctionName: getHeadCheckRank
@@ -358,7 +403,6 @@ def head_check_rank():
     return jsonify(resp_data)
 
 
-
 # headquarter页面部分
 #
 # FunctionName: getHeadMajorRatio
@@ -384,7 +428,6 @@ def head_major_ratio():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
-
 
 
 # headquarter页面部分
@@ -433,22 +476,25 @@ def head_area_ratio():
     print("In function head_area_ratio")
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
+    major_name = request.form.get("major_name")
     print("Received headquarter_name " + str(headquarter_name))
+    print("Received major_name " + str(major_name))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if headquarter_name == item.headquarter_tag:
-            area = "not defined area" if item.area == '' else item.area
-            if item.major_name not in resp_data["data"].keys():
-                resp_data["data"][item.major_name] = {}
-            if area not in resp_data["data"][item.major_name].keys():
-                resp_data["data"][item.major_name][area] = 0
-            resp_data["data"][item.major_name][area] += 1
+        if headquarter_name == item.headquarter_tag and major_name == item.major_name:
+            area = "未定义" if item.area == '' else item.area
+            # if item.major_name not in resp_data["data"].keys():
+            #     resp_data["data"][item.major_name] = {}
+            if area not in resp_data["data"].keys():
+                resp_data["data"][area] = 0
+            resp_data["data"][area] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # headquarter页面部分
 #
@@ -558,7 +604,6 @@ def danger_selection():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
-
 
 
 # headquarter页面部分

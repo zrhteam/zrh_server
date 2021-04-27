@@ -94,7 +94,7 @@ def check_risk_ratio():
 # check页面部分
 #
 # FunctionName: getCheckHighImage
-# Purpose: 显示当前检查中未整改的高风险隐患图片
+# Purpose: 显示当前检查中未整改的高风险隐患图片 以及隐患描述
 # Parameter:
 # Return:
 @check_blueprint.route('/check_high_image', methods=['POST', 'GET'])
@@ -112,11 +112,13 @@ def check_high_image():
             if item.risk_level == "3" and item.state != "5":
                 tmp_image_id_list = str(item.images_file_id).split(",")
                 for ele in tmp_image_id_list:
-                    image_id_list[ele] = 0
+                    # image_id_list[ele] = 0
+                    image_id_list[ele] = {"note": item.note, "check_name": item.project_name}
     for ele in cache_sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
-            resp_data["data"]["image_list"].append(image_url)
+            resp_data["data"]["image_list"].append({"image_url": image_url, "check_name":
+                image_id_list[str(ele.id)]["check_name"], "note": image_id_list[str(ele.id)]["note"]})
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()

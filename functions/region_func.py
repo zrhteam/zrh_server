@@ -26,7 +26,7 @@ def region_project():
     region_name = request.form.get("region_name")
     print("Received region_name " + str(region_name))
     cache_prj_with_tag = gl.get_value("cache_prj_with_tag")
-    resp_data = { "code": 10000, "data": {"rectification_number": 0}}
+    resp_data = {"code": 10000, "data": {"rectification_number": 0}}
     for item in cache_prj_with_tag:
         if region_name == item.region_tag:
             resp_data["data"]["rectification_number"] += 1
@@ -100,7 +100,7 @@ def region_risk_list():
     start_t = datetime.now()
     region_name = request.form.get("region_name")
     print("Received region_name " + str(region_name))
-    resp_data = { "code": 10000, "data": {"note_list": []}}
+    resp_data = {"code": 10000, "data": {"note_list": []}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     for item in cache_cascade_record:
         if region_name == item.region_tag:
@@ -173,7 +173,8 @@ def region_high_image():
                 image_id_list[ele]["check_name"] = item.project_name
                 image_id_list[ele]["note"] = item.note
                 print("debug..." + str(item.create_time))
-                image_id_list[ele]["create_time"] = int(time.mktime(time.strptime(str(item.create_time), "%Y-%m-%d %H:%M:%S")))
+                image_id_list[ele]["create_time"] = int(
+                    time.mktime(time.strptime(str(item.create_time), "%Y-%m-%d %H:%M:%S")))
     res = sorted(image_id_list.items(), key=lambda d: d[1]["create_time"], reverse=True)
     image_id_list = {}
     idx = 0
@@ -186,7 +187,8 @@ def region_high_image():
     for ele in cache_sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
-            resp_data["data"]["image_list"].append({"image_url": image_url, "check_name": image_id_list[str(ele.id)]["check_name"], "note": image_id_list[str(ele.id)]["note"]})
+            resp_data["data"]["image_list"].append({"image_url": image_url, "check_name":
+                image_id_list[str(ele.id)]["check_name"], "note": image_id_list[str(ele.id)]["note"]})
     # # 取前10张
     # resp_data["data"]["image_list"] = resp_data["data"]["image_list"][0: 10]
     print("Returned data: ")
@@ -194,9 +196,6 @@ def region_high_image():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
-
-
-
 
 
 # region页面部分
@@ -211,12 +210,13 @@ def region_distribution():
     start_t = datetime.now()
     region_name = request.form.get("region_name")
     print("Received region_name " + str(region_name))
-    resp_data = { "code": 10000, "data": {"project_distribution": {}}}
+    resp_data = {"code": 10000, "data": {"project_distribution": {}}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     for item in cache_cascade_record:
         if region_name == item.region_tag:
             if item.project_tag not in resp_data["data"]["project_distribution"].keys():
-                resp_data["data"]["project_distribution"][item.project_tag] = {"risk_level": {"1": 0, "2": 0, "3": 0}, "major": {}}
+                resp_data["data"]["project_distribution"][item.project_tag] = {"risk_level": {"1": 0, "2": 0, "3": 0},
+                                                                               "major": {}}
             resp_data["data"]["project_distribution"][item.project_tag]["risk_level"][str(item.risk_level)] += 1
             if item.major_name not in resp_data["data"]["project_distribution"][item.project_tag]["major"].keys():
                 resp_data["data"]["project_distribution"][item.project_tag]["major"][item.major_name] = 0
@@ -267,7 +267,6 @@ def region_rank_top():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
-
 
 
 # region页面部分
@@ -404,7 +403,7 @@ def region_index_rank():
     start_t = datetime.now()
     region_name = request.form.get("region_name")
     print("Received region_name " + str(region_name))
-    resp_data = { "code": 10000, "data": {}}
+    resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     risk_project_map = {}
     for item in cache_cascade_record:
@@ -425,7 +424,6 @@ def region_index_rank():
     return jsonify(resp_data)
 
 
-
 # region页面部分
 #
 # FunctionName: getRegionCheckRank
@@ -438,7 +436,7 @@ def region_check_rank():
     start_t = datetime.now()
     region_name = request.form.get("region_name")
     print("Received region_name " + str(region_name))
-    resp_data = { "code": 10000, "data": {}}
+    resp_data = {"code": 10000, "data": {}}
     cache_cascade_record = gl.get_value("cache_cascade_record")
     risk_project_map = {}
     for item in cache_cascade_record:
@@ -516,7 +514,6 @@ def region_system_ratio():
     return jsonify(resp_data)
 
 
-
 # region页面部分
 #
 # FunctionName: getRegionStageRatio
@@ -555,29 +552,34 @@ def region_stage_ratio():
 #
 # FunctionName: getRegionAreaRatio
 # Purpose: 根据隐患数量显示不同分布区域的占比情况
-# Parameter:
+# Parameter: major_name
 # Return:
+#
 @region_blueprint.route('/region_area_ratio', methods=['POST', 'GET'])
 def region_area_ratio():
     print("In function region_area_ratio")
     start_t = datetime.now()
     region_name = request.form.get("region_name")
+    major_name = request.form.get("major_name")
+    # 新增 major 入参
     print("Received region_name " + str(region_name))
+    print("Received major_name " + str(major_name))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if region_name == item.region_tag:
-            area = "not defined area" if item.area == '' else item.area
-            if item.major_name not in resp_data["data"].keys():
-                resp_data["data"][item.major_name] = {}
-            if area not in resp_data["data"][item.major_name].keys():
-                resp_data["data"][item.major_name][area] = 0
-            resp_data["data"][item.major_name][area] += 1
+        if region_name == item.region_tag and major_name == item.major_name:
+            area = "未定义" if item.area == '' else item.area
+            # if item.major_name not in resp_data["data"].keys():
+            #     resp_data["data"][item.major_name] = {}
+            if area not in resp_data["data"].keys():
+                resp_data["data"][area] = 0
+            resp_data["data"][area] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # region页面部分
 #
@@ -605,7 +607,6 @@ def region_risk_level_ratio():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
-
 
 
 # region页面部分

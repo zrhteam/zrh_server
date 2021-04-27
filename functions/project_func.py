@@ -128,11 +128,12 @@ def project_high_image():
         if latest_map["check_code"] == item.project_code:
             tmp_image_id_list = str(item.images_file_id).split(",")
             for ele in tmp_image_id_list:
-                image_id_list[ele] = 0
+                image_id_list[ele] = {"note": item.note, "check_name": item.project_name}
     for ele in cache_sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
-            resp_data["data"]["image_list"].append(image_url)
+            resp_data["data"]["image_list"].append({"image_url": image_url, "check_name":
+                image_id_list[str(ele.id)]["check_name"], "note": image_id_list[str(ele.id)]["note"]})
     # 取top n张
     resp_data["data"]["image_list"] = resp_data["data"]["image_list"][0: top]
     print("Returned data: ")
