@@ -476,13 +476,13 @@ def head_area_ratio():
     print("In function head_area_ratio")
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
-    major_name = request.form.get("major_name")
+    major = request.form.get("major")
     print("Received headquarter_name " + str(headquarter_name))
-    print("Received major_name " + str(major_name))
+    print("Received major" + str(major))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if headquarter_name == item.headquarter_tag and major_name == item.major_name:
+        if headquarter_name == item.headquarter_tag and major == item.major_name:
             area = "未定义" if item.area == '' else item.area
             # if item.major_name not in resp_data["data"].keys():
             #     resp_data["data"][item.major_name] = {}

@@ -560,14 +560,14 @@ def region_area_ratio():
     print("In function region_area_ratio")
     start_t = datetime.now()
     region_name = request.form.get("region_name")
-    major_name = request.form.get("major_name")
+    major = request.form.get("major")
     # 新增 major 入参
     print("Received region_name " + str(region_name))
-    print("Received major_name " + str(major_name))
+    print("Received major " + str(major))
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if region_name == item.region_tag and major_name == item.major_name:
+        if region_name == item.region_tag and major == item.major_name:
             area = "未定义" if item.area == '' else item.area
             # if item.major_name not in resp_data["data"].keys():
             #     resp_data["data"][item.major_name] = {}
