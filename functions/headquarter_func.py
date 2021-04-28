@@ -484,11 +484,11 @@ def head_area_ratio():
     for item in cache_cascade_record:
         if headquarter_name == item.headquarter_tag and major == item.major_name:
             area = "未定义" if item.area == '' else item.area
-            # if item.major_name not in resp_data["data"].keys():
-            #     resp_data["data"][item.major_name] = {}
-            if area not in resp_data["data"].keys():
-                resp_data["data"][area] = 0
-            resp_data["data"][area] += 1
+            if item.major_name not in resp_data["data"].keys():
+                resp_data["data"][item.major_name] = {}
+            if area not in resp_data["data"][item.major_name].keys():
+                resp_data["data"][item.major_name][area] = 0
+            resp_data["data"][item.major_name][area] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
