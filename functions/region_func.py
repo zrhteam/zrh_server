@@ -567,13 +567,14 @@ def region_area_ratio():
     cache_cascade_record = gl.get_value("cache_cascade_record")
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
-        if region_name == item.region_tag and major == item.major_name:
-            area = "未定义" if item.area == '' else item.area
-            if item.major_name not in resp_data["data"].keys():
-                resp_data["data"][item.major_name] = {}
-            if area not in resp_data["data"][item.major_name].keys():
-                resp_data["data"][item.major_name][area] = 0
-            resp_data["data"][item.major_name][area] += 1
+        if region_name == item.region_tag:
+            if major == item.major_name or major == "all":
+                area = "未定义" if item.area == '' else item.area
+                if item.major_name not in resp_data["data"].keys():
+                    resp_data["data"][item.major_name] = {}
+                if area not in resp_data["data"][item.major_name].keys():
+                    resp_data["data"][item.major_name][area] = 0
+                resp_data["data"][item.major_name][area] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
