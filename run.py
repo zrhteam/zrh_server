@@ -9,6 +9,11 @@ import functions.cache_data as gl
 from flask_cors import CORS
 import random
 
+# modified
+from models.final_record import FinalRecord
+from models.final_tag import FinalTag
+from models.risk_project import RiskProject
+
 app = app_create('testing')
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app, supports_credentials=True)
@@ -34,10 +39,10 @@ def cache_tables():
 
     # 缓存表 new_cascade_risk_prj_danger_record
     # cache_cascade_record = NewCascadeRiskPrjDangerRecord.query.all()
-    cache_cascade_record = FinalAllRecord.query.all()
-    end_t3 = datetime.now()
-    gl.set_value("cache_cascade_record", cache_cascade_record)
-    print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
+    # cache_cascade_record = FinalAllRecord.query.all()
+    # end_t3 = datetime.now()
+    # gl.set_value("cache_cascade_record", cache_cascade_record)
+    # print("Time to query table 3 is " + str((end_t3 - end_t2).seconds) + "s")
 
     # 缓存表 sys_file
     cache_sys_file = SysFile.query.all()
@@ -54,6 +59,21 @@ def cache_tables():
     end_t = datetime.now()
     print("Time to query all is " + str((end_t - start_t).seconds) + "s")
 
+    # modified
+    begin_t = datetime.now()
+    cache_final_record = FinalRecord.query.all()
+    gl.set_value("final_record", cache_final_record)
+    print("Time to query final_record is " + str((datetime.now() - begin_t).seconds) + "s")
+
+    begin_t = datetime.now()
+    cache_final_tag = FinalTag.query.all()
+    gl.set_value("final_tag", cache_final_tag)
+    print("Time to query final_tag is " + str((datetime.now() - begin_t).seconds) + "s")
+
+    begin_t = datetime.now()
+    cache_risk_project = RiskProject.query.all()
+    gl.set_value("risk_project", cache_risk_project)
+    print("Time to query risk_project is " + str((datetime.now() - begin_t).seconds) + "s")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000', debug=True)
