@@ -25,17 +25,17 @@ def cache_tables():
 
     # 缓存表 risk_user
     cache_risk_user = RiskUser.query.all()
-    end_t1 = datetime.now()
+    begin_t = datetime.now()
     gl.set_value("cache_risk_user", cache_risk_user)
-    print("Time to query table 1 is " + str((end_t1 - start_t).seconds) + "s")
+    print("Time to query table [1]risk_user is " + str((datetime.now() - begin_t).seconds) + "s")
     print(cache_risk_user[0])
 
     # 缓存表 prj_with_tag
-    cache_prj_with_tag = PrjWithTag.query.all()
-    end_t2 = datetime.now()
-    gl.set_value("cache_prj_with_tag", cache_prj_with_tag)
-    print("Time to query table 2 is " + str((end_t2 - end_t1).seconds) + "s")
-    print(cache_prj_with_tag[0])
+    # cache_prj_with_tag = PrjWithTag.query.all()
+    # end_t2 = datetime.now()
+    # gl.set_value("cache_prj_with_tag", cache_prj_with_tag)
+    # print("Time to query table 2 is " + str((end_t2 - end_t1).seconds) + "s")
+    # print(cache_prj_with_tag[0])
 
     # 缓存表 new_cascade_risk_prj_danger_record
     # cache_cascade_record = NewCascadeRiskPrjDangerRecord.query.all()
@@ -46,9 +46,9 @@ def cache_tables():
 
     # 缓存表 sys_file
     cache_sys_file = SysFile.query.all()
-    end_t4 = datetime.now()
+    begin_t = datetime.now()
     gl.set_value("cache_sys_file", cache_sys_file)
-    print("Time to query table 4 is " + str((end_t4 - end_t3).seconds) + "s")
+    print("Time to query table [2]sys_file is " + str((datetime.now() - begin_t).seconds) + "s")
 
     # cache_check_location_map = {}
     # for item in cache_cascade_record:
@@ -56,24 +56,24 @@ def cache_tables():
     #         cache_check_location_map[item.project_code] = {"lat": item.lat, "lng": item.lng, "index": round(random.uniform(1.0, 99.99), 2)}
     # gl.set_value("cache_check_location_map", cache_check_location_map)
 
-    end_t = datetime.now()
-    print("Time to query all is " + str((end_t - start_t).seconds) + "s")
-
     # modified
     begin_t = datetime.now()
     cache_final_record = FinalRecord.query.all()
     gl.set_value("final_record", cache_final_record)
-    print("Time to query final_record is " + str((datetime.now() - begin_t).seconds) + "s")
+    print("Time to query [3]final_record is " + str((datetime.now() - begin_t).seconds) + "s")
 
     begin_t = datetime.now()
     cache_final_tag = FinalTag.query.all()
     gl.set_value("final_tag", cache_final_tag)
-    print("Time to query final_tag is " + str((datetime.now() - begin_t).seconds) + "s")
+    print("Time to query [4]final_tag is " + str((datetime.now() - begin_t).seconds) + "s")
 
     begin_t = datetime.now()
     cache_risk_project = RiskProject.query.all()
     gl.set_value("risk_project", cache_risk_project)
-    print("Time to query risk_project is " + str((datetime.now() - begin_t).seconds) + "s")
+    print("Time to query [5]risk_project is " + str((datetime.now() - begin_t).seconds) + "s")
+
+    end_t = datetime.now()
+    print("Time to query all is " + str((end_t - start_t).seconds) + "s")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000', debug=True)
