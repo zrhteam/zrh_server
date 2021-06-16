@@ -241,7 +241,7 @@ def project_high_image():
     for item in cache_final_tag:
         if item.project_tag == project_name:
             contained_check_map[item.code] = 0
-    cache_sys_file = gl.get_value("cache_sys_file")
+    cache_sys_file = gl.get_value("sys_file")
     image_id_list = {}
     # 找到最近一次的项目 code
     latest_map = {"time": "2000-01-01 23:59:59", "check_code": ""}

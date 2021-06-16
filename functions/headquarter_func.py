@@ -274,7 +274,7 @@ def head_high_image():
     for item in cache_final_tag:
         if item.headquarter_tag == item.headquarter_name:
             contained_check_map[item.code] = 0
-    cache_sys_file = gl.get_value("cache_sys_file")
+    cache_sys_file = gl.get_value("sys_file")
     image_id_list = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():

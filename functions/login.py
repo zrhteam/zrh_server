@@ -146,11 +146,11 @@ def get_grant():
                           "region_tag": "",
                           "project_tag": "",
                           "value": {}}}
-    cache_risk_user = gl.get_value("cache_risk_user")
+    cache_risk_user = gl.get_value("risk_user")
 
     # cache_prj_with_tag = gl.get_value("cache_prj_with_tag")
     # modified
-    cache_prj_with_tag = gl.get_value("cache_risk_project")
+    cache_prj_with_tag = gl.get_value("risk_project")
     # cache_check_location_map = gl.get_value("cache_check_location_map")
     # print(cache_check_location_map)
     # print(len(cache_check_location_map))

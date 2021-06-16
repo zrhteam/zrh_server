@@ -302,7 +302,7 @@ def region_high_image():
     for item in cache_final_tag:
         if item.region_tag == item.region_name:
             contained_check_map[item.code] = 0
-    cache_sys_file = gl.get_value("cache_sys_file")
+    cache_sys_file = gl.get_value("sys_file")
     image_id_list = {}
     # resp_data["check_code"] = latest_map["check_code"]
     # resp_data["check_time"] = latest_map["time"]

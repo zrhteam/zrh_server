@@ -26,7 +26,7 @@ def cache_tables():
     # 缓存表 risk_user
     begin_t = datetime.now()
     cache_risk_user = RiskUser.query.all()
-    gl.set_value("cache_risk_user", cache_risk_user)
+    gl.set_value("risk_user", cache_risk_user)
     print("Time to query table [1]risk_user is " + str((datetime.now() - begin_t).seconds) + "s")
     print(cache_risk_user[0])
 
@@ -47,7 +47,7 @@ def cache_tables():
     # 缓存表 sys_file
     begin_t = datetime.now()
     cache_sys_file = SysFile.query.all()
-    gl.set_value("cache_sys_file", cache_sys_file)
+    gl.set_value("sys_file", cache_sys_file)
     print("Time to query [2]sys_file is " + str((datetime.now() - begin_t).seconds) + "s")
 
     # cache_check_location_map = {}

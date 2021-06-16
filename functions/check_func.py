@@ -197,7 +197,7 @@ def check_high_image():
     print("Received check_code " + str(check_code))
     resp_data = {"code": 10000, "data": {"image_list": []}}
     cache_cascade_record = gl.get_value("final_record")
-    cache_sys_file = gl.get_value("cache_sys_file")
+    cache_sys_file = gl.get_value("sys_file")
     image_id_list = {}
     for item in cache_cascade_record:
         if check_code == item.project_code:
