@@ -88,7 +88,7 @@ def region_risk_level():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -138,7 +138,7 @@ def region_risk_level_year():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -189,7 +189,7 @@ def region_risk_list():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -300,7 +300,7 @@ def region_high_image():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     cache_sys_file = gl.get_value("sys_file")
     image_id_list = {}
@@ -379,7 +379,7 @@ def region_distribution():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -453,7 +453,7 @@ def region_rank_top():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     risk_note_map = {}
     for item in cache_cascade_record:
@@ -500,7 +500,7 @@ def region_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.region_tag == item.region_name:
+            if item.region_tag == region_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             t_stage = ''
@@ -519,7 +519,7 @@ def region_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.region_tag == item.region_name:
+            if item.region_tag == region_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys():
@@ -534,7 +534,7 @@ def region_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.region_tag == item.region_name:
+            if item.region_tag == region_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys() and major_name == item.major_name:
@@ -550,7 +550,7 @@ def region_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.region_tag == item.region_name:
+            if item.region_tag == region_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys() and major_name == item.major_name and system_name == item.system_name:
@@ -566,7 +566,7 @@ def region_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.region_tag == item.region_name:
+            if item.region_tag == region_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys() and major_name == item.major_name and area == item.area:
@@ -633,7 +633,7 @@ def region_index_rank():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     risk_project_map = {}
     for item in cache_cascade_record:
@@ -697,7 +697,7 @@ def region_check_rank():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     risk_project_map = {}
     for item in cache_cascade_record:
@@ -755,7 +755,7 @@ def region_major_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -813,7 +813,7 @@ def region_system_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
@@ -875,7 +875,7 @@ def region_stage_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
@@ -945,7 +945,7 @@ def region_area_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
@@ -1002,7 +1002,7 @@ def region_risk_level_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
@@ -1077,7 +1077,7 @@ def region_danger_problem():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.region_tag == item.region_name:
+        if item.region_tag == region_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():

@@ -81,7 +81,7 @@ def head_rectification():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     state_ok = 0
     state_nok = 0
@@ -135,7 +135,7 @@ def head_risk_level():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -201,7 +201,7 @@ def head_risk_rank():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     region_high_risk_map = {}
     for item in cache_cascade_record:
@@ -272,7 +272,7 @@ def head_high_image():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     cache_sys_file = gl.get_value("sys_file")
     image_id_list = {}
@@ -401,7 +401,7 @@ def head_rank_top():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     risk_note_map = {}
     for item in cache_cascade_record:
@@ -466,7 +466,7 @@ def head_risk_level_year():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -577,7 +577,7 @@ def head_risk_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.headquarter_tag == item.headquarter_name:
+            if item.headquarter_tag == headquarter_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             t_stage = ''
@@ -596,7 +596,7 @@ def head_risk_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.headquarter_tag == item.headquarter_name:
+            if item.headquarter_tag == headquarter_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys():
@@ -611,7 +611,7 @@ def head_risk_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.headquarter_tag == item.headquarter_name:
+            if item.headquarter_tag == headquarter_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys() and major_name == item.major_name:
@@ -627,7 +627,7 @@ def head_risk_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.headquarter_tag == item.headquarter_name:
+            if item.headquarter_tag == headquarter_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys() and major_name == item.major_name and system_name == item.system_name:
@@ -643,7 +643,7 @@ def head_risk_other_top():
         contained_check_map = {}
         # 找到所有在此项目下的检查
         for item in cache_final_tag:
-            if item.headquarter_tag == item.headquarter_name:
+            if item.headquarter_tag == headquarter_name:
                 contained_check_map[item.code] = 0
         for item in cache_cascade_record:
             if item.project_code in contained_check_map.keys() and major_name == item.major_name and area == item.area:
@@ -706,7 +706,7 @@ def head_check_rank():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     risk_check_map = {}
     for item in cache_cascade_record:
@@ -761,7 +761,7 @@ def head_major_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -821,7 +821,7 @@ def head_stage_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
@@ -889,7 +889,7 @@ def head_area_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
@@ -948,7 +948,7 @@ def head_region_rank():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     risk_project_map = {}
     for item in cache_cascade_record:
@@ -1023,7 +1023,7 @@ def head_danger_problem():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -1157,7 +1157,7 @@ def head_risk_level_ratio():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     resp_data = {"code": 10000, "data": {}}
     for item in cache_cascade_record:
