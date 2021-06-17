@@ -150,7 +150,7 @@ def get_grant():
 
     # cache_prj_with_tag = gl.get_value("cache_prj_with_tag")
     # modified
-    cache_prj_with_tag = gl.get_value("risk_project")
+    cache_prj_with_tag = gl.get_value("final_tag")
     # cache_check_location_map = gl.get_value("cache_check_location_map")
     # print(cache_check_location_map)
     # print(len(cache_check_location_map))
