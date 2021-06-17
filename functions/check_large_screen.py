@@ -88,9 +88,9 @@ def check_ls_note_top_10():
     return jsonify(resp_data)
 
 # 4.消防专业发现的隐患数量 以及消防专业下的风险种类数量
-@check_ls_blueprint.route('/check_ls_note_top_10', methods=['POST', 'GET'])
-def check_ls_note_top_10():
-    print("In function check_ls_note_top_10")
+@check_ls_blueprint.route('/check_ls_fire', methods=['POST', 'GET'])
+def check_ls_fire():
+    print("In function check_ls_fire")
     start_t = datetime.now()
     check_code = request.form.get("check_code")
     cache_cascade_record = gl.get_value("final_record")
