@@ -202,11 +202,11 @@ def head_risk_rank():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.headquarter_tag == headquarter_name:
-            contained_check_map[item.code] = 0
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
     region_high_risk_map = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
-            region_name = item.region_tag if item.region_tag is not None else "空"
+            region_name = contained_check_map["region_tag"] if contained_check_map["region_tag"] is not None else "空"
             if region_name not in region_high_risk_map.keys():
                 region_high_risk_map[region_name] = 0
             if item.risk_level == "3":
@@ -707,15 +707,15 @@ def head_check_rank():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.headquarter_tag == headquarter_name:
-            contained_check_map[item.code] = 0
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
     risk_check_map = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             if item.project_name not in risk_check_map.keys():
                 risk_check_map[item.project_name] = 0
-                if item.region_tag not in resp_data["data"].keys():
-                    resp_data["data"][item.region_tag] = 0
-                resp_data["data"][item.region_tag] += 1
+                if contained_check_map["region_tag"] not in resp_data["data"].keys():
+                    resp_data["data"][contained_check_map["region_tag"]] = 0
+                resp_data["data"][contained_check_map["region_tag"]] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -949,15 +949,15 @@ def head_region_rank():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.headquarter_tag == headquarter_name:
-            contained_check_map[item.code] = 0
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
     risk_project_map = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
-            if item.project_tag not in risk_project_map.keys():
-                risk_project_map[item.project_tag] = 0
-                if item.region_tag not in resp_data["data"].keys():
-                    resp_data["data"][item.region_tag] = 0
-                resp_data["data"][item.region_tag] += 1
+            if contained_check_map["project_tag"] not in risk_project_map.keys():
+                risk_project_map[contained_check_map["project_tag"]] = 0
+                if contained_check_map["region_tag"] not in resp_data["data"].keys():
+                    resp_data["data"][contained_check_map["region_tag"]] = 0
+                resp_data["data"][contained_check_map["region_tag"]] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()

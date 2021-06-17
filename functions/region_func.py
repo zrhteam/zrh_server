@@ -380,16 +380,16 @@ def region_distribution():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.region_tag == region_name:
-            contained_check_map[item.code] = 0
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
-            if item.project_tag not in resp_data["data"]["project_distribution"].keys():
-                resp_data["data"]["project_distribution"][item.project_tag] = {"risk_level": {"1": 0, "2": 0, "3": 0},
+            if contained_check_map["project_tag"] not in resp_data["data"]["project_distribution"].keys():
+                resp_data["data"]["project_distribution"][contained_check_map["project_tag"]] = {"risk_level": {"1": 0, "2": 0, "3": 0},
                                                                                "major": {}}
-            resp_data["data"]["project_distribution"][item.project_tag]["risk_level"][str(item.risk_level)] += 1
-            if item.major_name not in resp_data["data"]["project_distribution"][item.project_tag]["major"].keys():
-                resp_data["data"]["project_distribution"][item.project_tag]["major"][item.major_name] = 0
-            resp_data["data"]["project_distribution"][item.project_tag]["major"][item.major_name] += 1
+            resp_data["data"]["project_distribution"][contained_check_map["project_tag"]]["risk_level"][str(item.risk_level)] += 1
+            if item.major_name not in resp_data["data"]["project_distribution"][contained_check_map["project_tag"]]["major"].keys():
+                resp_data["data"]["project_distribution"][contained_check_map["project_tag"]]["major"][item.major_name] = 0
+            resp_data["data"]["project_distribution"][contained_check_map["project_tag"]]["major"][item.major_name] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -634,14 +634,14 @@ def region_index_rank():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.region_tag == region_name:
-            contained_check_map[item.code] = 0
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
     risk_project_map = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
-            if item.project_tag not in risk_project_map.keys():
-                risk_project_map[item.project_tag] = 0
+            if contained_check_map["project_tag"] not in risk_project_map.keys():
+                risk_project_map[contained_check_map["project_tag"]] = 0
             if str(item.risk_level) == "3":
-                risk_project_map[item.project_tag] += 1
+                risk_project_map[contained_check_map["project_tag"]] += 1
     res = sorted(risk_project_map.items(), key=lambda d: d[1], reverse=True)
     idx = 0
     for ele in res:
@@ -698,13 +698,13 @@ def region_check_rank():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.region_tag == region_name:
-            contained_check_map[item.code] = 0
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
     risk_project_map = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
-            if item.project_tag not in risk_project_map.keys():
-                risk_project_map[item.project_tag] = 0
-            risk_project_map[item.project_tag] += 1
+            if contained_check_map["project_tag"] not in risk_project_map.keys():
+                risk_project_map[contained_check_map["project_tag"]] = 0
+            risk_project_map[contained_check_map["project_tag"]] += 1
     res = sorted(risk_project_map.items(), key=lambda d: d[1], reverse=True)
     idx = 0
     for ele in res:
