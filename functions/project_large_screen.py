@@ -133,9 +133,9 @@ def project_ls_fire():
 
 # 5.不同致因阶段的不同系统下的数量
 # 消防栓系统
-@project_ls_blueprint.route('/project_ls_high_risk', methods=['POST', 'GET'])
-def project_ls_high_risk():
-    print("In function project_ls_high_risk")
+@project_ls_blueprint.route('/project_ls_stage_system_info', methods=['POST', 'GET'])
+def project_ls_stage_system_info():
+    print("In function project_ls_stage_system_info")
     start_t = datetime.now()
     project_name = request.form.get("project_name")
     cache_cascade_record = gl.get_value("final_record")
