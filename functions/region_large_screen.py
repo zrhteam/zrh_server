@@ -185,3 +185,41 @@ def region_ls_area_num():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
+# 7.下方表格
+# 隐患专业（部位）、问题描述、风险等级、致因阶段、分布区域、法规名称
+# major_name, note, risk_level, stage, area, rule_name
+@region_ls_blueprint.route('/region_ls_table', methods=['POST', 'GET'])
+def region_ls_table():
+    print("In function region_ls_table")
+    start_t = datetime.now()
+    region_name = request.form.get("region_name")
+    print("Received region_name: " + str(region_name))
+    resp_data = {"code": 10000, "data": {}}
+    cache_cascade_record = gl.get_value("final_record")
+    cache_final_tag = gl.get_value("final_tag")
+    contained_check_map = {}
+    # 找到所有在此项目下的检查
+    for item in cache_final_tag:
+        if item.region_tag == region_name:
+            contained_check_map[item.code] = 0
+    cnt = 0
+    resp_data["data"]["record_list"] = []
+    for item in cache_cascade_record:
+        if item.project_code in contained_check_map.keys():
+            tmp_dict = {}
+            tmp_dict["major_name"] = item.major_name
+            tmp_dict["note"] = item.note
+            tmp_dict["risk_level"] = item.risk_level
+            tmp_dict["stage"] = item.stage
+            tmp_dict["area"] = item.area
+            tmp_dict["rule_name"] = item.rule_name
+            resp_data["data"]["record_list"].append(tmp_dict)
+            cnt += 1
+            if cnt == 10:
+                break
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
