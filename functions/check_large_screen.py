@@ -8,7 +8,7 @@ check_ls_blueprint = Blueprint('check_ls', __name__, url_prefix='/api/check_ls')
 # 所需函数
 # 1.	隐患数量
 # 2.	不同专业的隐患数量
-# 3.	隐患数量排行
+# 3.	隐患描述的数量排行 前10
 # 4.	消防专业发现的隐患数量 以及消防专业下的风险种类数量
 # 5.	不同致因阶段的不同系统下的数量
 # 6.	消防专业的高风险隐患数量排行
@@ -59,7 +59,7 @@ def check_ls_major_ratio():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
-# 3.隐患数量排行 前10
+# 3.隐患描述的数量排行 前10
 @check_ls_blueprint.route('/check_ls_note_top_10', methods=['POST', 'GET'])
 def check_ls_note_top_10():
     print("In function check_ls_note_top_10")
