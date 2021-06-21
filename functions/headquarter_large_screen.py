@@ -26,7 +26,7 @@ def headquarter_ls_risk_num():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     risk_num_cnt = 0
     for item in cache_cascade_record:
@@ -52,7 +52,7 @@ def headquarter_ls_risk_num_rank():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     risk_num_map = {}
     for item in cache_cascade_record:
@@ -86,7 +86,7 @@ def headquarter_ls_major_num():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -112,7 +112,7 @@ def headquarter_ls_check_num_rank():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     check_num_map = {}
     for item in cache_cascade_record:
@@ -145,7 +145,7 @@ def headquarter_ls_major_stage_info():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -173,7 +173,7 @@ def headquarter_ls_area_num():
     contained_check_map = {}
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
-        if item.headquarter_tag == item.headquarter_name:
+        if item.headquarter_tag == headquarter_name:
             contained_check_map[item.code] = 0
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
