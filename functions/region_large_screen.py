@@ -53,14 +53,14 @@ def region_ls_risk_num_rank():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.region_tag == region_name:
-            contained_check_map[item.code] = 0
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
     risk_num_map = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             if str(item.risk_level) == "3":
-                if item.project_tag not in risk_num_map.keys():
-                    risk_num_map[item.project_tag] = 0
-                risk_num_map[item.project_tag] += 1
+                if contained_check_map[item.project_code]["project_tag"] not in risk_num_map.keys():
+                    risk_num_map[contained_check_map[item.project_code]["project_tag"]] = 0
+                risk_num_map[contained_check_map[item.project_code]["project_tag"]] += 1
     res = sorted(risk_num_map.items(), key=lambda d: d[1], reverse=True)
     # resp_data["data"] = {}
     idx = 0
