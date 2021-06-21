@@ -129,21 +129,21 @@ def check_ls_high_risk():
     return jsonify(resp_data)
 
 # 6.消防专业的高风险隐患数量排行 ?
-@check_ls_blueprint.route('/check_ls_high_risk', methods=['POST', 'GET'])
-def check_ls_high_risk():
-    print("In function check_ls_high_risk")
-    start_t = datetime.now()
-    check_code = request.form.get("check_code")
-    cache_cascade_record = gl.get_value("final_record")
-    print("Received check_code: " + str(check_code))
-    resp_data = {"code": 10000, "data": {"risk_num": 0, "risk_level_ratio": {"1": 0, "2": 0, "3": 0}}}
-    for item in cache_cascade_record:
-        if check_code == item.project_code:
-            if item.major_name == "消防专业":
-                resp_data["data"]["risk_num"] += 1
-                resp_data["data"]["risk_level_ratio"][str(item.risk_level)] += 1
-    print("Returned data: ")
-    print(resp_data)
-    end_t = datetime.now()
-    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
-    return jsonify(resp_data)
+# @check_ls_blueprint.route('/check_ls_high_risk', methods=['POST', 'GET'])
+# def check_ls_high_risk():
+#     print("In function check_ls_high_risk")
+#     start_t = datetime.now()
+#     check_code = request.form.get("check_code")
+#     cache_cascade_record = gl.get_value("final_record")
+#     print("Received check_code: " + str(check_code))
+#     resp_data = {"code": 10000, "data": {"risk_num": 0, "risk_level_ratio": {"1": 0, "2": 0, "3": 0}}}
+#     for item in cache_cascade_record:
+#         if check_code == item.project_code:
+#             if item.major_name == "消防专业":
+#                 resp_data["data"]["risk_num"] += 1
+#                 resp_data["data"]["risk_level_ratio"][str(item.risk_level)] += 1
+#     print("Returned data: ")
+#     print(resp_data)
+#     end_t = datetime.now()
+#     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+#     return jsonify(resp_data)
