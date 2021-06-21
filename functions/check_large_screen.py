@@ -5,6 +5,7 @@ import time
 
 check_ls_blueprint = Blueprint('check_ls', __name__, url_prefix='/api/check_ls')
 
+
 # 所需函数
 # 1.	隐患数量
 # 2.	不同专业的隐患数量
@@ -33,6 +34,7 @@ def check_ls_risk_num():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # 2.不同专业的隐患数量
 @check_ls_blueprint.route('/check_ls_major_ratio', methods=['POST', 'GET'])
@@ -100,6 +102,7 @@ def check_ls_stage_ratio():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+
 # 5.高风险的隐患描述 前20
 @check_ls_blueprint.route('/check_ls_high_risk_note', methods=['POST', 'GET'])
 def check_ls_high_risk_note():
@@ -121,6 +124,7 @@ def check_ls_high_risk_note():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # 6.四大专业的隐患图片（各3张 + 隐患描述）
 @check_ls_blueprint.route('/check_ls_picture_note', methods=['POST', 'GET'])
@@ -154,6 +158,7 @@ def check_ls_picture_note():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # 7.下方表格
 # 录入时间、录入人员(?)、隐患位置(?)、系统类型、隐患部位、问题描述、致因阶段、分布区域、法规名称、相关条款、条款内容
@@ -195,7 +200,6 @@ def check_ls_table():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
-
 
 # # 3.隐患描述的数量排行 前10
 # @check_ls_blueprint.route('/check_ls_note_top_10', methods=['POST', 'GET'])
@@ -265,7 +269,6 @@ def check_ls_table():
 #     end_t = datetime.now()
 #     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
 #     return jsonify(resp_data)
-
 
 
 # 6.消防专业的高风险隐患数量排行 ?

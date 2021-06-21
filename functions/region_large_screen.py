@@ -39,6 +39,7 @@ def region_ls_risk_num():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+
 # 2.高风险排名
 @region_ls_blueprint.route('/region_ls_risk_num_rank', methods=['POST', 'GET'])
 def region_ls_risk_num_rank():
@@ -53,7 +54,8 @@ def region_ls_risk_num_rank():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.region_tag == region_name:
-            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag, "headquarter_tag": item.headquarter_tag}
+            contained_check_map[item.code] = {"project_tag": item.project_tag, "region_tag": item.region_tag,
+                                              "headquarter_tag": item.headquarter_tag}
     risk_num_map = {}
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
@@ -72,6 +74,7 @@ def region_ls_risk_num_rank():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # 3.不同专业的隐患数量
 @region_ls_blueprint.route('/region_ls_major_num', methods=['POST', 'GET'])
@@ -98,6 +101,7 @@ def region_ls_major_num():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # 4.隐患项目数量排行
 @region_ls_blueprint.route('/region_ls_check_num_rank', methods=['POST', 'GET'])
@@ -132,6 +136,7 @@ def region_ls_check_num_rank():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+
 # 5.不同专业下的不同致因阶段
 @region_ls_blueprint.route('/region_ls_major_stage_info', methods=['POST', 'GET'])
 def region_ls_major_stage_info():
@@ -160,6 +165,7 @@ def region_ls_major_stage_info():
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
 
+
 # 6.不同分布区域的隐患数量
 @region_ls_blueprint.route('/region_ls_area_num', methods=['POST', 'GET'])
 def region_ls_area_num():
@@ -185,6 +191,7 @@ def region_ls_area_num():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
 
 # 7.下方表格
 # 隐患专业（部位）、问题描述、风险等级、致因阶段、分布区域、法规名称
