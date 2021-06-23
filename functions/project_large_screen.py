@@ -221,7 +221,7 @@ def project_ls_table():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             tmp_dict = {}
-            tmp_dict["create_time"] = item.create_time
+            tmp_dict["create_time"] = str(item.create_time)
             tmp_dict["system_name"] = item.system_name
             tmp_dict["major_name"] = item.major_name
             tmp_dict["note"] = item.note
