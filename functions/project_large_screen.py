@@ -200,8 +200,8 @@ def project_ls_picture_note():
 
 
 # 7.下方表格
-# 录入时间、录入人员(?)、隐患位置(?)、系统类型、隐患部位、问题描述、致因阶段、分布区域、法规名称、相关条款、条款内容
-# create_time, system_name, major_name, note, stage, area, rule_name, clause, clause_contact
+# 录入时间、录入人员(?)、隐患位置(?)、系统类型、隐患部位、问题描述、风险等级、致因阶段、分布区域、法规名称、相关条款、条款内容
+# create_time, system_name, major_name, note, stage, area, risk_level, rule_name, clause, clause_contact
 @project_ls_blueprint.route('/project_ls_table', methods=['POST', 'GET'])
 def project_ls_table():
     print("In function project_ls_table")
@@ -227,6 +227,14 @@ def project_ls_table():
             tmp_dict["note"] = item.note
             tmp_dict["stage"] = item.stage
             tmp_dict["area"] = item.area
+            if str(item.risk_level) == "3":
+                tmp_dict["risk_level"] = "高"
+            elif str(item.risk_level) == "2":
+                tmp_dict["risk_level"] = "中"
+            elif str(item.risk_level) == "1":
+                tmp_dict["risk_level"] = "低"
+            else:
+                tmp_dict["risk_level"] = "未定"
             tmp_dict["rule_name"] = item.rule_name
             tmp_dict["clause"] = item.clause
             tmp_dict["clause_contact"] = item.clause_contact
