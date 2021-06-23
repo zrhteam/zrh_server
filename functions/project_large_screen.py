@@ -171,7 +171,7 @@ def project_ls_picture_note():
             contained_check_map[item.code] = 0
     sys_file = gl.get_value("sys_file")
     print("Received project_name: " + str(project_name))
-    resp_data = {"code": 10000, "data": {"image_list": []}}
+    resp_data = {"code": 10000, "data": {}}
     cnt_map = {}
     image_id_list = {}
     for item in cache_cascade_record:
@@ -184,11 +184,14 @@ def project_ls_picture_note():
             cur_img_id = str(item.images_file_id).split(",")[0]
             image_id_list[cur_img_id] = {}
             image_id_list[cur_img_id]["note"] = item.note
+            image_id_list[cur_img_id]["major_name"] = item.major_name
     for ele in sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
-            resp_data["data"]["image_list"].append({"image_url": image_url,
-                                                    "note": image_id_list[str(ele.id)]["note"]})
+            if image_id_list[cur_img_id]["major_name"] not in resp_data["data"].keys():
+                resp_data["data"][image_id_list[cur_img_id]["major_name"]] = []
+            resp_data["data"][image_id_list[cur_img_id]["major_name"]].append({"image_url": image_url,
+                                                                               "note": image_id_list[str(ele.id)]["note"]})
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
