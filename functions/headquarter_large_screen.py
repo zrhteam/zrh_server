@@ -60,9 +60,9 @@ def headquarter_ls_risk_num_rank():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             if str(item.risk_level) == "3":
-                if contained_check_map[item.project_code]["project_tag"] not in risk_num_map.keys():
-                    risk_num_map[contained_check_map[item.project_code]["project_tag"]] = 0
-                risk_num_map[contained_check_map[item.project_code]["project_tag"]] += 1
+                if contained_check_map[item.project_code]["region_tag"] not in risk_num_map.keys():
+                    risk_num_map[contained_check_map[item.project_code]["region_tag"]] = 0
+                risk_num_map[contained_check_map[item.project_code]["region_tag"]] += 1
     res = sorted(risk_num_map.items(), key=lambda d: d[1], reverse=True)
     # resp_data["data"] = {}
     idx = 0
