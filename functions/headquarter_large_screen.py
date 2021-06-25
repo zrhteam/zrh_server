@@ -20,7 +20,7 @@ def headquarter_ls_risk_num():
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
     print("Received headquarter_name: " + str(headquarter_name))
-    resp_data = {"code": 10000, "data": {"risk_num": 0}}
+    resp_data = {"code": 10000, "data": {"risk_num": 0, "低": 0, "中": 0, "高": 0, "未定": 0}}
     cache_cascade_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
     contained_check_map = {}
@@ -32,6 +32,14 @@ def headquarter_ls_risk_num():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             risk_num_cnt += 1
+            if str(item.risk_level) == "3":
+                resp_data["data"]["高"] += 1
+            elif str(item.risk_level) == "2":
+                resp_data["data"]["中"] += 1
+            elif str(item.risk_level) == "1":
+                resp_data["data"]["低"] += 1
+            else:
+                resp_data["data"]["未定"] += 1
     resp_data["data"]["risk_num"] = risk_num_cnt
     print("Returned data: ")
     print(resp_data)

@@ -32,6 +32,14 @@ def region_ls_risk_num():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             risk_num_cnt += 1
+            if str(item.risk_level) == "3":
+                resp_data["data"]["高"] += 1
+            elif str(item.risk_level) == "2":
+                resp_data["data"]["中"] += 1
+            elif str(item.risk_level) == "1":
+                resp_data["data"]["低"] += 1
+            else:
+                resp_data["data"]["未定"] += 1
     resp_data["data"]["risk_num"] = risk_num_cnt
     print("Returned data: ")
     print(resp_data)
