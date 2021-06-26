@@ -32,6 +32,14 @@ def region_ls_risk_num():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             risk_num_cnt += 1
+            if str(item.risk_level) == "3":
+                resp_data["data"]["高"] += 1
+            elif str(item.risk_level) == "2":
+                resp_data["data"]["中"] += 1
+            elif str(item.risk_level) == "1":
+                resp_data["data"]["低"] += 1
+            else:
+                resp_data["data"]["未定"] += 1
     resp_data["data"]["risk_num"] = risk_num_cnt
     print("Returned data: ")
     print(resp_data)
@@ -157,8 +165,8 @@ def region_ls_major_stage_info():
             if item.major_name not in resp_data["data"].keys():
                 resp_data["data"][item.major_name] = {}
             if item.stage not in resp_data["data"][item.major_name].keys():
-                resp_data["data"][item.major_name][item.major_name][item.stage] = 0
-            resp_data["data"][item.major_name][item.major_name][item.stage] += 1
+                resp_data["data"][item.major_name][item.stage] = 0
+            resp_data["data"][item.major_name][item.stage] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -217,7 +225,15 @@ def region_ls_table():
             tmp_dict = {}
             tmp_dict["major_name"] = item.major_name
             tmp_dict["note"] = item.note
-            tmp_dict["risk_level"] = item.risk_level
+            # tmp_dict["risk_level"] = item.risk_level
+            if str(item.risk_level) == "3":
+                tmp_dict["risk_level"] = "高"
+            elif str(item.risk_level) == "2":
+                tmp_dict["risk_level"] = "中"
+            elif str(item.risk_level) == "1":
+                tmp_dict["risk_level"] = "低"
+            else:
+                tmp_dict["risk_level"] = "未定"
             tmp_dict["stage"] = item.stage
             tmp_dict["area"] = item.area
             tmp_dict["rule_name"] = item.rule_name

@@ -171,7 +171,7 @@ def project_ls_picture_note():
             contained_check_map[item.code] = 0
     sys_file = gl.get_value("sys_file")
     print("Received project_name: " + str(project_name))
-    resp_data = {"code": 10000, "data": {"image_list": []}}
+    resp_data = {"code": 10000, "data": {}}
     cnt_map = {}
     image_id_list = {}
     for item in cache_cascade_record:
@@ -184,11 +184,14 @@ def project_ls_picture_note():
             cur_img_id = str(item.images_file_id).split(",")[0]
             image_id_list[cur_img_id] = {}
             image_id_list[cur_img_id]["note"] = item.note
+            image_id_list[cur_img_id]["major_name"] = item.major_name
     for ele in sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
-            resp_data["data"]["image_list"].append({"image_url": image_url,
-                                                    "note": image_id_list[str(ele.id)]["note"]})
+            if image_id_list[cur_img_id]["major_name"] not in resp_data["data"].keys():
+                resp_data["data"][image_id_list[cur_img_id]["major_name"]] = []
+            resp_data["data"][image_id_list[cur_img_id]["major_name"]].append({"image_url": image_url,
+                                                                               "note": image_id_list[str(ele.id)]["note"]})
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -197,8 +200,8 @@ def project_ls_picture_note():
 
 
 # 7.下方表格
-# 录入时间、录入人员(?)、隐患位置(?)、系统类型、隐患部位、问题描述、致因阶段、分布区域、法规名称、相关条款、条款内容
-# create_time, system_name, major_name, note, stage, area, rule_name, clause, clause_contact
+# 录入时间、录入人员(?)、隐患位置(?)、系统类型、隐患部位、问题描述、风险等级、致因阶段、分布区域、法规名称、相关条款、条款内容
+# create_time, system_name, major_name, note, stage, area, risk_level, rule_name, clause, clause_contact
 @project_ls_blueprint.route('/project_ls_table', methods=['POST', 'GET'])
 def project_ls_table():
     print("In function project_ls_table")
@@ -218,12 +221,20 @@ def project_ls_table():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             tmp_dict = {}
-            tmp_dict["create_time"] = item.create_time
+            tmp_dict["create_time"] = str(item.create_time)
             tmp_dict["system_name"] = item.system_name
             tmp_dict["major_name"] = item.major_name
             tmp_dict["note"] = item.note
             tmp_dict["stage"] = item.stage
             tmp_dict["area"] = item.area
+            if str(item.risk_level) == "3":
+                tmp_dict["risk_level"] = "高"
+            elif str(item.risk_level) == "2":
+                tmp_dict["risk_level"] = "中"
+            elif str(item.risk_level) == "1":
+                tmp_dict["risk_level"] = "低"
+            else:
+                tmp_dict["risk_level"] = "未定"
             tmp_dict["rule_name"] = item.rule_name
             tmp_dict["clause"] = item.clause
             tmp_dict["clause_contact"] = item.clause_contact

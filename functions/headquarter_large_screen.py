@@ -20,7 +20,7 @@ def headquarter_ls_risk_num():
     start_t = datetime.now()
     headquarter_name = request.form.get("headquarter_name")
     print("Received headquarter_name: " + str(headquarter_name))
-    resp_data = {"code": 10000, "data": {"risk_num": 0}}
+    resp_data = {"code": 10000, "data": {"risk_num": 0, "低": 0, "中": 0, "高": 0, "未定": 0}}
     cache_cascade_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
     contained_check_map = {}
@@ -32,6 +32,14 @@ def headquarter_ls_risk_num():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             risk_num_cnt += 1
+            if str(item.risk_level) == "3":
+                resp_data["data"]["高"] += 1
+            elif str(item.risk_level) == "2":
+                resp_data["data"]["中"] += 1
+            elif str(item.risk_level) == "1":
+                resp_data["data"]["低"] += 1
+            else:
+                resp_data["data"]["未定"] += 1
     resp_data["data"]["risk_num"] = risk_num_cnt
     print("Returned data: ")
     print(resp_data)
@@ -60,9 +68,9 @@ def headquarter_ls_risk_num_rank():
     for item in cache_cascade_record:
         if item.project_code in contained_check_map.keys():
             if str(item.risk_level) == "3":
-                if contained_check_map[item.project_code]["project_tag"] not in risk_num_map.keys():
-                    risk_num_map[contained_check_map[item.project_code]["project_tag"]] = 0
-                risk_num_map[contained_check_map[item.project_code]["project_tag"]] += 1
+                if contained_check_map[item.project_code]["region_tag"] not in risk_num_map.keys():
+                    risk_num_map[contained_check_map[item.project_code]["region_tag"]] = 0
+                risk_num_map[contained_check_map[item.project_code]["region_tag"]] += 1
     res = sorted(risk_num_map.items(), key=lambda d: d[1], reverse=True)
     # resp_data["data"] = {}
     idx = 0
@@ -157,8 +165,8 @@ def headquarter_ls_major_stage_info():
             if item.major_name not in resp_data["data"].keys():
                 resp_data["data"][item.major_name] = {}
             if item.stage not in resp_data["data"][item.major_name].keys():
-                resp_data["data"][item.major_name][item.major_name][item.stage] = 0
-            resp_data["data"][item.major_name][item.major_name][item.stage] += 1
+                resp_data["data"][item.major_name][item.stage] = 0
+            resp_data["data"][item.major_name][item.stage] += 1
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
@@ -217,7 +225,15 @@ def headquarter_ls_table():
             tmp_dict = {}
             tmp_dict["major_name"] = item.major_name
             tmp_dict["note"] = item.note
-            tmp_dict["risk_level"] = item.risk_level
+            # tmp_dict["risk_level"] = item.risk_level
+            if str(item.risk_level) == "3":
+                tmp_dict["risk_level"] = "高"
+            elif str(item.risk_level) == "2":
+                tmp_dict["risk_level"] = "中"
+            elif str(item.risk_level) == "1":
+                tmp_dict["risk_level"] = "低"
+            else:
+                tmp_dict["risk_level"] = "未定"
             tmp_dict["stage"] = item.stage
             tmp_dict["area"] = item.area
             tmp_dict["rule_name"] = item.rule_name
