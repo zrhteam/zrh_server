@@ -20,7 +20,7 @@ def region_ls_risk_num():
     start_t = datetime.now()
     region_name = request.form.get("region_name")
     print("Received region_name: " + str(region_name))
-    resp_data = {"code": 10000, "data": {"risk_num": 0}}
+    resp_data = {"code": 10000, "data": {"risk_num": 0, "低": 0, "中": 0, "高": 0, "未定": 0}}
     cache_cascade_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
     contained_check_map = {}
