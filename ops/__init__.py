@@ -19,6 +19,7 @@ def app_create(config_name):
     from functions.project_large_screen import project_ls_blueprint
     from functions.region_large_screen import region_ls_blueprint
     from functions.headquarter_large_screen import headquarter_ls_blueprint
+    from functions.data_insight_func import insight_func_blueprint
     app = Flask(__name__)
     # 注册蓝图
     app.register_blueprint(blueprint=init_data_blueprint)
@@ -33,6 +34,7 @@ def app_create(config_name):
     app.register_blueprint(blueprint=project_ls_blueprint)
     app.register_blueprint(blueprint=region_ls_blueprint)
     app.register_blueprint(blueprint=headquarter_ls_blueprint)
+    app.register_blueprint(blueprint=insight_func_blueprint)
     # 这里调用前面定义的配置文件的对象
     app.config.from_object(config[config_name])
     # 初始化配置
