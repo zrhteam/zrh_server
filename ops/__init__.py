@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, session, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from conf.default import config
+from flask_apscheduler import APScheduler  # as _BaseAPScheduler
 
+scheduler = APScheduler()
 db = SQLAlchemy()
 db.session.expire_on_commit = False
 

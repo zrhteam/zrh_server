@@ -61,7 +61,7 @@ def analyze_red_line_data():
     if request.form.get("end") is not None:
         end = datetime.strptime(request.form.get("end"), "%Y-%m-%d %H:%M:%S")
     contained_check_map = {}
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     if flag == 1:
         print("Received region_name " + str(check_key))
         # 找到所有在该区域下的检查
@@ -273,7 +273,7 @@ def analyze_tendency_headquarter():
     resp_data = {"code": 10000, "data": {}}
     year_end = end.year
     month_end = end.month
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received headquarter_name " + str(headquarter_name))
     print("Received major_name " + str(major_name))
     # 对于每个总部，映射start到end的每一个月份，日期格式为字符串“%Y-%m”
@@ -360,7 +360,7 @@ def analyze_tendency_region():
 
     year_end = end.year
     month_end = end.month
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received headquarter_name/region_name " + str(region_name))
     print("Received major_name " + str(major_name))
     # 对于每个区域，映射start到end的每一个月份，日期格式为字符串“%Y-%m”
@@ -446,7 +446,7 @@ def analyze_tendency_project():
     resp_data = {"code": 10000, "data": {}}
     year_end = end.year
     month_end = end.month
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received headquarter_name/region_name/project_name " + str(project_name))
     print("Received major_name " + str(major_name))
     # 对于每个项目，映射start到end的每一个月份，日期格式为字符串“%Y-%m”
@@ -532,7 +532,7 @@ def analyze_tendency_profession():
     resp_data = {"code": 10000, "data": {}}
     year_end = end.year
     month_end = end.month
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received profession_name " + str(profession_name))
     print("Received major_name " + str(major_name))
     # 对于每个行业，映射start到end的每一个月份，日期格式为字符串“%Y-%m”
@@ -606,7 +606,7 @@ def analyze_ratio_headquarter():
     resp_data = {"code": 10000, "headquarter_name": str(headquarter_name), "major_name": str(major_name),
                  "ratio": {"level_1": 0.0, "level_2": 0.0, "level_3": 0.0,
                            "major_level_1": 0.0, "major_level_2": 0.0, "major_level_3": 0.0}}
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received headquarter_name " + str(headquarter_name))
     print("Received major_name " + str(major_name))
 
@@ -707,7 +707,7 @@ def analyze_ratio_region():
     resp_data = {"code": 10000, "region_name": str(region_name), "major_name": str(major_name),
                  "ratio": {"level_1": 0.0, "level_2": 0.0, "level_3": 0.0,
                            "major_level_1": 0.0, "major_level_2": 0.0, "major_level_3": 0.0}}
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received headquarter_name/region_name " + str(region_name))
     print("Received major_name " + str(major_name))
 
@@ -800,7 +800,7 @@ def analyze_ratio_project():
     resp_data = {"code": 10000, "project_name": str(project_name), "major_name": str(major_name),
                  "ratio": {"level_1": 0.0, "level_2": 0.0, "level_3": 0.0,
                            "major_level_1": 0.0, "major_level_2": 0.0, "major_level_3": 0.0}}
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received headquarter_name/region_name/project_name " + str(project_name))
     print("Received major_name " + str(major_name))
 
@@ -893,7 +893,7 @@ def analyze_ratio_profession():
     resp_data = {"code": 10000, "profession_name": str(profession_name), "major_name": str(major_name),
                  "ratio": {"level_1": 0.0, "level_2": 0.0, "level_3": 0.0,
                            "major_level_1": 0.0, "major_level_2": 0.0, "major_level_3": 0.0}}
-    print("Received time " + str(start) + "to" + str(end))
+    print("Received time " + str(start) + " to " + str(end))
     print("Received profession_name " + str(profession_name))
     print("Received major_name " + str(major_name))
 
