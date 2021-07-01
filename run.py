@@ -9,7 +9,9 @@ from models.sys_file import SysFile
 import functions.cache_data as gl
 from flask_cors import CORS
 import random
-
+from flask_apscheduler import APScheduler
+from ops import scheduler  # 先导入生成的scheduler对象
+from config import APSchedulerJobConfig
 # modified
 from models.final_record import FinalRecord
 from models.final_tag import FinalTag
@@ -18,6 +20,15 @@ from models.risk_project import RiskProject
 app = app_create('testing')
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app, supports_credentials=True)
+app.config.from_object(APSchedulerJobConfig)
+
+
+@app.before_first_request
+def update():
+    scheduler.init_app(app)
+    scheduler.start()
+
+
 @app.before_first_request
 def cache_tables():
     print("In func cache_tables")
@@ -75,6 +86,7 @@ def cache_tables():
 
     end_t = datetime.now()
     print("Time to query all is " + str((end_t - start_t).seconds) + "s")
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000', debug=True)
