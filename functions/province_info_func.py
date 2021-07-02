@@ -8,7 +8,7 @@ province_info_blueprint = Blueprint('province_info', __name__, url_prefix='/api/
 # province info
 
 # FunctionName: province_check_and_record_num
-# Purpose: 显示该省当前已检查项目数量
+# # Purpose: 显示该省当前已检查数量和隐患数量
 # Parameter:
 # Return:
 @province_info_blueprint.route('/province_check_and_record_num', methods=['POST'])
