@@ -23,7 +23,7 @@ def province_check_and_record_num():
         if item.province_name is not None:
             check_code_map[item.code] = item.province_name
             if item.province_name not in resp_data["data"].keys():
-                resp_data["data"][item.province_name] = {"check_num": 0, "record_num": 0}
+                resp_data["data"][item.province_name] = {"check_num": 0, "record_num": 0, "lng": item.lng, "lat": item.lat} # 取出第一个检查的坐标作为该省的位置
             resp_data["data"][item.province_name]["check_num"] += 1
     for item in final_record:
         if item.project_code in check_code_map.keys():
