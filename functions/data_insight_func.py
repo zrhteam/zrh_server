@@ -51,6 +51,9 @@ def analyze_red_line_data():
     # flag=1 check_key = headquarter_name/region_name
     # flag=2 check_key = headquarter_name/region_name/project_name
     # flag=3 check_key = check_code
+    # Test:
+    # flag = 1  # request.form.get("flag")
+    # check_key = "华润置地/华东大区"  # request.form.get("check_key")
     flag = request.form.get("flag")
     check_key = request.form.get("check_key")
     # 若没有传入时间参数，则start为最小时间，end为最大时间
@@ -258,11 +261,13 @@ def analyze_tendency_headquarter():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    headquarter_name = {"华润置地", "菜鸟物流"}  # request.form.get("headquarter_name")
+    # Test:{"华润置地", "菜鸟物流"}
+    headquarter_name = request.form.get("headquarter_name")
     if headquarter_name is None:
         print("Missing headquarter parameter")
         return None
-    major_name = "消防专业"  # request.form.get("major_name")
+    # Test:"消防专业"
+    major_name = request.form.get("major_name")
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-03-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     end = datetime.now()
@@ -344,11 +349,11 @@ def analyze_tendency_region():
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
     # Test: {"华润置地/华东大区", "菜鸟物流/华东区域"}
-    region_name = {"华润置地/华东大区", "菜鸟物流/华东区域"}  # request.form.get("region_name")
+    region_name = request.form.get("region_name")
     if region_name is None:
         print("Missing region parameter")
         return None
-    major_name = "消防专业"  # request.form.get("major_name")  # Test: "消防专业"
+    major_name = request.form.get("major_name")  # Test: "消防专业"
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-03-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     end = datetime.now()
@@ -431,11 +436,11 @@ def analyze_tendency_project():
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
     # Test: {"华润置地/华东大区/上海万象城", "菜鸟物流/东北区域/菜鸟大件沈阳安得仓&菜鸟大件标品沈阳安得仓"}
-    project_name = {"华润置地/华东大区/上海万象城", "菜鸟物流/东北区域/菜鸟大件沈阳安得仓&菜鸟大件标品沈阳安得仓"}  # request.form.get("project_name")
+    project_name = request.form.get("project_name")
     if project_name is None:
         print("Missing project parameter")
         return None
-    major_name = "消防专业"  # request.form.get("major_name")  # Test: "消防专业"
+    major_name = request.form.get("major_name")  # Test: "消防专业"
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-03-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     end = datetime.now()
@@ -594,8 +599,10 @@ def analyze_ratio_headquarter():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    headquarter_name = "华润置地"  # request.form.get("headquarter_name")
-    major_name = "消防专业"  # request.form.get("major_name")
+    # Test:华润置地
+    headquarter_name = request.form.get("headquarter_name")
+    # Test: 消防专业
+    major_name = request.form.get("major_name")
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-03-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     end = datetime.now()
@@ -695,8 +702,10 @@ def analyze_ratio_region():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    region_name = "华润置地/华东大区"  # request.form.get("region_name")
-    major_name = "消防专业"  # request.form.get("major_name")
+    # Test:"华润置地/华东大区"
+    region_name = request.form.get("region_name")
+    # Test:消防专业
+    major_name = request.form.get("major_name")
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-03-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     end = datetime.now()
@@ -788,8 +797,10 @@ def analyze_ratio_project():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    project_name = "华润置地/华东大区/上海万象城"  # request.form.get("project_name")
-    major_name = "消防专业"  # request.form.get("major_name")
+    # Test:"华润置地/华东大区/上海万象城"
+    project_name = request.form.get("project_name")
+    # Test:"消防专业"
+    major_name = request.form.get("major_name")
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-03-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     end = datetime.now()
@@ -881,7 +892,9 @@ def analyze_ratio_profession():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
+    # Test:"仓储物流"
     profession_name = request.form.get("profession_name")
+    # Test:"消防专业"
     major_name = request.form.get("major_name")
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-03-01 00:00:00", "%Y-%m-%d %H:%M:%S")

@@ -18,4 +18,5 @@ class FinalTag(db.Model):
     region_hide_tag = db.Column(db.String(100))
     headquarter_tag = db.Column(db.String(255, 'utf8mb4_0900_ai_ci'))
     headquarter_hide_tag = db.Column(db.String(100))
+    profession_tag = db.Column(db.String(255, 'utf8mb4_0900_ai_ci'))
     remark = db.Column(db.String(100))
