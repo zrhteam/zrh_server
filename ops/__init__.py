@@ -23,6 +23,8 @@ def app_create(config_name):
     from functions.headquarter_large_screen import headquarter_ls_blueprint
     from functions.data_insight_func import insight_func_blueprint
     from functions.province_info_func import province_info_blueprint
+    from functions.check_major_ls import check_major_ls_blueprint
+    from functions.project_major_ls import project_major_ls_blueprint
     app = Flask(__name__)
     # 注册蓝图
     app.register_blueprint(blueprint=init_data_blueprint)
@@ -39,6 +41,8 @@ def app_create(config_name):
     app.register_blueprint(blueprint=headquarter_ls_blueprint)
     app.register_blueprint(blueprint=insight_func_blueprint)
     app.register_blueprint(blueprint=province_info_blueprint)
+    app.register_blueprint(blueprint=check_major_ls_blueprint)
+    app.register_blueprint(blueprint=project_major_ls_blueprint)
     # 这里调用前面定义的配置文件的对象
     app.config.from_object(config[config_name])
     # 初始化配置
