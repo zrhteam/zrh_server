@@ -1172,3 +1172,30 @@ def head_risk_level_ratio():
     end_t = datetime.now()
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
     return jsonify(resp_data)
+
+
+# 所属项目名，对应的经纬度
+@headquarter_blueprint.route('/head_project_position', methods=['POST', 'GET'])
+def head_project_position():
+    print("In function head_project_position")
+    start_t = datetime.now()
+    headquarter_name = request.form.get("headquarter_name")
+    print("Received headquarter_name " + str(headquarter_name))
+    cache_final_tag = gl.get_value("final_tag")
+    cache_risk_project = gl.get_value("risk_project")
+    contained_check_and_project_map = {}
+    resp_data = {"code": 10000, "data": {}}
+    # 找到所有在此项目下的检查
+    for item in cache_final_tag:
+        if item.headquarter_tag == headquarter_name:
+            if item.project_tag not in resp_data["data"].keys():
+                resp_data["data"][item.project_tag] = {"lat": "", "lng": ""}
+            contained_check_and_project_map[item.code] = item.project_tag
+    for item in cache_risk_project:
+        if item.code in contained_check_and_project_map.keys():
+            resp_data["data"][contained_check_and_project_map[item.code]] = {"lat": item.lat, "lng": item.lng}
+    print("Returned data: ")
+    print(resp_data)
+    end_t = datetime.now()
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
