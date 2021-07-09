@@ -65,7 +65,7 @@ def analyze_red_line_data():
         end = datetime.strptime(request.form.get("end"), "%Y-%m-%d %H:%M:%S")
     contained_check_map = {}
     print("Received time " + str(start) + " to " + str(end))
-    if flag == 1:
+    if flag == "1":
         print("Received region_name " + str(check_key))
         # 找到所有在该区域下的检查
         for item in cache_final_tag:
@@ -120,7 +120,7 @@ def analyze_red_line_data():
                         resp_data["data"][item.alert_indicator]["total"] += 1.0
                         resp_data["data"][item.alert_indicator]["ratio"][item.problem5] = 1.0
 
-    if flag == 2:
+    if flag == "2":
         print("Received project_name " + str(check_key))
         # 找到所有在该项目下的检查
         for item in cache_final_tag:
@@ -174,7 +174,7 @@ def analyze_red_line_data():
                         resp_data["data"][item.alert_indicator]["total"] += 1.0
                         resp_data["data"][item.alert_indicator]["ratio"][item.problem5] = 1.0
 
-    if flag == 3:
+    if flag == "3":
         print("Received check_code " + str(check_key))
         for item in cache_final_record:
             # 如果当前检查在这个项目中，并且在时间范围内
@@ -261,8 +261,8 @@ def analyze_tendency_headquarter():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    # Test:{"华润置地", "菜鸟物流"}
-    headquarter_name = request.form.get("headquarter_name")
+    # Test:"华润置地%菜鸟物流"
+    headquarter_name = request.form.get("headquarter_name").split("%")
     if headquarter_name is None:
         print("Missing headquarter parameter")
         return None
@@ -348,8 +348,8 @@ def analyze_tendency_region():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    # Test: {"华润置地/华东大区", "菜鸟物流/华东区域"}
-    region_name = request.form.get("region_name")
+    # Test: "华润置地/华东大区%菜鸟物流/华东区域"
+    region_name = request.form.get("region_name").split("%")
     if region_name is None:
         print("Missing region parameter")
         return None
@@ -435,8 +435,8 @@ def analyze_tendency_project():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    # Test: {"华润置地/华东大区/上海万象城", "菜鸟物流/东北区域/菜鸟大件沈阳安得仓&菜鸟大件标品沈阳安得仓"}
-    project_name = request.form.get("project_name")
+    # Test: "华润置地/华东大区/上海万象城%菜鸟物流/东北区域/菜鸟大件沈阳安得仓&菜鸟大件标品沈阳安得仓"
+    project_name = request.form.get("project_name").split("%")
     if project_name is None:
         print("Missing project parameter")
         return None
@@ -522,7 +522,7 @@ def analyze_tendency_profession():
     start_t = datetime.now()
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
-    profession_name = request.form.get("profession_name")
+    profession_name = request.form.get("profession_name").split("%")
     if profession_name is None:
         print("Missing profession parameter")
         return None
