@@ -1188,9 +1188,10 @@ def head_project_position():
     # 找到所有在此项目下的检查
     for item in cache_final_tag:
         if item.headquarter_tag == headquarter_name:
-            if item.project_tag not in resp_data["data"].keys():
+            if item.project_tag not in resp_data["data"].keys() and item.project_tag is not None:
                 resp_data["data"][item.project_tag] = {"lat": "", "lng": ""}
-            contained_check_and_project_map[item.code] = item.project_tag
+            if item.code is not None and item.project_tag is not None:
+                contained_check_and_project_map[item.code] = item.project_tag
     for item in cache_risk_project:
         if item.code in contained_check_and_project_map.keys():
             if item.lat is not None and item.lng is not None:
