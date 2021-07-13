@@ -1193,7 +1193,8 @@ def head_project_position():
             contained_check_and_project_map[item.code] = item.project_tag
     for item in cache_risk_project:
         if item.code in contained_check_and_project_map.keys():
-            resp_data["data"][contained_check_and_project_map[item.code]] = {"lat": item.lat, "lng": item.lng}
+            if item.lat is not None and item.lng is not None:
+                resp_data["data"][contained_check_and_project_map[item.code]] = {"lat": str(item.lat), "lng": str(item.lng)}
     print("Returned data: ")
     print(resp_data)
     end_t = datetime.now()
