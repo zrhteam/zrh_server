@@ -1421,9 +1421,10 @@ def analyze_ratio():
         start = datetime.strptime(request.values.get("start"), "%Y-%m-%d %H:%M:%S")
     if request.values.get("end") is not None:
         end = datetime.strptime(request.values.get("end"), "%Y-%m-%d %H:%M:%S")
-    resp_data = {"code": 10000, "major_name": str(major_name), "ratio": {"level_1": 0.0, "level_2": 0.0, "level_3": 0.0,
-                                                                         "major_level_1": 0.0, "major_level_2": 0.0,
-                                                                         "major_level_3": 0.0}}
+    resp_data = {"code": 10000, "major_name": str(major_name), "total_risk": 0, "total_major_risk": 0,
+                 "ratio": {"level_1": 0.0, "level_2": 0.0, "level_3": 0.0,
+                           "major_level_1": 0.0, "major_level_2": 0.0,
+                           "major_level_3": 0.0}}
     print("Received time " + str(start) + " to " + str(end))
     print("Received check_key " + str(check_code_list))
     print("Received major_name " + str(major_name))
@@ -1483,7 +1484,9 @@ def analyze_ratio():
         resp_data["ratio"]["major_level_1"] = resp_data["ratio"]["level_1"]
         resp_data["ratio"]["major_level_2"] = resp_data["ratio"]["level_2"]
         resp_data["ratio"]["major_level_3"] = resp_data["ratio"]["level_3"]
-
+        total_major_risk = total_risk
+    resp_data['total_risk'] = total_risk
+    resp_data['total_major_risk'] = total_major_risk
     end_t = datetime.now()
     print(resp_data)
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
@@ -1546,5 +1549,58 @@ def get_project_tag():
         if temp not in contain_map and item.project_tag is not None:
             resp_data.append({"value": temp, "label": str(item.headquarter_tag) + "/" + str(item.project_tag)})
             contain_map.append(temp)
+    print(resp_data)
+    return jsonify(resp_data)
+
+
+@insight_func_blueprint.route('/get_level_query', methods=['POST', 'GET'])
+def get_level_query():
+    print("In function get_level_query")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_head_map = {}
+    resp_data = []
+    # 首先筛选所有总部
+    for item in cache_final_tag:
+        if item.headquarter_tag not in contain_head_map.keys():
+            contain_head_map[str(item.headquarter_tag)] = {}
+    # 再筛选所有区域
+    for item in cache_final_tag:
+        if item.region_tag not in contain_head_map[str(item.headquarter_tag)].keys():
+            contain_head_map[str(item.headquarter_tag)][str(item.region_tag)] = {}
+    # 再筛选所有项目
+    for item in cache_final_tag:
+        if item.project_tag not in contain_head_map[str(item.headquarter_tag)][str(item.region_tag)].keys():
+            contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)] = []
+    for item in cache_final_tag:
+        contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+    # 将返回数据格式化
+    for head in contain_head_map:
+        if head != "None":
+            region_list = []
+            for region in contain_head_map[head]:
+                project_list = []
+                for project in contain_head_map[head][region]:
+                    check_code_list = []
+                    for check_code in contain_head_map[head][region][project]:
+                        check_code_list.append({"label": check_code, "value": check_code})
+                    project_list.append({"label": project if project != "None" else "其他", "value": project,
+                                         "children": check_code_list})
+                region_list.append(
+                    {"label": region if region != "None" else "其他", "value": region, "children": project_list})
+            resp_data.append({"label": head, "value": head, "children": region_list})
+    for head in contain_head_map:
+        if head == "None":
+            region_list = []
+            for region in contain_head_map[head]:
+                project_list = []
+                for project in contain_head_map[head][region]:
+                    check_code_list = []
+                    for check_code in contain_head_map[head][region][project]:
+                        check_code_list.append({"label": check_code, "value": check_code})
+                    project_list.append({"label": project if project != "None" else "其他", "value": project,
+                                         "children": check_code_list})
+                region_list.append(
+                    {"label": region if region != "None" else "其他", "value": region, "children": project_list})
+            resp_data.append({"label": "其他", "value": head, "children": region_list})
     print(resp_data)
     return jsonify(resp_data)
