@@ -41,7 +41,6 @@ def cache_tables():
     cache_risk_user = RiskUser.query.all()
     gl.set_value("risk_user", cache_risk_user)
     print("Time to query table [1]risk_user is " + str((datetime.now() - begin_t).seconds) + "s")
-    print(cache_risk_user[0])
 
     # 缓存表 prj_with_tag
     # cache_prj_with_tag = PrjWithTag.query.all()

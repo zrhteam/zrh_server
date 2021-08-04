@@ -3,6 +3,7 @@ from datetime import datetime
 from models.final_record import FinalRecord
 from models.final_tag import FinalTag
 from models.risk_project import RiskProject
+from models.risk_project_module import RiskProjectModule
 from models.risk_user import RiskUser
 from models.sys_file import SysFile
 from ops import scheduler  # 很关键的一步，导入初始化过的scheduler对象
@@ -65,6 +66,11 @@ def auto_update():
         cache_risk_project = RiskProject.query.all()
         gl.set_value("risk_project", cache_risk_project)
         print("Time to query [5]risk_project is " + str((datetime.now() - begin_t).seconds) + "s")
+
+        begin_t = datetime.now()
+        cache_risk_project_module = RiskProjectModule.query.all()
+        gl.set_value("risk_project_module", cache_risk_project_module)
+        print("Time to query [6]risk_project_module is " + str((datetime.now() - begin_t).seconds) + "s")
         # print("risk_project 更新完成")
         end_t = datetime.now()
         print("Time to query all is " + str((end_t - start_t).seconds) + "s")
