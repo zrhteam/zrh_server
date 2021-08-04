@@ -913,9 +913,15 @@ def analyze_tendency_project():
             # 专业隐患数量
             if item.major_name == major_name:
                 resp_data["data"][contained_check_map[item.project_code]][item.project_code]["major_risk"] += 1
+            if major_name == '全部专业':
+                resp_data["data"][contained_check_map[item.project_code]][item.project_code]["major_risk"] = \
+                    resp_data["data"][contained_check_map[item.project_code]][item.project_code]["risk"]
             # 专业高风险隐患数量
             if item.risk_level == "3" and item.major_name == major_name:
                 resp_data["data"][contained_check_map[item.project_code]][item.project_code]["major_risk_high"] += 1
+            if major_name == '全部专业':
+                resp_data["data"][contained_check_map[item.project_code]][item.project_code]["major_risk_high"] = \
+                    resp_data["data"][contained_check_map[item.project_code]][item.project_code]["risk_high"]
     end_t = datetime.now()
     print(resp_data)
     print("Query total time is: " + str((end_t - start_t).seconds) + "s")
@@ -1604,3 +1610,32 @@ def get_level_query():
             resp_data.append({"label": "其他", "value": head, "children": region_list})
     print(resp_data)
     return jsonify(resp_data)
+
+
+@insight_func_blueprint.route('/get_kpi', methods=['POST', 'GET'])
+def get_kpi():
+    print("In function get_kpi")
+    start_t = datetime.now()
+    cache_final_record = gl.get_value("final_record")
+    cache_final_tag = gl.get_value("final_tag")
+    cache_risk_project_module = gl.get_value("risk_project_module")
+    # Test:检查1%检查2 ——> ["检查1"，"检查2"] 选择多个对象，以"%"隔开
+    check_code_list = request.values.get("check_key").split("%")
+    # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
+    start = datetime.strptime("2020-02-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+    end = datetime.now()
+    if request.values.get("start") is not None:
+        start = datetime.strptime(request.values.get("start"), "%Y-%m-%d %H:%M:%S")
+    if request.values.get("end") is not None:
+        end = datetime.strptime(request.values.get("end"), "%Y-%m-%d %H:%M:%S")
+    print("Received time " + str(start) + " to " + str(end))
+    print("Received check_key " + str(check_code_list))
+    contained_check_map = []
+    for item in cache_final_tag:
+        if item.code in check_code_list:
+            if item.plan_start_time <= end and item.plan_end_time >= start:
+                contained_check_map.append(item.code)
+
+    for item in cache_final_record:
+        print(item)
+
