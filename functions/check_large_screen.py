@@ -152,6 +152,7 @@ def check_ls_picture_note():
     for ele in sys_file:
         if str(ele.id) in image_id_list.keys():
             image_url = ele.upload_host + ele.directory + ele.name
+            cur_img_id = str(ele.id)
             if image_id_list[cur_img_id]["major_name"] not in resp_data["data"].keys():
                 resp_data["data"][image_id_list[cur_img_id]["major_name"]] = []
             resp_data["data"][image_id_list[cur_img_id]["major_name"]].append({"image_url": image_url,
