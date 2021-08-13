@@ -1514,21 +1514,6 @@ def get_headquarter_tag():
     return jsonify(resp_data)
 
 
-@insight_func_blueprint.route('/get_hide_head', methods=['POST', 'GET'])
-def get_headquarter_hide_tag():
-    print("In function get_headquarter_hide_tag")
-    cache_final_tag = gl.get_value("final_tag")
-    contain_map = []
-    resp_data = []
-    for item in cache_final_tag:
-        if item.hide_headquarter not in contain_map:
-            resp_data.append({"value": item.headquarter_tag, "label": item.headquarter_tag})
-            contain_map.append(item.headquarter_tag)
-
-    print(resp_data)
-    return jsonify(resp_data)
-
-
 @insight_func_blueprint.route('/get_region_tag', methods=['POST', 'GET'])
 def get_region_tag():
     print("In function get_region_tag")
@@ -1619,6 +1604,7 @@ def get_kpi():
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
     cache_risk_project_module = gl.get_value("risk_project_module")
+    resp_data = []
     # Test:检查1%检查2 ——> ["检查1"，"检查2"] 选择多个对象，以"%"隔开
     check_code_list = request.values.get("check_key").split("%")
     # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
@@ -1631,11 +1617,82 @@ def get_kpi():
     print("Received time " + str(start) + " to " + str(end))
     print("Received check_key " + str(check_code_list))
     contained_check_map = []
-    for item in cache_final_tag:
-        if item.code in check_code_list:
-            if item.plan_start_time <= end and item.plan_end_time >= start:
-                contained_check_map.append(item.code)
-
     for item in cache_final_record:
-        print(item)
+        if item.project_code in check_code_list:
+            if item.system_name == '消火栓系统' and item.equipment_name == '室内消火栓' and item.module_name == '消火栓静压':
+                if item.note == '室内消火栓静压小于0.07Mpa' or item.note == '室内消火栓静压小于0.07Mpa' or item.note == '室内消火栓静压小于0.07Mpa':
+                    contained_check_map.append(item.code)
 
+    end_t = datetime.now()
+    print(resp_data)
+    print("Query total time is: " + str((end_t - start_t).seconds) + "s")
+    return jsonify(resp_data)
+
+
+@insight_func_blueprint.route('/get_hide_tag', methods=['POST', 'GET'])
+def get_hide_tag():
+    print("In function get_hide_tag")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_head_map = {}
+    head_hide_tag_map = {}
+    region_hide_tag_map = {}
+    project_hide_tag_map = {}
+    resp_data = []
+    # 首先筛选所有总部
+    for item in cache_final_tag:
+        if item.headquarter_tag is not None and str(item.headquarter_tag) not in contain_head_map.keys():
+            contain_head_map[str(item.headquarter_tag)] = {}
+            if item.headquarter_tag not in head_hide_tag_map.keys():
+                if item.headquarter_hide_tag is not None:
+                    head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_hide_tag)
+                else:
+                    head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_tag)[0] + '***' + \
+                                                                   str(item.headquarter_tag)[-1]
+    # 再筛选所有区域
+    for item in cache_final_tag:
+        if item.region_tag is not None and str(item.region_tag) not in contain_head_map[str(item.headquarter_tag)].keys():
+            contain_head_map[str(item.headquarter_tag)][str(item.region_tag)] = {}
+            if str(item.headquarter_tag) + '/' + str(item.region_tag) not in region_hide_tag_map.keys():
+                if item.region_hide_tag is not None:
+                    region_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag)] = str(
+                        item.region_hide_tag)
+                else:
+                    region_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag)] = str(item.region_tag)[
+                                                                                                      0] + '***' + \
+                                                                                                  str(item.region_tag)[
+                                                                                                      -1]
+    # 再筛选所有项目
+    for item in cache_final_tag:
+        if item.project_tag is not None and item.region_tag is not None:
+            if str(item.project_tag) not in contain_head_map[str(item.headquarter_tag)][str(item.region_tag)].keys():
+                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)] = []
+                if str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(
+                        item.project_tag) not in project_hide_tag_map.keys():
+                    if item.project_hide_tag is not None:
+                        project_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag) +
+                                             '/' + str(item.project_tag)] = str(item.project_hide_tag)
+                    else:
+                        project_hide_tag_map[
+                            str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(item.project_tag)] = \
+                            str(item.project_tag)[0] + '***' + str(item.project_tag)[-1]
+
+    for item in cache_final_tag:
+        if item.headquarter_tag is not None and item.region_tag is not None and item.project_tag is not None:
+            contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+
+    # 将返回数据格式化
+    for head in contain_head_map:
+        region_list = []
+        for region in contain_head_map[head]:
+            project_list = []
+            for project in contain_head_map[head][region]:
+                check_code_list = []
+                for check_code in contain_head_map[head][region][project]:
+                    check_code_list.append({"level": 4, "label": check_code, "value": check_code})
+                project_list.append(
+                    {"level": 3, "label": project_hide_tag_map[head+'/'+region+'/'+project], "value": project, "children": check_code_list})
+            region_list.append(
+                {"level": 2, "label": region_hide_tag_map[head+'/'+region], "value": region, "children": project_list})
+        resp_data.append({"level": 1, "label": head_hide_tag_map[head], "value": head, "children": region_list})
+    print(resp_data)
+    return jsonify(resp_data)
