@@ -1646,11 +1646,14 @@ def get_hide_tag():
                 if item.headquarter_hide_tag is not None:
                     head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_hide_tag)
                 else:
-                    head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_tag)[0] + '***' + \
-                                                                   str(item.headquarter_tag)[-1]
+                    if len(str(item.headquarter_tag)) <= 3:
+                        head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_tag)[0] + '***'
+                    else:
+                        head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_tag)[0] + '***' + \
+                                                                       str(item.headquarter_tag)[-1]
     # 再筛选所有区域
     for item in cache_final_tag:
-        if item.region_tag is not None and str(item.region_tag) not in contain_head_map[str(item.headquarter_tag)].keys():
+        if item.headquarter_tag is not None and str(item.region_tag) not in contain_head_map[str(item.headquarter_tag)].keys():
             contain_head_map[str(item.headquarter_tag)][str(item.region_tag)] = {}
             if str(item.headquarter_tag) + '/' + str(item.region_tag) not in region_hide_tag_map.keys():
                 if item.region_hide_tag is not None:
@@ -1663,36 +1666,50 @@ def get_hide_tag():
                                                                                                       -1]
     # 再筛选所有项目
     for item in cache_final_tag:
-        if item.project_tag is not None and item.region_tag is not None:
+        if item.project_tag is not None and item.headquarter_tag is not None:
             if str(item.project_tag) not in contain_head_map[str(item.headquarter_tag)][str(item.region_tag)].keys():
                 contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)] = []
                 if str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(
                         item.project_tag) not in project_hide_tag_map.keys():
                     if item.project_hide_tag is not None:
-                        project_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag) +
-                                             '/' + str(item.project_tag)] = str(item.project_hide_tag)
+                        project_hide_tag_map[
+                            str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(item.project_tag)] = \
+                            str(item.project_hide_tag)
                     else:
                         project_hide_tag_map[
                             str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(item.project_tag)] = \
                             str(item.project_tag)[0] + '***' + str(item.project_tag)[-1]
-
+    # 筛选所有检查
     for item in cache_final_tag:
-        if item.headquarter_tag is not None and item.region_tag is not None and item.project_tag is not None:
+        if item.headquarter_tag is not None and item.project_tag is not None:
             contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
 
     # 将返回数据格式化
     for head in contain_head_map:
         region_list = []
         for region in contain_head_map[head]:
-            project_list = []
-            for project in contain_head_map[head][region]:
-                check_code_list = []
-                for check_code in contain_head_map[head][region][project]:
-                    check_code_list.append({"level": 4, "label": check_code, "value": check_code})
-                project_list.append(
-                    {"level": 3, "label": project_hide_tag_map[head+'/'+region+'/'+project], "value": project, "children": check_code_list})
-            region_list.append(
-                {"level": 2, "label": region_hide_tag_map[head+'/'+region], "value": region, "children": project_list})
+            if region != 'None':
+                project_list = []
+                for project in contain_head_map[head][region]:
+                    check_code_list = []
+                    for check_code in contain_head_map[head][region][project]:
+                        check_code_list.append({"level": 4, "label": check_code, "value": check_code})
+                    project_list.append(
+                        {"level": 3, "label": project_hide_tag_map[head + '/' + region + '/' + project],
+                         "value": project, "children": check_code_list})
+                region_list.append(
+                    {"level": 2, "label": region_hide_tag_map[head + '/' + region], "value": region,
+                     "children": project_list})
+            else:
+                project_list = []
+                for project in contain_head_map[head][region]:
+                    check_code_list = []
+                    for check_code in contain_head_map[head][region][project]:
+                        check_code_list.append({"level": 4, "label": check_code, "value": check_code})
+                    project_list.append(
+                        {"level": 3, "label": project_hide_tag_map[head + '/' + region + '/' + project],
+                         "value": project, "children": check_code_list})
+                region_list = project_list
         resp_data.append({"level": 1, "label": head_hide_tag_map[head], "value": head, "children": region_list})
     print(resp_data)
     return jsonify(resp_data)
