@@ -1685,6 +1685,7 @@ def get_hide_tag():
             contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
 
     # 将返回数据格式化
+    count = 0
     for head in contain_head_map:
         region_list = []
         for region in contain_head_map[head]:
@@ -1693,23 +1694,29 @@ def get_hide_tag():
                 for project in contain_head_map[head][region]:
                     check_code_list = []
                     for check_code in contain_head_map[head][region][project]:
-                        check_code_list.append({"level": 4, "label": check_code, "value": check_code})
+                        check_code_list.append({"level": 4, "label": check_code, "value": check_code, "id": count})
+                        count += 1
                     project_list.append(
                         {"level": 3, "label": project_hide_tag_map[head + '/' + region + '/' + project],
-                         "value": project, "children": check_code_list})
+                         "value": project, "children": check_code_list, "id": count})
+                    count += 1
                 region_list.append(
                     {"level": 2, "label": region_hide_tag_map[head + '/' + region], "value": region,
-                     "children": project_list})
+                     "children": project_list, "id": count})
+                count += 1
             else:
                 project_list = []
                 for project in contain_head_map[head][region]:
                     check_code_list = []
                     for check_code in contain_head_map[head][region][project]:
-                        check_code_list.append({"level": 4, "label": check_code, "value": check_code})
+                        check_code_list.append({"level": 4, "label": check_code, "value": check_code, "id": count})
+                        count += 1
                     project_list.append(
                         {"level": 3, "label": project_hide_tag_map[head + '/' + region + '/' + project],
-                         "value": project, "children": check_code_list})
+                         "value": project, "children": check_code_list, "id": count})
+                    count += 1
                 region_list = project_list
-        resp_data.append({"level": 1, "label": head_hide_tag_map[head], "value": head, "children": region_list})
+        resp_data.append({"level": 1, "label": head_hide_tag_map[head], "value": head, "children": region_list, "id": count})
+        count += 1
     print(resp_data)
     return jsonify(resp_data)
