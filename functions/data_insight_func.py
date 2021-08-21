@@ -1604,10 +1604,17 @@ def get_kpi():
     cache_final_record = gl.get_value("final_record")
     cache_final_tag = gl.get_value("final_tag")
     cache_risk_project_module = gl.get_value("risk_project_module")
-    resp_data = []
-    # Test:检查1%检查2 ——> ["检查1"，"检查2"] 选择多个对象，以"%"隔开
+    # total = -1 代表没有查询到，total = 0 0次检查
+    resp_data = [{'label': '室内消火栓水压', 'count': 0, 'total': -1, 'kpi': 1.0, 'ratio': {}},
+                 {'label': '末端压力（自喷）', 'count': 0, 'total': -1, 'kpi': 1.0, 'ratio': {}},
+                 {'label': '报警主机点位', 'count': 0, 'total': -1, 'kpi': 1.0, 'ratio': {}},
+                 {'label': '感烟火灾探测器物理地址', 'count': 0, 'kpi': 1.0, 'total': -1, 'ratio': {}},
+                 {'label': '排烟口风量', 'count': 0, 'total': -1, 'kpi': 1.0, 'ratio': {}},
+                 {'label': '防火卷帘手动降落功能', 'count': 0, 'kpi': 1.0, 'total': -1, 'ratio': {}},
+                 {'label': '常闭防火门状态', 'count': 0, 'total': -1, 'kpi': 1.0, 'ratio': {}},
+                 {'label': '疏散指示', 'count': 0, 'total': -1, 'kpi': 1.0, 'ratio': {}},
+                 {'label': '应急照明', 'count': 0, 'total': -1, 'kpi': 1.0, 'ratio': {}}]
     check_code_list = request.values.get("check_key").split("%")
-    # 若没有传入时间参数，则start为表中的最早时间，end为当前时间
     start = datetime.strptime("2020-02-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     end = datetime.now()
     if request.values.get("start") is not None:
@@ -1616,12 +1623,137 @@ def get_kpi():
         end = datetime.strptime(request.values.get("end"), "%Y-%m-%d %H:%M:%S")
     print("Received time " + str(start) + " to " + str(end))
     print("Received check_key " + str(check_code_list))
-    contained_check_map = []
+    module_map = {}
     for item in cache_final_record:
-        if item.project_code in check_code_list:
+        if item.project_code in check_code_list and (start <= item.create_time <= end or start <= item.update_time <= end):
+            # KPI指标1
             if item.system_name == '消火栓系统' and item.equipment_name == '室内消火栓' and item.module_name == '消火栓静压':
-                if item.note == '室内消火栓静压小于0.07Mpa' or item.note == '室内消火栓静压小于0.07Mpa' or item.note == '室内消火栓静压小于0.07Mpa':
-                    contained_check_map.append(item.code)
+                if item.note == '室内消火栓静压小于0.07Mpa' or item.note == '室内消火栓静压小于0.10Mpa' or item.note == '室内消火栓静压小于0.15Mpa':
+                    resp_data[0]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[0]['rate'].keys():
+                                resp_data[0]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[0]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 0
+            # KPI指标2
+            if item.system_name == '自动喷水灭火系统' and item.equipment_name == '末端试水装置' and item.module_name == '压力':
+                if item.note == '喷淋系统防火分区未端压力小于0.05Mpa':
+                    resp_data[1]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[1]['rate'].keys():
+                                resp_data[1]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[1]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 1
+            # KPI指标3
+            if item.system_name == '火灾自动报警系统' and item.equipment_name == '报警主机' and item.module_name == '点位故障':
+                if item.note is not None:
+                    if resp_data[2]['total'] == -1:
+                        resp_data[2]['total'] = 0
+                    data = str(item.note).split("；")
+                    resp_data[2]['total'] += int(data[0])
+                    for num in data[1].split("，"):
+                        resp_data[2]['count'] += int(num)
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[2]['rate'].keys():
+                                resp_data[2]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[2]['rate'][str(problem)] += 1
+            # KPI指标4
+            if item.system_name == '火灾自动报警系统' and item.equipment_name == '感烟火灾探测器' and item.module_name == '物理地址':
+                if item.note == '感烟火灾探测器物理地址错误' or item.note == '感烟火灾探测器物理地址不准确' or item.note == '感烟火灾探测器物理地址不详细':
+                    resp_data[3]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[3]['rate'].keys():
+                                resp_data[3]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[3]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 3
+            # KPI指标5
+            if item.system_name == '防排烟系统' and item.equipment_name == '排烟系统' and item.module_name == '排烟口':
+                if item.note == '排烟口风量不合格':
+                    resp_data[4]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[4]['rate'].keys():
+                                resp_data[4]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[4]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 4
+            # KPI指标6
+            if item.system_name == '防火分隔设施' and item.equipment_name == '防火卷帘' and item.module_name == '功能':
+                if item.note == '防火卷帘无法现场手动降落':
+                    resp_data[5]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[5]['rate'].keys():
+                                resp_data[5]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[5]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 5
+            # KPI指标7
+            if item.system_name == '防火分隔设施' and item.equipment_name == '常闭防火门' and item.module_name == '状态':
+                if item.note == '常闭防火门处于常开状态':
+                    resp_data[6]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[6]['rate'].keys():
+                                resp_data[6]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[6]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 6
+            # KPI指标8
+            if item.system_name == '应急疏散系统' and item.equipment_name == '疏散指示标志' and item.module_name == '状态':
+                if item.note == '疏散指示标志故障':
+                    resp_data[7]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[7]['rate'].keys():
+                                resp_data[7]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[7]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 7
+            # KPI指标9
+            if item.system_name == '应急疏散系统' and item.equipment_name == '应急照明' and item.module_name == '状态':
+                if item.note == '应急照明故障':
+                    resp_data[8]['count'] += 1
+                    temp_arr = [item.problem1, item.problem2, item.problem3, item.problem4, item.problem5]
+                    for problem in temp_arr:
+                        if problem is not None:
+                            if str(problem) not in resp_data[8]['rate'].keys():
+                                resp_data[8]['rate'][str(problem)] = 0.0
+                            else:
+                                resp_data[8]['rate'][str(problem)] += 1
+                    module_map[str(item.project_code) + str(item.module_code)] = 8
+
+    for item in cache_risk_project_module:
+        if str(item.project_code) + str(item.module_code) in module_map.keys():
+            # 如果查到了并且当前数值是-1，则要转为0
+            if resp_data[module_map[str(item.project_code)+str(item.module_code)]]['total'] == -1:
+                resp_data[module_map[str(item.project_code) + str(item.module_code)]]['total'] = 0
+            resp_data[module_map[str(item.project_code)+str(item.module_code)]]['total'] += item.check_quantity
+    for item in range(9):
+        if resp_data[item]['total'] != 0 and resp_data[item]['total'] != -1:
+            resp_data[item]['kpi'] = round(1 - resp_data[item]['count']/resp_data[item]['total'], 2)
+            if resp_data[item]['count'] != 0:
+                for problem in resp_data[item]['ratio']:
+                    resp_data[item]['ratio'][problem] = resp_data[item]['ratio'][problem]/resp_data[item]['count']
+        # 若total为0，则表示缺项，kpi为-1
+        if resp_data[item]['total'] == 0:
+            resp_data[item]['kpi'] = -1
 
     end_t = datetime.now()
     print(resp_data)
