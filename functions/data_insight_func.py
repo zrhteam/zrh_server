@@ -1778,11 +1778,8 @@ def get_hide_tag():
                 if item.headquarter_hide_tag is not None:
                     head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_hide_tag)
                 else:
-                    if len(str(item.headquarter_tag)) <= 3:
-                        head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_tag)[0] + '***'
-                    else:
-                        head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_tag)[0] + '***' + \
-                                                                       str(item.headquarter_tag)[-1]
+                    head_hide_tag_map[str(item.headquarter_tag)] = str(item.headquarter_tag)
+
     # 再筛选所有区域
     for item in cache_final_tag:
         if item.headquarter_tag is not None and str(item.region_tag) not in contain_head_map[str(item.headquarter_tag)].keys():
@@ -1792,10 +1789,8 @@ def get_hide_tag():
                     region_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag)] = str(
                         item.region_hide_tag)
                 else:
-                    region_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag)] = str(item.region_tag)[
-                                                                                                      0] + '***' + \
-                                                                                                  str(item.region_tag)[
-                                                                                                      -1]
+                    region_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag)] = str(item.region_tag)
+
     # 再筛选所有项目
     for item in cache_final_tag:
         if item.project_tag is not None and item.headquarter_tag is not None:
@@ -1810,7 +1805,7 @@ def get_hide_tag():
                     else:
                         project_hide_tag_map[
                             str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(item.project_tag)] = \
-                            str(item.project_tag)[0] + '***' + str(item.project_tag)[-1]
+                            str(item.project_tag)
     # 筛选所有检查
     for item in cache_final_tag:
         if item.headquarter_tag is not None and item.project_tag is not None:
