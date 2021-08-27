@@ -169,3 +169,95 @@ def get_level_hide():
             resp_data.append({"label": "其他", "value": head, "children": region_list})
     print(resp_data)
     return jsonify(resp_data)
+
+
+@hide_tag_blueprint.route('/get_headquarter_tag', methods=['POST', 'GET'])
+def get_headquarter_tag():
+    print("In function get_headquarter_tag")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_map = []
+    resp_data = []
+    for item in cache_final_tag:
+        if item.headquarter_tag not in contain_map and item.headquarter_tag is not None:
+            resp_data.append({"value": item.headquarter_tag, "label": item.headquarter_tag})
+            contain_map.append(item.headquarter_tag)
+    print(resp_data)
+    return jsonify(resp_data)
+
+
+@hide_tag_blueprint.route('/get_headquarter_hide_tag', methods=['POST', 'GET'])
+def get_headquarter_hide_tag():
+    print("In function get_headquarter_hide_tag")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_map = []
+    resp_data = []
+    for item in cache_final_tag:
+        if str(item.headquarter_tag) not in contain_map and item.headquarter_tag is not None:
+            resp_data.append({"value": str(item.headquarter_tag), "label": str(item.headquarter_hide_tag) if
+                              item.headquarter_hide_tag is not None else str(item.headquarter_tag)})
+            contain_map.append(str(item.headquarter_tag))
+    print(resp_data)
+    return jsonify(resp_data)
+
+
+@hide_tag_blueprint.route('/get_region_tag', methods=['POST', 'GET'])
+def get_region_tag():
+    print("In function get_region_tag")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_map = []
+    resp_data = []
+    for item in cache_final_tag:
+        if str(item.headquarter_tag) + "/" + str(item.region_tag) not in contain_map and item.region_tag is not None:
+            resp_data.append({"value": str(item.headquarter_tag) + "/" + str(item.region_tag),
+                              "label": str(item.headquarter_tag) + "/" + str(item.region_tag)})
+            contain_map.append(str(item.headquarter_tag) + "/" + str(item.region_tag))
+    print(resp_data)
+    return jsonify(resp_data)
+
+
+@hide_tag_blueprint.route('/get_region_hide_tag', methods=['POST', 'GET'])
+def get_region_hide_tag():
+    print("In function get_region_hide_tag")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_map = []
+    resp_data = []
+    for item in cache_final_tag:
+        if str(item.headquarter_tag) + "/" + str(item.region_tag) not in contain_map and item.region_tag is not None:
+            resp_data.append({"value": str(item.headquarter_tag) + "/" + str(item.region_tag),
+                              "label": (str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(item.headquarter_tag)) + "/" +
+                                       (str(item.region_hide_tag) if item.region_hide_tag is not None else str(item.region_tag))})
+            contain_map.append(str(item.headquarter_tag) + "/" + str(item.region_tag))
+    print(resp_data)
+    return jsonify(resp_data)
+
+
+@hide_tag_blueprint.route('/get_project_tag', methods=['POST', 'GET'])
+def get_project_tag():
+    print("In function get_project_tag")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_map = []
+    resp_data = []
+    for item in cache_final_tag:
+        temp = str(item.headquarter_tag) + "/" + str(item.region_tag) + "/" + str(item.project_tag)
+        if temp not in contain_map and item.project_tag is not None:
+            resp_data.append({"value": temp, "label": str(item.headquarter_tag) + "/" + str(item.project_tag)})
+            contain_map.append(temp)
+    print(resp_data)
+    return jsonify(resp_data)
+
+
+@hide_tag_blueprint.route('/get_project_hide_tag', methods=['POST', 'GET'])
+def get_project_hide_tag():
+    print("In function get_project_hide_tag")
+    cache_final_tag = gl.get_value("final_tag")
+    contain_map = []
+    resp_data = []
+    for item in cache_final_tag:
+        temp = str(item.headquarter_tag) + "/" + str(item.region_tag) + "/" + str(item.project_tag)
+        if temp not in contain_map and item.project_tag is not None:
+            resp_data.append({"value": temp,
+                              "label": (str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(item.headquarter_tag)) + "/" +
+                                       (str(item.project_hide_tag) if item.project_hide_tag is not None else str(item.project_tag))})
+            contain_map.append(temp)
+    print(resp_data)
+    return jsonify(resp_data)
