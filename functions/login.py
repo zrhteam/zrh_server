@@ -162,7 +162,7 @@ def get_grant():
                 resp_data["data"]["region_tag"] = item.region_tag
                 resp_data["data"]["project_tag"] = item.project_tag
                 value = {}
-                if item.user_grant == "超级用户":
+                if item.user_grant == "超级用户" or item.user_grant == "系统用户":
                     value["headquarter_tag"] = {}
                     for ele in cache_prj_with_tag:
                         if ele.headquarter_tag is None:
