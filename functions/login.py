@@ -137,6 +137,7 @@ def get_grant():
     start_t = datetime.now()
     name = request.values.get("username")
     password = request.values.get("password")
+    grant = request.values.get("user_grant")
     print("Received name: " + str(name))
     print("Received password: " + str(password))
     flag = 0
@@ -154,6 +155,45 @@ def get_grant():
     # cache_check_location_map = gl.get_value("cache_check_location_map")
     # print(cache_check_location_map)
     # print(len(cache_check_location_map))
+    value = {}
+    if grant == "超级用户" or grant == "系统用户":
+        value["headquarter_tag"] = {}
+        for ele in cache_prj_with_tag:
+            if ele.headquarter_tag is None:
+                continue
+            if ele.headquarter_tag not in value["headquarter_tag"].keys():
+                value["headquarter_tag"][ele.headquarter_tag] = {"region_tag": {}}
+            if ele.region_tag is None:
+                if "project_tag" not in value["headquarter_tag"][ele.headquarter_tag].keys():
+                    value["headquarter_tag"][ele.headquarter_tag]["project_tag"] = {}
+                if ele.project_tag is None:  # 如果project都为null，那么可以判断为测试项目，跳过
+                    resp_data["code"] = -1
+                    break
+                if ele.project_tag not in value["headquarter_tag"][ele.headquarter_tag]["project_tag"].keys():
+                    value["headquarter_tag"][ele.headquarter_tag]["project_tag"][ele.project_tag] = []
+                # print(ele.code)
+                # if ele.code in cache_check_location_map.keys():
+                # value["headquarter_tag"][ele.headquarter_tag]["project_tag"][ele.project_tag].append({ele.code: cache_check_location_map[ele.code]})
+                value["headquarter_tag"][ele.headquarter_tag]["project_tag"][ele.project_tag].append(
+                    {ele.code: ""})
+
+            else:
+                if ele.region_tag not in value["headquarter_tag"][ele.headquarter_tag]["region_tag"].keys():
+                    value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag] = {"project_tag": {}}
+                if ele.project_tag is None:  # 如果project都为null，那么可以判断为测试项目，跳过
+                    resp_data["code"] = -1
+                    break
+                if ele.project_tag not in value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag][
+                    "project_tag"].keys():
+                    value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][
+                        ele.project_tag] = []
+                # print(ele.code)
+                # if ele.code in cache_check_location_map.keys():
+                # value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][ele.project_tag].append({ele.code: cache_check_location_map[ele.code]})
+                value["headquarter_tag"][ele.headquarter_tag]["region_tag"][ele.region_tag]["project_tag"][
+                    ele.project_tag].append({ele.code: ""})
+        resp_data["data"]["value"] = value
+        resp_data["data"]["user_grant"] = grant
     for item in cache_risk_user:
         if item.name == name:
             if item.password == password:
