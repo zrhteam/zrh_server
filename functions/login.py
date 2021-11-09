@@ -148,7 +148,6 @@ def get_grant():
                           "project_tag": "",
                           "value": {}}}
     cache_risk_user = gl.get_value("risk_user")
-
     # cache_prj_with_tag = gl.get_value("cache_prj_with_tag")
     # modified
     cache_prj_with_tag = gl.get_value("final_tag")

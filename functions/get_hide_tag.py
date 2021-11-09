@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request
 
 import functions.cache_data as gl
+from models.risk_user import RiskUser
 
 hide_tag_blueprint = Blueprint('hide_tag', __name__, url_prefix='/api/analyze/hide_tag')
 
@@ -29,7 +30,8 @@ def get_hide_tag():
 
     # 再筛选所有区域
     for item in cache_final_tag:
-        if item.headquarter_tag is not None and str(item.region_tag) not in contain_head_map[str(item.headquarter_tag)].keys():
+        if item.headquarter_tag is not None and str(item.region_tag) not in contain_head_map[
+            str(item.headquarter_tag)].keys():
             contain_head_map[str(item.headquarter_tag)][str(item.region_tag)] = {}
             if str(item.headquarter_tag) + '/' + str(item.region_tag) not in region_hide_tag_map.keys():
                 if item.region_hide_tag is not None:
@@ -90,7 +92,8 @@ def get_hide_tag():
                          "value": project, "children": check_code_list, "id": count})
                     count += 1
                 region_list = project_list
-        resp_data.append({"level": 1, "label": head_hide_tag_map[head], "value": head, "children": region_list, "id": count})
+        resp_data.append(
+            {"level": 1, "label": head_hide_tag_map[head], "value": head, "children": region_list, "id": count})
         count += 1
     print(resp_data)
     return jsonify(resp_data)
@@ -180,8 +183,8 @@ def get_level_hide():
             contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)] = []
         if str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(
                 item.project_tag) not in project_hide_tag_map.keys():
-            project_hide_tag_map[str(item.headquarter_tag)+'/'+str(item.region_tag)+'/'+str(item.project_tag)] = \
-                    str(item.project_hide_tag) if item.project_hide_tag is not None else str(item.project_tag)
+            project_hide_tag_map[str(item.headquarter_tag) + '/' + str(item.region_tag) + '/' + str(item.project_tag)] = \
+                str(item.project_hide_tag) if item.project_hide_tag is not None else str(item.project_tag)
 
     for item in cache_final_tag:
         contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
@@ -195,12 +198,12 @@ def get_level_hide():
                     check_code_list = []
                     for check_code in contain_head_map[head][region][project]:
                         check_code_list.append({"label": check_code, "value": check_code})
-                    project_list.append({"label": project_hide_tag_map[head+'/'+region+'/'+project]
-                                        if project_hide_tag_map[head+'/'+region+'/'+project] != "None" else "其他",
+                    project_list.append({"label": project_hide_tag_map[head + '/' + region + '/' + project]
+                    if project_hide_tag_map[head + '/' + region + '/' + project] != "None" else "其他",
                                          "value": project,
                                          "children": check_code_list})
-                region_list.append({"label": region_hide_tag_map[head+'/'+region]
-                                    if region_hide_tag_map[head+'/'+region] != "None" else "其他",
+                region_list.append({"label": region_hide_tag_map[head + '/' + region]
+                if region_hide_tag_map[head + '/' + region] != "None" else "其他",
                                     "value": region,
                                     "children": project_list})
             resp_data.append({"label": head_hide_tag_map[head] if head_hide_tag_map[head] != "None" else "其他",
@@ -215,11 +218,11 @@ def get_level_hide():
                     for check_code in contain_head_map[head][region][project]:
                         check_code_list.append({"label": check_code, "value": check_code})
                     project_list.append({"label": project_hide_tag_map[head + '/' + region + '/' + project]
-                                        if project_hide_tag_map[head + '/' + region + '/' + project] != "None" else "其他",
+                    if project_hide_tag_map[head + '/' + region + '/' + project] != "None" else "其他",
                                          "value": project,
                                          "children": check_code_list})
                 region_list.append({"label": region_hide_tag_map[head + '/' + region]
-                                    if region_hide_tag_map[head + '/' + region] != "None" else "其他",
+                if region_hide_tag_map[head + '/' + region] != "None" else "其他",
                                     "value": region,
                                     "children": project_list})
             resp_data.append({"label": "其他", "value": head, "children": region_list})
@@ -250,7 +253,7 @@ def get_headquarter_hide_tag():
     for item in cache_final_tag:
         if str(item.headquarter_tag) not in contain_map and item.headquarter_tag is not None:
             resp_data.append({"value": str(item.headquarter_tag), "label": str(item.headquarter_hide_tag) if
-                              item.headquarter_hide_tag is not None else str(item.headquarter_tag)})
+            item.headquarter_hide_tag is not None else str(item.headquarter_tag)})
             contain_map.append(str(item.headquarter_tag))
     print(resp_data)
     return jsonify(resp_data)
@@ -280,8 +283,11 @@ def get_region_hide_tag():
     for item in cache_final_tag:
         if str(item.headquarter_tag) + "/" + str(item.region_tag) not in contain_map and item.region_tag is not None:
             resp_data.append({"value": str(item.headquarter_tag) + "/" + str(item.region_tag),
-                              "label": (str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(item.headquarter_tag)) + "/" +
-                                       (str(item.region_hide_tag) if item.region_hide_tag is not None else str(item.region_tag))})
+                              "label": (str(
+                                  item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                  item.headquarter_tag)) + "/" +
+                                       (str(item.region_hide_tag) if item.region_hide_tag is not None else str(
+                                           item.region_tag))})
             contain_map.append(str(item.headquarter_tag) + "/" + str(item.region_tag))
     print(resp_data)
     return jsonify(resp_data)
@@ -312,8 +318,11 @@ def get_project_hide_tag():
         temp = str(item.headquarter_tag) + "/" + str(item.region_tag) + "/" + str(item.project_tag)
         if temp not in contain_map and item.project_tag is not None:
             resp_data.append({"value": temp,
-                              "label": (str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(item.headquarter_tag)) + "/" +
-                                       (str(item.project_hide_tag) if item.project_hide_tag is not None else str(item.project_tag))})
+                              "label": (str(
+                                  item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                  item.headquarter_tag)) + "/" +
+                                       (str(item.project_hide_tag) if item.project_hide_tag is not None else str(
+                                           item.project_tag))})
             contain_map.append(temp)
     print(resp_data)
     return jsonify(resp_data)
@@ -329,6 +338,7 @@ def get_level_query_new():
     region_tag = request.values.get("region")
     project_tag = request.values.get("project")
     contain_head_map = {}
+    print(headquarter_tag + "/" + region_tag + "/" + project_tag)
     resp_data = []
     if user_type == "超级用户" or user_type == "系统用户":
         # 首先筛选所有总部
@@ -363,7 +373,8 @@ def get_level_query_new():
                     contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)] = []
         for item in cache_final_tag:
             if item.headquarter_tag == headquarter_tag:
-                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(
+                    item.code)
 
     elif user_type == "区域":
         # 首先筛选所有总部
@@ -383,7 +394,8 @@ def get_level_query_new():
                     contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)] = []
         for item in cache_final_tag:
             if item.headquarter_tag == headquarter_tag and item.region_tag == region_tag:
-                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(
+                    item.code)
 
     elif user_type == "项目":
         # 首先筛选所有总部
@@ -403,7 +415,8 @@ def get_level_query_new():
                     contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)] = []
         for item in cache_final_tag:
             if item.headquarter_tag == headquarter_tag and item.region_tag == region_tag and item.project_tag == project_tag:
-                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(
+                    item.code)
     # 将返回数据格式化
     for head in contain_head_map:
         if head != "None":
@@ -511,7 +524,8 @@ def get_level_hide_new():
         # 再筛选所有检查
         for item in cache_final_tag:
             if item.headquarter_tag == headquarter_tag:
-                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(
+                    item.code)
 
     elif user_type == "区域":
         # 首先筛选所有总部
@@ -544,7 +558,8 @@ def get_level_hide_new():
         # 再筛选所有检查
         for item in cache_final_tag:
             if item.headquarter_tag == headquarter_tag and item.region_tag == region_tag:
-                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(
+                    item.code)
 
     elif user_type == "项目":
         # 首先筛选所有总部
@@ -577,7 +592,8 @@ def get_level_hide_new():
         # 再筛选所有检查
         for item in cache_final_tag:
             if item.headquarter_tag == headquarter_tag and item.region_tag == region_tag and item.project_tag == project_tag:
-                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(item.code)
+                contain_head_map[str(item.headquarter_tag)][str(item.region_tag)][str(item.project_tag)].append(
+                    item.code)
 
     # 将返回数据格式化
     for head in contain_head_map:
@@ -589,12 +605,12 @@ def get_level_hide_new():
                     check_code_list = []
                     for check_code in contain_head_map[head][region][project]:
                         check_code_list.append({"label": check_code, "value": check_code})
-                    project_list.append({"label": project_hide_tag_map[head+'/'+region+'/'+project]
-                                        if project_hide_tag_map[head+'/'+region+'/'+project] != "None" else "其他",
+                    project_list.append({"label": project_hide_tag_map[head + '/' + region + '/' + project]
+                    if project_hide_tag_map[head + '/' + region + '/' + project] != "None" else "其他",
                                          "value": project,
                                          "children": check_code_list})
-                region_list.append({"label": region_hide_tag_map[head+'/'+region]
-                                    if region_hide_tag_map[head+'/'+region] != "None" else "其他",
+                region_list.append({"label": region_hide_tag_map[head + '/' + region]
+                if region_hide_tag_map[head + '/' + region] != "None" else "其他",
                                     "value": region,
                                     "children": project_list})
             resp_data.append({"label": head_hide_tag_map[head] if head_hide_tag_map[head] != "None" else "其他",
@@ -609,11 +625,11 @@ def get_level_hide_new():
                     for check_code in contain_head_map[head][region][project]:
                         check_code_list.append({"label": check_code, "value": check_code})
                     project_list.append({"label": project_hide_tag_map[head + '/' + region + '/' + project]
-                                        if project_hide_tag_map[head + '/' + region + '/' + project] != "None" else "其他",
+                    if project_hide_tag_map[head + '/' + region + '/' + project] != "None" else "其他",
                                          "value": project,
                                          "children": check_code_list})
                 region_list.append({"label": region_hide_tag_map[head + '/' + region]
-                                    if region_hide_tag_map[head + '/' + region] != "None" else "其他",
+                if region_hide_tag_map[head + '/' + region] != "None" else "其他",
                                     "value": region,
                                     "children": project_list})
             resp_data.append({"label": "其他", "value": head, "children": region_list})
@@ -660,14 +676,14 @@ def get_headquarter_hide_tag_new():
         for item in cache_final_tag:
             if str(item.headquarter_tag) not in contain_map and item.headquarter_tag is not None:
                 resp_data.append({"value": str(item.headquarter_tag), "label": str(item.headquarter_hide_tag) if
-                                  item.headquarter_hide_tag is not None else str(item.headquarter_tag)})
+                item.headquarter_hide_tag is not None else str(item.headquarter_tag)})
                 contain_map.append(str(item.headquarter_tag))
     elif user_type == "总部":
         for item in cache_final_tag:
             if item.headquarter_tag == headquarter_tag:
                 if str(item.headquarter_tag) not in contain_map and item.headquarter_tag is not None:
                     resp_data.append({"value": str(item.headquarter_tag), "label": str(item.headquarter_hide_tag) if
-                                      item.headquarter_hide_tag is not None else str(item.headquarter_tag)})
+                    item.headquarter_hide_tag is not None else str(item.headquarter_tag)})
                     contain_map.append(str(item.headquarter_tag))
     print(resp_data)
     return jsonify(resp_data)
@@ -726,7 +742,8 @@ def get_region_hide_tag_new():
                     item.region_tag) not in contain_map and item.region_tag is not None:
                 resp_data.append({"value": str(item.headquarter_tag) + "/" + str(item.region_tag),
                                   "label": (
-                                               str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                               str(
+                                                   item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
                                                    item.headquarter_tag)) + "/" +
                                            (str(item.region_hide_tag) if item.region_hide_tag is not None else str(
                                                item.region_tag))})
@@ -738,7 +755,8 @@ def get_region_hide_tag_new():
                         item.region_tag) not in contain_map and item.region_tag is not None:
                     resp_data.append({"value": str(item.headquarter_tag) + "/" + str(item.region_tag),
                                       "label": (
-                                                   str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                                   str(
+                                                       item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
                                                        item.headquarter_tag)) + "/" +
                                                (str(item.region_hide_tag) if item.region_hide_tag is not None else str(
                                                    item.region_tag))})
@@ -750,7 +768,8 @@ def get_region_hide_tag_new():
                         item.region_tag) not in contain_map and item.region_tag is not None:
                     resp_data.append({"value": str(item.headquarter_tag) + "/" + str(item.region_tag),
                                       "label": (
-                                                   str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                                   str(
+                                                       item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
                                                        item.headquarter_tag)) + "/" +
                                                (str(item.region_hide_tag) if item.region_hide_tag is not None else str(
                                                    item.region_tag))})
@@ -816,7 +835,8 @@ def get_project_hide_tag_new():
             if temp not in contain_map and item.project_tag is not None:
                 resp_data.append({"value": temp,
                                   "label": (
-                                               str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                               str(
+                                                   item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
                                                    item.headquarter_tag)) + "/" +
                                            (str(item.project_hide_tag) if item.project_hide_tag is not None else str(
                                                item.project_tag))})
@@ -828,10 +848,12 @@ def get_project_hide_tag_new():
                 if temp not in contain_map and item.project_tag is not None:
                     resp_data.append({"value": temp,
                                       "label": (
-                                                   str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                                   str(
+                                                       item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
                                                        item.headquarter_tag)) + "/" +
                                                (
-                                                   str(item.project_hide_tag) if item.project_hide_tag is not None else str(
+                                                   str(
+                                                       item.project_hide_tag) if item.project_hide_tag is not None else str(
                                                        item.project_tag))})
                     contain_map.append(temp)
     elif user_type == "区域":
@@ -841,10 +863,12 @@ def get_project_hide_tag_new():
                 if temp not in contain_map and item.project_tag is not None:
                     resp_data.append({"value": temp,
                                       "label": (
-                                                   str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                                   str(
+                                                       item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
                                                        item.headquarter_tag)) + "/" +
                                                (
-                                                   str(item.project_hide_tag) if item.project_hide_tag is not None else str(
+                                                   str(
+                                                       item.project_hide_tag) if item.project_hide_tag is not None else str(
                                                        item.project_tag))})
                     contain_map.append(temp)
     elif user_type == "项目":
@@ -854,11 +878,21 @@ def get_project_hide_tag_new():
                 if temp not in contain_map and item.project_tag is not None:
                     resp_data.append({"value": temp,
                                       "label": (
-                                                   str(item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
+                                                   str(
+                                                       item.headquarter_hide_tag) if item.headquarter_hide_tag is not None else str(
                                                        item.headquarter_tag)) + "/" +
                                                (
-                                                   str(item.project_hide_tag) if item.project_hide_tag is not None else str(
+                                                   str(
+                                                       item.project_hide_tag) if item.project_hide_tag is not None else str(
                                                        item.project_tag))})
                     contain_map.append(temp)
     print(resp_data)
     return jsonify(resp_data)
+
+
+@hide_tag_blueprint.route('/update_user', methods=['POST', 'GET'])
+def update_user():
+    cache_risk_user = RiskUser.query.all()
+    gl.set_value("risk_user", cache_risk_user)
+    print("New user added!!!")
+    return "Finished!"

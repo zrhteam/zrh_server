@@ -26,8 +26,11 @@ app.config.from_object(APSchedulerJobConfig)
 
 @app.before_first_request
 def update():
-    scheduler.init_app(app)
-    scheduler.start()
+    try:
+        scheduler.init_app(app)
+        scheduler.start()
+    except:
+        pass
 
 
 @app.before_first_request
@@ -95,3 +98,4 @@ def cache_tables():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000', debug=True)
+    # app.run(host='124.71.45.84', port='5000', debug=True)
